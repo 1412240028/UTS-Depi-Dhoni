@@ -49,6 +49,10 @@
 }
 
 /* ================= PUTIH BERSIH FULL MONITOR BASE ================= */
+html {
+  font-size: 18px; /* Skala teks diperbesar +2px dari standar 16px untuk keterbacaan optimal */
+}
+
 html, body {
   width: 100%;
   height: 100%;
@@ -1295,6 +1299,7 @@ html, body {
 
 /* ================= ADAPTIVE RESPONSIVENESS ================= */
 @media (max-height: 760px) {
+  html { font-size: 16px; }
   .slide-header { padding: 10px 32px; }
   .slide-footer { padding: 10px 32px; }
   .slide-body { padding: 16px 40px; }

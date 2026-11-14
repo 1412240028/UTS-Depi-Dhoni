@@ -56,7 +56,7 @@ const hardwareModules = [
         
         <!-- Chipset Heatsink -->
         <rect x="195" y="132" width="48" height="48" rx="4" fill="#192e4e" stroke="#395f98" stroke-width="1.5"/>
-        <text x="201" y="160" fill="#ffffff" font-family="JetBrains Mono" font-size="8" font-weight="800">CHIPSET</text>
+        <text x="198" y="161" fill="#ffffff" font-family="JetBrains Mono" font-size="10" font-weight="800">CHIPSET</text>
         
         <!-- Circuit Signal Traces with Pulse Animation -->
         <path d="M140 78 H160" stroke="#136cfc" stroke-width="3" stroke-linecap="square" class="anim-trace"/>
@@ -98,8 +98,8 @@ const hardwareModules = [
         <line x1="140" y1="70" x2="140" y2="150" stroke="#395f98" stroke-dasharray="4,2"/>
         
         <!-- Monospace Identifier -->
-        <text x="108" y="112" fill="#ffffff" font-family="JetBrains Mono" font-size="10" font-weight="800">CPU_CORE</text>
-        <text x="108" y="128" fill="#c3f84a" font-family="JetBrains Mono" font-size="8" font-weight="800">5.8 GHz // x64</text>
+        <text x="104" y="112" fill="#ffffff" font-family="JetBrains Mono" font-size="12" font-weight="800">CPU_CORE</text>
+        <text x="100" y="130" fill="#c3f84a" font-family="JetBrains Mono" font-size="10" font-weight="800">5.8 GHz // x64</text>
       </svg>
     `,
     points: [
@@ -136,7 +136,7 @@ const hardwareModules = [
         <rect x="126" y="150" width="16" height="14" fill="#0f1c30"/>
         <rect x="142" y="150" width="114" height="10" fill="#c3f84a"/>
         
-        <text x="65" y="185" fill="#ffffff" font-family="JetBrains Mono" font-size="9" font-weight="800">DDR5 // 32GB // 6000MT/s</text>
+        <text x="50" y="185" fill="#ffffff" font-family="JetBrains Mono" font-size="11" font-weight="800">DDR5 // 32GB // 6000MT/s</text>
       </svg>
     `,
     points: [
@@ -162,14 +162,14 @@ const hardwareModules = [
         
         <!-- Controller IC -->
         <rect x="58" y="82" width="36" height="50" rx="2" fill="#192e4e" stroke="#136cfc" stroke-width="2"/>
-        <text x="64" y="111" fill="#136cfc" font-family="JetBrains Mono" font-size="8" font-weight="800">CTRL</text>
+        <text x="62" y="111" fill="#136cfc" font-family="JetBrains Mono" font-size="10" font-weight="800">CTRL</text>
         
         <!-- NAND Flash Packages -->
         <rect x="108" y="80" width="60" height="55" rx="2" fill="#192e4e" stroke="#395f98" stroke-width="1.5"/>
-        <text x="118" y="111" fill="#ffffff" font-family="JetBrains Mono" font-size="8" font-weight="800">NAND_01</text>
+        <text x="114" y="111" fill="#ffffff" font-family="JetBrains Mono" font-size="10" font-weight="800">NAND_01</text>
         
         <rect x="178" y="80" width="60" height="55" rx="2" fill="#192e4e" stroke="#395f98" stroke-width="1.5"/>
-        <text x="188" y="111" fill="#ffffff" font-family="JetBrains Mono" font-size="8" font-weight="800">NAND_02</text>
+        <text x="184" y="111" fill="#ffffff" font-family="JetBrains Mono" font-size="10" font-weight="800">NAND_02</text>
         
         <!-- Streaming Data Packets -->
         <circle cx="100" cy="92" r="3" fill="#c3f84a" class="anim-ssd-pkt"/>
@@ -179,7 +179,7 @@ const hardwareModules = [
         <!-- M-Key Gold Pins -->
         <rect x="249" y="75" width="6" height="65" fill="#c3f84a"/>
         
-        <text x="65" y="175" fill="#c3f84a" font-family="JetBrains Mono" font-size="9" font-weight="800">PCIe Gen4 x4 // NVMe 1.4</text>
+        <text x="50" y="175" fill="#c3f84a" font-family="JetBrains Mono" font-size="11" font-weight="800">PCIe Gen4 x4 // NVMe 1.4</text>
       </svg>
     `,
     points: [
@@ -228,7 +228,7 @@ const hardwareModules = [
           <path d="M185 105 L150 105 A10 10 0 0 1 159 94 Z" fill="#ffffff"/>
         </g>
         
-        <text x="75" y="195" fill="#ffffff" font-family="JetBrains Mono" font-size="9" font-weight="800">PCIe 4.0 x16 // DUAL_FAN</text>
+        <text x="60" y="195" fill="#ffffff" font-family="JetBrains Mono" font-size="11" font-weight="800">PCIe 4.0 x16 // DUAL_FAN</text>
       </svg>
     `,
     points: [
@@ -267,7 +267,7 @@ const hardwareModules = [
         <path d="M160 150 Q190 205 245 200" stroke="#136cfc" stroke-width="3" fill="none"/>
         <path d="M170 150 Q200 215 250 210" stroke="#ffffff" stroke-width="3" fill="none"/>
         
-        <text x="80" y="170" fill="#c3f84a" font-family="JetBrains Mono" font-size="9" font-weight="800">80+ GOLD // 750W ATX</text>
+        <text x="65" y="170" fill="#c3f84a" font-family="JetBrains Mono" font-size="11" font-weight="800">80+ GOLD // 750W ATX</text>
       </svg>
     `,
     points: [
