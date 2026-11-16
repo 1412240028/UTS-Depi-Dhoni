@@ -1,4 +1,4 @@
-# 🖥️ Media Interaktif: Anatomi Komponen & Simulasi Perakitan PC
+# 🖥️ Media Pembelajaran Interaktif: Anatomi Komponen & Simulasi Perakitan PC
 
 > **Proyek Ujian Tengah Semester (UTS) — Mata Kuliah Multimedia (IF562528)**  
 > **Program Studi Teknik Informatika (TIF 2024) — Universitas PGRI Ronggolawe Tuban**  
@@ -7,16 +7,51 @@
 ---
 
 ## 👥 Tim Pengembang
-* **Dhoni** — Mahasiswa Teknik Informatika (TIF 2024)
-* **Devi** — Mahasiswa Teknik Informatika (TIF 2024)
+* **Dhoni** — NPM 1412240028 (Teknik Informatika 2024)
+* **Devi** — NPM 1412240027 (Teknik Informatika 2024)
 
 ---
 
-## 🖥️ Layout & Responsivitas Layar PC / Laptop
-Media presentasi ini dirancang menggunakan **arsitektur viewport dinamis (*Full Monitor / Laptop Workspace*)**, menggantikan batasan kaku rasio kotak 16:9:
-* **Edge-to-Edge Workspace (`100vw × 100vh`):** Memanfaatkan seluruh bidang layar monitor tanpa ruang kosong (*letterbox/pillarbox*).
-* **Adaptasi Resolusi:** Mendukung tampilan optimal mulai dari laptop standar (1366×768), layar Full HD (1920×1080), rasio 16:10 (1440×900, 1920×1200), hingga monitor *Ultrawide*.
-* **Auto-Scaling Layout:** Elemen skematik SVG, kolom *workbench*, dan lembar spesifikasi secara adaptif menyesuaikan ketinggian vertikal monitor sehingga terhindar dari pemotongan visual.
+## 🌟 Fitur Utama & Keunggulan Sistem
+
+1. **State Persistence Otomatis (`localStorage`)**
+   - Seluruh aktivitas pengguna (progres membaca 6 komponen hardware, status verifikasi drag & drop perakitan, riwayat jawaban kuis, dan slide aktif terakhir) tersimpan otomatis di penyimpanan lokal browser.
+   - Pengguna dapat me-*refresh* halaman atau menutup browser tanpa khawatir kehilangan capaian belajar atau skor evaluasi.
+
+2. **Dukungan Layar Sentuh Penuh (Mobile Touch Drag & Drop)**
+   - Mendukung manipulasi interaktif di perangkat *touchscreen* (smartphone dan tablet) menggunakan event `touchstart`, `touchmove`, dan `touchend`.
+   - Dilengkapi elemen klon melayang (*floating drag-ghost*) dengan elevasi dinamis dan deteksi koordinat presisi via `elementFromPoint()`.
+   - Tetap menyediakan mode *tap-to-move* sebagai alternatif yang fleksibel.
+
+3. **Mode Full Screen Presentasi & Pembesaran Teks Otomatis**
+   - Mode layar penuh dapat diaktifkan melalui tombol **`⛶ Fullscreen`** pada navbar atau menekan tombol **`F`** pada keyboard.
+   - **Fluid Typography Scaling**: Tipografi otomatis membesar secara proporsional (hingga `21px` base font size) saat presentasi layar penuh, memastikan diagram, teks penjelasan, dan opsi kuis terbaca jelas oleh audiens di baris belakang kelas maupun proyektor.
+
+4. **Panel Laci Navigasi Slide (*Slide Navigation Drawer*)**
+   - Tombol **`☰ Slide`** di footer membuka panel laci dari sisi kiri layar.
+   - Pengguna dapat langsung meninjau seluruh daftar 14 slide dan melompat ke slide mana pun dalam 1 klik tanpa harus menekan tombol navigasi berkali-kali.
+
+5. **Dialog Konfirmasi Ulangi Sesi (*Safe Reset Modal*)**
+   - Tombol "Ulangi Seluruh Sesi" dilengkapi modal konfirmasi dialog modern (`#confirm-modal`) untuk mencegah hilangnya data progres belajar akibat ketidaksengajaan.
+   - Mendukung penutupan dialog cepat via tombol `Escape` atau klik pada area *backdrop*.
+
+6. **Navbar Mobile Responsif Dua Tingkat (*Two-Tier Mobile Navbar*)**
+   - Pada layar smartphone/tablet (`≤ 768px`), bilah navigasi bawah otomatis ditata menjadi 2 baris terstruktur:
+     - **Baris 1**: Utilitas (`☰ Slide`, `⛶ Fullscreen`) dan indikator status (`SLIDE XX`, counter `XX / 14`).
+     - **Baris 2**: Tombol aksi navigasi penuh (`← Sebelumnya`, `Peta Komponen`, `Selanjutnya →`) dengan lebar 100% layar tanpa teks terpotong atau terlipat.
+
+7. **Aksesibilitas Standar WCAG AA (*Accessibility-First*)**
+   - Dilengkapi elemen pembaca layar **`#aria-announcer`** (`aria-live="polite"`) yang membacakan perpindahan slide dan hasil verifikasi evaluasi.
+   - Setiap diagram skematik SVG memiliki elemen semantik `<title>`, atribut `role="img"`, dan `aria-label`.
+   - Rasio kontras teks status memenuhi standar WCAG AA (`--green-text: #256604`).
+   - Bebas dari gangguan *focus-outline* biru pada judul slide.
+
+8. **Kuis Evaluasi Anti-Manipulasi (*Locked State & Solution*)**
+   - Pilihan kuis langsung terkunci setelah dijawab (`.quiz-locked`) untuk menjaga validitas evaluasi.
+   - Dilengkapi tombol reset resmi per-soal ("Ulangi Soal") dan tombol pembahasan teknis mendalam ("Lihat Solusi").
+
+9. **Pengacakan Bebas Bias (*Fisher-Yates Shuffle Algorithm*)**
+   - Pengacakan tahapan simulasi perakitan PC menggunakan algoritma Fisher-Yates murni untuk menjamin distribusi permutasi yang adil dan seragam setiap kali direset.
 
 ---
 
@@ -24,13 +59,12 @@ Media presentasi ini dirancang menggunakan **arsitektur viewport dinamis (*Full 
 
 | Nama Warna | Kode HEX | Nilai RGB | Peran dalam Sistem Desain |
 | :--- | :---: | :---: | :--- |
-| **Clean White** | `#FFFFFF` | `255, 255, 255` | Warna dasar / kanvas utama website (*Technical Blueprint Paper*) |
+| **Clean White** | `#FFFFFF` | `255, 255, 255` | Warna dasar / kanvas utama (*Technical Blueprint Workspace*) |
 | **Light Blue** | `#E8F4FC` | `232, 244, 252` | Permukaan kontainer sekunder, slot perakitan, dan highlight lembut |
-| **Dark Blue** | `#152641` | `21, 38, 65` | Tipografi utama kontras maksimal (100% bebas teks abu-abu) & border struktural |
-| **Blue** | `#136CFC` | `19, 108, 252` | Tombol interaktif utama, indikator jalur sirkuit, dan lajur bus data |
-| **Green (Lime)** | `#C3F84A` | `195, 248, 74` | Lencana verifikasi, pendar inti CPU, dan aksen skematik aktif |
-
-> **Filosofi UI/UX:** Menghindari elemen dekoratif generik (*AI slop*), gradien berlebih, maupun efek buram tak bertujuan. Latar putih bersih dipadukan dengan tipografi `#152641` berukuran proporsional dan tebal menjamin keterbacaan tinggi (*high legibility*) tanpa menggunakan warna abu-abu pudar. Seluruh visual mengadopsi standar diagram teknik berpresisi tinggi dengan tipografi proporsional (*Plus Jakarta Sans*) dan kode monospaced (*JetBrains Mono*).
+| **Dark Blue** | `#152641` | `21, 38, 65` | Tipografi utama kontras maksimal (100% bebas abu-abu) & border struktural |
+| **Blue (Primary)** | `#136CFC` | `19, 108, 252` | Tombol interaktif utama, indikator jalur bus sirkuit, dan fokus aktif |
+| **Lime Green** | `#C3F84A` | `195, 248, 74` | Lencana verifikasi, pendar inti CPU, dan aksen skematik CAD aktif |
+| **Accessible Green** | `#256604` | `37, 102, 4` | Teks status `[SELESAI]` kontras tinggi memenuhi standar WCAG AA |
 
 ---
 
@@ -38,54 +72,54 @@ Media presentasi ini dirancang menggunakan **arsitektur viewport dinamis (*Full 
 
 | No. Slide | Topik / Modul | Detail Interaktivitas & Visual |
 | :---: | :--- | :--- |
-| **Slide 01** | **Sampul Utama (Overview)** | Lembar spesifikasi identitas mahasiswa, dosen, kampus, dan tombol navigasi langsung |
-| **Slide 02** | **Peta Blok Komponen** | Matriks navigasi non-linear untuk membuka modul hardware secara mandiri |
-| **Slide 03** | **Motherboard** | **Skematik Vektor SVG jalur sirkuit bus & VRM berdenyut** (`circuitPulseTrace`) |
-| **Slide 04** | **CPU / Processor** | **Skematik Vektor SVG inti silikon prosesor berpendar** (`cpuDiePulse`) |
-| **Slide 05** | **RAM (Memory)** | **Skematik Vektor SVG keping DIMM & LED aktivitas memori berkedip** (`ramClockBlink`) |
-| **Slide 06** | **SSD (Storage)** | **Skematik Vektor SVG paket data streaming ke kontroler & NAND flash** (`ssdDataPacket`) |
-| **Slide 07** | **GPU (VGA Card)** | **Skematik Vektor SVG bilah kipas pendingin ganda berputar mulus** (`fanContinuousRotate`) |
-| **Slide 08** | **PSU (Power Supply)** | **Skematik Vektor SVG kilatan spark tegangan tinggi & kabel daya** (`powerSparkLine`) |
-| **Slide 09** | **Panduan & SOP Perakitan** | Protokol keselamatan kerja (K3), pencegahan lonjakan ESD, dan aturan sub-assembly |
-| **Slide 10** | **Simulasi Drag & Drop Rakit** | Menyeret 5 tahapan ke slot urutan teknis, dilengkapi tombol **Reset Posisi** & **Cek Urutan & Solusi** |
-| **Slide 11** | **Tantangan Blok 01** | Kasus bottleneck multitasking & browser macet (RAM), dilengkapi tombol **Ulangi Soal** & **Lihat Solusi** |
-| **Slide 12** | **Tantangan Blok 02** | Kasus anomali daya listrik & komputer mati total (PSU), dilengkapi tombol **Ulangi Soal** & **Lihat Solusi** |
-| **Slide 13** | **Tantangan Blok 03** | Kasus integritas data non-volatile saat listrik padam (SSD), dilengkapi tombol **Ulangi Soal** & **Lihat Solusi** |
-| **Slide 14** | **Rekapitulasi Capaian** | Metrik otomatis: Modul terbaca (/6), status simulasi, akurasi soal (/3), dan **Skor Akhir (0–100)** |
+| **Slide 01** | **Sampul Utama (Overview)** | Lembar spesifikasi identitas mahasiswa, dosen pengampu, institusi, dan tombol langsung ke materi |
+| **Slide 02** | **Peta Blok Komponen** | Matriks non-linear untuk mengeksplorasi 6 komponen inti dengan indikator status belajar `[SELESAI]` |
+| **Slide 03** | **Motherboard** | Skematik Vektor SVG jalur bus PCB, soket CPU, slot DIMM, chipset, dan VRM berdenyut (`circuitPulseTrace`) |
+| **Slide 04** | **CPU / Processor** | Skematik Vektor SVG IHS dan silicon die prosesor berpendar dinamis (`cpuDiePulse`) |
+| **Slide 05** | **RAM (Memory)** | Skematik Vektor SVG keping DIMM DDR5 & LED aktivitas memori berkedip bergantian (`ramClockBlink`) |
+| **Slide 06** | **SSD (Storage)** | Skematik Vektor SVG kontroler NVMe M.2 & aliran paket data streaming ke NAND flash (`ssdDataPacket`) |
+| **Slide 07** | **GPU (VGA Card)** | Skematik Vektor SVG shroud pendingin dan rotor kipas ganda berputar mulus (`fanContinuousRotate`) |
+| **Slide 08** | **PSU (Power Supply)** | Skematik Vektor SVG konverter AC-DC, ventilasi heksagonal, dan sambaran spark tegangan tinggi (`powerSparkLine`) |
+| **Slide 09** | **Panduan & SOP Perakitan** | 3 Standar Operasional Prosedur: Proteksi ESD, Perakitan Inti di Luar Casing (*Sub-Assembly*), dan Integrasi Daya |
+| **Slide 10** | **Simulasi Perakitan PC** | Interaksi *drag & drop* atau *touch swipe* 5 tahapan perakitan ke slot urutan standar K3 teknis |
+| **Slide 11** | **Tantangan Kasus 01** | Analisis blok fungsi: Bottleneck beban kerja *multitasking* dan memori *volatile* (RAM) |
+| **Slide 12** | **Tantangan Kasus 02** | Analisis blok fungsi: Anomali suplai energi listrik dan kegagalan daya total (PSU) |
+| **Slide 13** | **Tantangan Kasus 03** | Analisis blok fungsi: Karakteristik retensi data permanen *non-volatile* (SSD) |
+| **Slide 14** | **Rekapitulasi Capaian** | Evaluasi capaian pembelajaran: Modul (/6), status simulasi, akurasi soal (/3), dan **Animasi Skor Akhir (0–100)** |
 
 ---
 
-## 🎮 Kontrol Navigasi & Fitur Auto-Hide Header
-* **Fitur Auto-Hide Header Cerdas:**
-  * **Otomatis Sembunyi Saat Membaca:** Header akan melipat ke atas secara halus setelah 2 detik membaca/inaktivitas di area slide, memberikan bidang pandang vertikal layar penuh (*distraction-free*).
-  * **Otomatis Sembunyi Saat Menggeser Slide:** Berpindah antar slide menjaga header tetap tersembunyi agar transisi antarslide stabil tanpa hentakan layout (*layout shift*).
-  * **Floating Peek Tab Atas:** Saat header tersembunyi, tab ringkas di tepi atas layar (`[▾] [SLIDE XX] JUDUL`) tetap menampilkan posisi slide secara elegan.
-  * **Cara Membuka Kembali Header:**
-    * Arahkan kursor mouse ke tepi paling atas layar monitor (zona atas `Y <= 25px`).
-    * Hover atau klik pada **Floating Peek Tab**.
-    * Tekan tombol pintas keyboard `[H]`.
-  * **Tombol Kunci (Pin):** Terdapat tombol `Auto-Hide: ON / Terkunci` di pojok kanan header jika ingin mengunci header agar tetap tampil permanen sewaktu presentasi.
+## 🎮 Kontrol Navigasi & Pintasan Keyboard
+
 * **Keyboard Shortcuts:**
-  * `Panah Kanan` / `Spasi` / `Page Down`: Maju ke slide selanjutnya.
+  * `Panah Kanan` / `Page Down`: Maju ke slide selanjutnya.
   * `Panah Kiri` / `Page Up`: Mundur ke slide sebelumnya.
-  * `Home` / `End`: Lompat langsung ke slide pertama / terakhir.
-  * `H`: *Toggle* buka / tutup header kapan saja.
-* **Tombol Antarmuka:**
-  * Tombol **Sebelumnya** dan **Selanjutnya** di footer bawah.
-  * Tombol jalan pintas **Peta Komponen** pada slide materi komponen.
+  * `Home`: Melompat langsung ke Slide 01 (Cover).
+  * `End`: Melompat langsung ke Slide 14 (Rekapitulasi).
+  * `F`: Beralih masuk / keluar mode **Full Screen (Layar Penuh)**.
+  * `Escape`: Menutup Drawer Navigasi atau Modal Konfirmasi Reset.
+* **Tombol Antarmuka (Navbar Bawah):**
+  * `☰ Slide`: Membuka laci daftar seluruh slide presentasi.
+  * `⛶ Fullscreen`: Beralih tampilan layar penuh untuk presentasi.
+  * `← Sebelumnya` & `Selanjutnya →`: Kontrol pergeseran slide bertahap.
+  * `Peta Komponen`: Jalan pintas kembali ke matriks eksplorasi (aktif pada slide materi).
 
 ---
 
-## 📁 Struktur Berkas
+## 📁 Struktur Berkas Proyek
+
 ```text
 UTS_DHONI & DEVI/
-├── index.html    # Struktur semantik 14 slide full monitor
-├── style.css     # Sistem desain 4 warna teknis, viewport PC/laptop & animasi SVG
-├── script.js     # Engine navigasi, validasi drag & drop, kuis, dan rekap nilai
-└── README.md     # Panduan dokumentasi proyek
+├── index.html    # Struktur semantik 14 slide, modal reset, drawer, dan live announcer
+├── style.css     # Sistem desain technical blueprint, responsivitas dua tingkat, dan transisi cubic-bezier
+├── script.js     # Engine navigasi, touch DnD, state localStorage, kuis terkunci, dan Fisher-Yates
+└── README.md     # Dokumentasi komprehensif proyek media pembelajaran
 ```
 
 ---
 
 ## 🚀 Cara Menjalankan
-Buka berkas `index.html` langsung menggunakan Google Chrome atau Microsoft Edge.
+
+1. Clone atau unduh repositori ini ke komputer lokal.
+2. Buka berkas `index.html` menggunakan peramban web modern (**Google Chrome**, **Microsoft Edge**, **Mozilla Firefox**, atau **Safari**).
+3. Tidak memerlukan instalasi server backend khusus (*zero-dependency pure client-side web application*).
