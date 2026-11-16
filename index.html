@@ -1,279 +1,377 @@
 <!DOCTYPE html>
 <html lang="id">
+<!--
+  ====================================================================
+  ANATOMI KOMPONEN & SIMULASI PERAKITAN PC (14 SLIDE)
+  ====================================================================
+  Modul Multimedia Pembelajaran Interaktif Teknik Informatika
+  Proyek UTS Multimedia (IF562528)
+  Penyusun : Dhoni & Devi (NPM: 1412240028 & 1412240027)
+  Prodi    : Teknik Informatika 2024 — Universitas PGRI Ronggolawe Tuban
+  Dosen    : Suprapto, S.Kom., M.Kom.
+  Tema     : Clean Technical White Workspace (High Contrast & Legibility)
+  ====================================================================
+
+  DAFTAR STRUKTUR DOKUMEN:
+    §1  Head & Metadata Dokumen
+    §2  Aksesibilitas — ARIA Live Announcer
+    §3  Komponen Laci — Drawer Navigasi Slide
+    §4  Komponen Dialog — Modal Konfirmasi Reset
+    §5  Panggung Utama & Slide 01: Sampul Utama & Identifikasi
+    §6  Slide 02: Peta Skematik Blok Komponen (Menu Eksplorasi)
+    §7  Slide 03–08: Wadah Detail Hardware (Dirender via script.js)
+    §8  Slide 09: Standar Keselamatan & SOP Perakitan
+    §9  Slide 10: Simulasi Urutan Perakitan Drag & Drop
+    §10 Slide 11–13: Wadah Kuis Evaluasi (Dirender via script.js)
+    §11 Slide 14: Laporan Rekapitulasi Capaian Akhir
+    §12 Bar Navigasi Bawah (Technical Footer)
+    §13 Pemuatan Mesin Logika (script.js)
+  ====================================================================
+-->
+
+<!-- ===================================================================
+  §1 — HEAD & METADATA DOKUMEN
+  Konfigurasi viewport, charset, fonts eksternal, dan stylesheet teknis
+==================================================================== -->
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Anatomi Komponen & Simulasi Perakitan PC | IF562528 Multimedia</title>
+  <title>Anatomi Komponen &amp; Simulasi Perakitan PC | IF562528 Multimedia</title>
   
-  <!-- Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <!-- Web Fonts: Plus Jakarta Sans (Body & Heading) & JetBrains Mono (Teknis & Monospace) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- Technical Stylesheet -->
+  <!-- Technical Stylesheet Utama -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- ARIA Live Announcer for Screen Readers -->
-<div id="aria-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+  <!-- ===================================================================
+    §2 — ARIA LIVE ANNOUNCER
+    Region live tersembunyi visual untuk pembacaan notifikasi screen reader
+  ==================================================================== -->
+  <div id="aria-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
-<!-- SLIDE NAVIGATION DRAWER -->
-<div class="slide-nav-backdrop" id="slide-nav-backdrop"></div>
-<nav class="slide-nav-drawer" id="slide-nav-drawer" role="navigation" aria-label="Navigasi Daftar Slide">
-  <div class="slide-nav-header">
-    <h3>Peta &amp; Navigasi Slide</h3>
-    <button class="btn-close-nav" id="btn-close-nav" aria-label="Tutup navigasi slide">&times;</button>
-  </div>
-  <div class="slide-nav-list" id="slide-nav-list">
-    <!-- Populated dynamically by script.js -->
-  </div>
-</nav>
-
-<!-- RESET CONFIRMATION MODAL -->
-<div class="modal-backdrop" id="confirm-modal-backdrop"></div>
-<div class="confirm-modal" id="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
-  <h3 id="confirm-modal-title">Konfirmasi Ulangi Sesi</h3>
-  <p>Apakah Anda yakin ingin mengulang seluruh modul pembelajaran? Seluruh progres telaah komponen, hasil simulasi perakitan, dan skor tantangan akan direset dari awal.</p>
-  <div class="modal-actions">
-    <button class="btn btn-secondary" id="btn-cancel-reset">Batal</button>
-    <button class="btn btn-danger" id="btn-confirm-reset">Ya, Ulangi Sesi</button>
-  </div>
-</div>
-
-<div class="slide-stage">
-  <!-- WORKSPACE VIEWPORT -->
-  <main class="slide-main-viewport" role="main" aria-label="Konten Slide Presentasi">
-
-    <!-- ================= SLIDE 1: SAMPUL UTAMA ================= -->
-    <section class="slide-body active" id="slide-0" data-slide="1" role="region" aria-label="Slide 1: Sampul Utama Anatomi Komponen PC">
-      <div class="cover-layout">
-        <div class="cover-left">
-          <div class="system-kicker">[UTS_IF562528] PROYEK MULTIMEDIA INTERAKTIF</div>
-          <h1 class="cover-title">
-            Anatomi Komponen &amp; <br>
-            <span>Simulasi Perakitan PC</span>
-          </h1>
-          <p class="cover-lead">
-            Modul pembelajaran interaktif teknik informatika: telaah skematik 6 komponen inti komputer dengan animasi vektor sirkuit, simulasi urutan perakitan <em>drag &amp; drop</em>, dan pengujian analisis blok fungsi perangkat keras.
-          </p>
-          <div class="cover-buttons">
-            <button class="btn btn-green" id="btn-start-module">
-              <span>Mulai Modul Pembelajaran &rarr;</span>
-            </button>
-            <button class="btn btn-secondary" id="btn-goto-sop">
-              <span>SOP Perakitan (Slide 9)</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="cover-right">
-          <div class="spec-meta-card">
-            <h4>Lembar Identifikasi Proyek</h4>
-            <div class="meta-row">
-              <span>Mata Kuliah</span>
-              <strong>IF562528 Multimedia</strong>
-            </div>
-            <div class="meta-row">
-              <span>Tim Penyusun</span>
-              <strong>Dhoni &amp; Devi</strong>
-            </div>
-            <div class="meta-row">
-              <span>NPM</span>
-              <strong>1412240028 &amp; 1412240027</strong>
-            </div>
-            <div class="meta-row">
-              <span>Program Studi</span>
-              <strong>Teknik Informatika 2024</strong>
-            </div>
-            <div class="meta-row">
-              <span>Instansi</span>
-              <strong>Univ. PGRI Ronggolawe Tuban</strong>
-            </div>
-            <div class="meta-row">
-              <span>Dosen Pengampu</span>
-              <strong>Suprapto, S.Kom., M.Kom.</strong>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= SLIDE 2: MENU EKSPLORASI KOMPONEN ================= -->
-    <section class="slide-body" id="slide-1" data-slide="2" role="region" aria-label="Slide 2: Peta Skematik Blok Komponen">
-      <div class="menu-head">
-        <div>
-          <h2>Peta Skematik Blok Komponen</h2>
-          <p>Pilih blok perangkat keras mana saja terlebih dahulu untuk mempelajari arsitektur dan prinsip kerjanya.</p>
-        </div>
-      </div>
-
-      <div class="component-matrix" id="component-menu-grid">
-        <!-- Rendered by script.js -->
-      </div>
-
-      <div class="status-bar-line">
-        <span>STATUS BELAJAR: <strong id="menu-progress-label">0 / 6 Komponen Dipelajari</strong></span>
-        <span>MODUL: NON-LINEAR INDEPENDENT EXPLORATION</span>
-      </div>
-    </section>
-
-    <!-- ================= SLIDE 3: MOTHERBOARD ================= -->
-    <section class="slide-body" id="slide-2" data-slide="3" role="region" aria-label="Slide 3: Komponen Motherboard"></section>
-
-    <!-- ================= SLIDE 4: CPU / PROCESSOR ================= -->
-    <section class="slide-body" id="slide-3" data-slide="4" role="region" aria-label="Slide 4: Komponen CPU Processor"></section>
-
-    <!-- ================= SLIDE 5: RAM ================= -->
-    <section class="slide-body" id="slide-4" data-slide="5" role="region" aria-label="Slide 5: Komponen RAM"></section>
-
-    <!-- ================= SLIDE 6: SSD / STORAGE ================= -->
-    <section class="slide-body" id="slide-5" data-slide="6" role="region" aria-label="Slide 6: Komponen SSD Storage"></section>
-
-    <!-- ================= SLIDE 7: GPU / VGA CARD ================= -->
-    <section class="slide-body" id="slide-6" data-slide="7" role="region" aria-label="Slide 7: Komponen GPU"></section>
-
-    <!-- ================= SLIDE 8: PSU / POWER SUPPLY ================= -->
-    <section class="slide-body" id="slide-7" data-slide="8" role="region" aria-label="Slide 8: Komponen PSU"></section>
-
-    <!-- ================= SLIDE 9: PENGANTAR & ATURAN SIMULASI ================= -->
-    <section class="slide-body" id="slide-8" data-slide="9" role="region" aria-label="Slide 9: Standar Keselamatan dan SOP Perakitan">
-      <div class="rules-stage">
-        <div class="rules-heading">
-          <div class="system-kicker">[SOP_ASSEMBLY] STANDAR KESELAMATAN &amp; PROSEDUR TEKNIS</div>
-          <h2>Panduan &amp; Aturan Perakitan Komputer</h2>
-          <p>Sebelum memulai simulasi drag &amp; drop, pahami standar keselamatan kerja (K3) dan tahapan kritis perakitan hardware.</p>
-        </div>
-
-        <div class="rules-trio">
-          <div class="rule-box">
-            <div class="rule-box-header">SOP 01 // PROTEKSI ESD</div>
-            <h3>Pencegahan Kerusakan Statis</h3>
-            <p>Muatan listrik statis tubuh <b>Electrostatic Discharge</b> dapat merusak gerbang logika mikrochip silikon (CPU &amp; RAM). Selalu netralkan tubuh dengan menyentuh bagian logam casing sebelum menyentuh sirkuit.</p>
-          </div>
-
-          <div class="rule-box">
-            <div class="rule-box-header">SOP 02 // SUB-ASSEMBLY</div>
-            <h3>Rakit Inti di Luar Casing</h3>
-            <p>Pasang prosesor (CPU), oleskan pasta termal, pasang heatsink/cooler, dan pasang RAM di atas kotak motherboard sebelum motherboard dimasukkan dan dibaut ke dalam rangka casing.</p>
-          </div>
-
-          <div class="rule-box">
-            <div class="rule-box-header">SOP 03 // INTEGRASI DAYA</div>
-            <h3>Pemasangan &amp; Distribusi Daya</h3>
-            <p>Pasang PSU ke casing terlebih dahulu, atur jalur kabel, hubungkan kabel 24-Pin ATX ke motherboard, 8-Pin CPU EPS, kabel storage, dan kabel PCIe untuk kartu grafis.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= SLIDE 10: SIMULASI DRAG & DROP ================= -->
-    <section class="slide-body" id="slide-9" data-slide="10" role="region" aria-label="Slide 10: Simulasi Urutan Perakitan PC">
-      <div class="dnd-stage">
-        <div class="dnd-panel-header">
-          <div>
-            <div class="system-kicker">[SIMULASI_RAKIT] INTERAKSI URUTAN PERAKITAN HARDWARE</div>
-            <h3>Simulasi Urutan Perakitan PC</h3>
-            <p>Pindahkan kartu tahapan ke slot urutan 1 sampai 5 yang tepat (bisa drag &amp; drop, geser di layar sentuh, atau tap/klik kartu).</p>
-          </div>
-          <div class="footer-actions">
-            <button class="btn btn-secondary" id="btn-reset-dnd">Reset Posisi</button>
-            <button class="btn btn-green" id="btn-check-dnd">Cek Urutan &amp; Solusi</button>
-          </div>
-        </div>
-
-        <div class="dnd-workbench">
-          <div class="dnd-shelf">
-            <div class="shelf-title">Tahapan Tersedia:</div>
-            <div class="source-depot" id="dnd-source"></div>
-          </div>
-
-          <div class="dnd-shelf">
-            <div class="shelf-title">Slot Urutan Perakitan:</div>
-            <div class="target-slots" id="dnd-targets"></div>
-          </div>
-        </div>
-
-        <div class="dnd-msg-box" id="dnd-feedback"></div>
-      </div>
-    </section>
-
-    <!-- ================= SLIDE 11: LATIHAN SOAL 1 ================= -->
-    <section class="slide-body" id="slide-10" data-slide="11" role="region" aria-label="Slide 11: Tantangan Kasus 01"></section>
-
-    <!-- ================= SLIDE 12: LATIHAN SOAL 2 ================= -->
-    <section class="slide-body" id="slide-11" data-slide="12" role="region" aria-label="Slide 12: Tantangan Kasus 02"></section>
-
-    <!-- ================= SLIDE 13: LATIHAN SOAL 3 ================= -->
-    <section class="slide-body" id="slide-12" data-slide="13" role="region" aria-label="Slide 13: Tantangan Kasus 03"></section>
-
-    <!-- ================= SLIDE 14: REKAPITULASI AKHIR ================= -->
-    <section class="slide-body" id="slide-13" data-slide="14" role="region" aria-label="Slide 14: Laporan Rekapitulasi Capaian Pembelajaran">
-      <div class="summary-stage">
-        <span class="summary-tag">MODUL SELESAI // LAPORAN REKAPITULASI</span>
-        <h2>Evaluasi Capaian Pembelajaran</h2>
-        <p>Rekapitulasi progres eksplorasi mandiri, verifikasi simulasi perakitan, dan akurasi analisis blok fungsi:</p>
-
-        <div class="score-metrics">
-          <div class="metric-panel">
-            <span class="metric-label">Modul Dipelajari</span>
-            <span class="metric-number" id="recap-materi">0 / 6</span>
-            <span class="metric-footnote">Eksplorasi Hardware</span>
-          </div>
-
-          <div class="metric-panel">
-            <span class="metric-label">Simulasi Rakit</span>
-            <span class="metric-number" id="recap-dnd">PENDING</span>
-            <span class="metric-footnote">Drag &amp; Drop Prosedur</span>
-          </div>
-
-          <div class="metric-panel">
-            <span class="metric-label">Tantangan Blok</span>
-            <span class="metric-number" id="recap-quiz">0 / 3</span>
-            <span class="metric-footnote">Akurasi Analisis</span>
-          </div>
-
-          <div class="metric-panel highlighted">
-            <span class="metric-label">Skor Akhir</span>
-            <span class="metric-number" id="recap-total-score">0 / 100</span>
-            <span class="metric-footnote" id="recap-predicate">Status: Belum Lengkap</span>
-          </div>
-        </div>
-
-        <div class="summary-author-footer">
-          <div>
-            <strong>Proyek UTS Multimedia (IF562528)</strong>
-            <span>Penyusun: <strong>Dhoni &amp; Devi</strong> | Prodi Teknik Informatika 2024 | Dosen: <strong>Suprapto, S.Kom., M.Kom.</strong></span>
-          </div>
-          <button class="btn btn-secondary" id="btn-restart-all">Ulangi Seluruh Sesi</button>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- TECHNICAL FOOTER NAVIGATION -->
-  <footer class="slide-footer" role="navigation" aria-label="Kontrol Navigasi Slide">
-    <div class="footer-meta">
-      <button class="btn-drawer-trigger" id="btn-nav-open" aria-label="Buka navigasi semua slide" title="Daftar Slide">&#9776; Slide</button>
-      <button class="btn-fullscreen-trigger" id="btn-fullscreen" aria-label="Mode layar penuh" title="Layar Penuh (Tekan F)">&#x26F6; Fullscreen</button>
-      <span class="footer-badge" id="footer-badge">SLIDE 01</span>
-      <span class="footer-title" id="footer-title">OVERVIEW</span>
-      <div class="footer-progress" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="14" aria-label="Progres Pembelajaran">
-        <div class="footer-progress-bar" id="progress-fill"></div>
-      </div>
-      <span class="footer-counter" id="slide-counter">01 / 14</span>
+  <!-- ===================================================================
+    §3 — DRAWER NAVIGASI SLIDE
+    Panel samping kiri untuk melompat langsung ke slide manapun (1–14)
+  ==================================================================== -->
+  <div class="slide-nav-backdrop" id="slide-nav-backdrop"></div>
+  <nav class="slide-nav-drawer" id="slide-nav-drawer" role="navigation" aria-label="Navigasi Daftar Slide">
+    <div class="slide-nav-header">
+      <h3>Peta &amp; Navigasi Slide</h3>
+      <button class="btn-close-nav" id="btn-close-nav" aria-label="Tutup navigasi slide">&times;</button>
     </div>
+    <!-- Daftar item slide diisi secara dinamis oleh script.js: renderSlideNavDrawer() -->
+    <div class="slide-nav-list" id="slide-nav-list"></div>
+  </nav>
+
+  <!-- ===================================================================
+    §4 — MODAL KONFIRMASI RESET
+    Dialog peringatan sebelum mengosongkan seluruh riwayat dan progres sesi
+  ==================================================================== -->
+  <div class="modal-backdrop" id="confirm-modal-backdrop"></div>
+  <div class="confirm-modal" id="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
+    <h3 id="confirm-modal-title">Konfirmasi Ulangi Sesi</h3>
+    <p>
+      Apakah Anda yakin ingin mengulang seluruh modul pembelajaran? Seluruh progres telaah komponen, hasil simulasi perakitan, dan skor tantangan akan direset dari awal.
+    </p>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="btn-cancel-reset">Batal</button>
+      <button class="btn btn-danger" id="btn-confirm-reset">Ya, Ulangi Sesi</button>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+    §5 — PANGGUNG UTAMA & VIEWPORT PRESENTASI
+    Wadah penuh layar (edge-to-edge) berlatar blueprint grid
+  ==================================================================== -->
+  <div class="slide-stage">
     
-    <div class="footer-actions">
-      <button class="btn btn-secondary" id="btn-prev" disabled aria-label="Ke slide sebelumnya">&larr; Sebelumnya</button>
-      <button class="btn btn-secondary" id="btn-map" style="display: none;" aria-label="Kembali ke peta komponen">Peta Komponen</button>
-      <button class="btn btn-primary" id="btn-next" aria-label="Ke slide selanjutnya">Selanjutnya &rarr;</button>
-    </div>
-  </footer>
-</div>
+    <!-- Viewport Tempat Slide Ditampilkan -->
+    <main class="slide-main-viewport" role="main" aria-label="Konten Slide Presentasi">
 
-<!-- Technical Logic Engine -->
-<script src="script.js"></script>
+      <!-- ===============================================================
+        SLIDE 01: SAMPUL UTAMA & LEMBAR IDENTIFIKASI
+      ================================================================ -->
+      <section class="slide-body active" id="slide-0" data-slide="1" role="region" aria-label="Slide 1: Sampul Utama Anatomi Komponen PC">
+        <div class="cover-layout">
+          <!-- Sisi Kiri Cover: Judul, Lead & Tombol CTA -->
+          <div class="cover-left">
+            <div class="system-kicker">[UTS_IF562528] PROYEK MULTIMEDIA INTERAKTIF</div>
+            <h1 class="cover-title">
+              Anatomi Komponen &amp; <br>
+              <span>Simulasi Perakitan PC</span>
+            </h1>
+            <p class="cover-lead">
+              Modul pembelajaran interaktif teknik informatika: telaah skematik 6 komponen inti komputer dengan animasi vektor sirkuit, simulasi urutan perakitan <em>drag &amp; drop</em>, dan pengujian analisis blok fungsi perangkat keras.
+            </p>
+            <div class="cover-buttons">
+              <button class="btn btn-green" id="btn-start-module">
+                <span>Mulai Modul Pembelajaran &rarr;</span>
+              </button>
+              <button class="btn btn-secondary" id="btn-goto-sop">
+                <span>SOP Perakitan (Slide 9)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Sisi Kanan Cover: Kartu Lembar Identifikasi Akademik -->
+          <div class="cover-right">
+            <div class="spec-meta-card">
+              <h4>Lembar Identifikasi Proyek</h4>
+              <div class="meta-row">
+                <span>Mata Kuliah</span>
+                <strong>IF562528 Multimedia</strong>
+              </div>
+              <div class="meta-row">
+                <span>Tim Penyusun</span>
+                <strong>Dhoni &amp; Devi</strong>
+              </div>
+              <div class="meta-row">
+                <span>NPM</span>
+                <strong>1412240028 &amp; 1412240027</strong>
+              </div>
+              <div class="meta-row">
+                <span>Program Studi</span>
+                <strong>Teknik Informatika 2024</strong>
+              </div>
+              <div class="meta-row">
+                <span>Instansi</span>
+                <strong>Univ. PGRI Ronggolawe Tuban</strong>
+              </div>
+              <div class="meta-row">
+                <span>Dosen Pengampu</span>
+                <strong>Suprapto, S.Kom., M.Kom.</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===============================================================
+        §6 — SLIDE 02: PETA SKEMATIK BLOK KOMPONEN (MENU GRID)
+      ================================================================ -->
+      <section class="slide-body" id="slide-1" data-slide="2" role="region" aria-label="Slide 2: Peta Skematik Blok Komponen">
+        <div class="menu-head">
+          <div>
+            <h2>Peta Skematik Blok Komponen</h2>
+            <p>Pilih blok perangkat keras mana saja terlebih dahulu untuk mempelajari arsitektur dan prinsip kerjanya.</p>
+          </div>
+        </div>
+
+        <!-- Matriks 6 Komponen: Diisi secara dinamis oleh script.js: renderComponentMenu() -->
+        <div class="component-matrix" id="component-menu-grid"></div>
+
+        <!-- Indikator Status Progress Belajar -->
+        <div class="status-bar-line">
+          <span>STATUS BELAJAR: <strong id="menu-progress-label">0 / 6 Komponen Dipelajari</strong></span>
+          <span>MODUL: NON-LINEAR INDEPENDENT EXPLORATION</span>
+        </div>
+      </section>
+
+      <!-- ===============================================================
+        §7 — SLIDE 03–08: WADAH DETAIL HARDWARE
+        Markup internal dan SVG skematik dirender dinamis via script.js: renderMateriSlides()
+      ================================================================ -->
+      
+      <!-- Slide 03: Motherboard (PCB Utama) -->
+      <section class="slide-body" id="slide-2" data-slide="3" role="region" aria-label="Slide 3: Komponen Motherboard"></section>
+
+      <!-- Slide 04: CPU (Central Processing Unit) -->
+      <section class="slide-body" id="slide-3" data-slide="4" role="region" aria-label="Slide 4: Komponen CPU Processor"></section>
+
+      <!-- Slide 05: RAM (Random Access Memory) -->
+      <section class="slide-body" id="slide-4" data-slide="5" role="region" aria-label="Slide 5: Komponen RAM"></section>
+
+      <!-- Slide 06: SSD (Solid State Drive NVMe M.2) -->
+      <section class="slide-body" id="slide-5" data-slide="6" role="region" aria-label="Slide 6: Komponen SSD Storage"></section>
+
+      <!-- Slide 07: GPU (Graphics Processing Unit / VGA Card) -->
+      <section class="slide-body" id="slide-6" data-slide="7" role="region" aria-label="Slide 7: Komponen GPU"></section>
+
+      <!-- Slide 08: PSU (Power Supply Unit) -->
+      <section class="slide-body" id="slide-7" data-slide="8" role="region" aria-label="Slide 8: Komponen PSU"></section>
+
+      <!-- ===============================================================
+        §8 — SLIDE 09: STANDAR KESELAMATAN & SOP PERAKITAN
+      ================================================================ -->
+      <section class="slide-body" id="slide-8" data-slide="9" role="region" aria-label="Slide 9: Standar Keselamatan dan SOP Perakitan">
+        <div class="rules-stage">
+          <div class="rules-heading">
+            <div class="system-kicker">[SOP_ASSEMBLY] STANDAR KESELAMATAN &amp; PROSEDUR TEKNIS</div>
+            <h2>Panduan &amp; Aturan Perakitan Komputer</h2>
+            <p>Sebelum memulai simulasi drag &amp; drop, pahami standar keselamatan kerja (K3) dan tahapan kritis perakitan hardware.</p>
+          </div>
+
+          <!-- Tiga Kartu Kaidah SOP Teknis -->
+          <div class="rules-trio">
+            <!-- SOP 01: Proteksi Pelepasan Elektrostatik -->
+            <div class="rule-box">
+              <div class="rule-box-header">SOP 01 // PROTEKSI ESD</div>
+              <h3>Pencegahan Kerusakan Statis</h3>
+              <p>Muatan listrik statis tubuh <b>Electrostatic Discharge</b> dapat merusak gerbang logika mikrochip silikon (CPU &amp; RAM). Selalu netralkan tubuh dengan menyentuh bagian logam casing sebelum menyentuh sirkuit.</p>
+            </div>
+
+            <!-- SOP 02: Pemasangan Modul Inti di Luar Casing -->
+            <div class="rule-box">
+              <div class="rule-box-header">SOP 02 // SUB-ASSEMBLY</div>
+              <h3>Rakit Inti di Luar Casing</h3>
+              <p>Pasang prosesor (CPU), oleskan pasta termal, pasang heatsink/cooler, dan pasang RAM di atas kotak motherboard sebelum motherboard dimasukkan dan dibaut ke dalam rangka casing.</p>
+            </div>
+
+            <!-- SOP 03: Penataan Kabel & Distribusi Listrik -->
+            <div class="rule-box">
+              <div class="rule-box-header">SOP 03 // INTEGRASI DAYA</div>
+              <h3>Pemasangan &amp; Distribusi Daya</h3>
+              <p>Pasang PSU ke casing terlebih dahulu, atur jalur kabel, hubungkan kabel 24-Pin ATX ke motherboard, 8-Pin CPU EPS, kabel storage, dan kabel PCIe untuk kartu grafis.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===============================================================
+        §9 — SLIDE 10: SIMULASI URUTAN PERAKITAN DRAG & DROP
+      ================================================================ -->
+      <section class="slide-body" id="slide-9" data-slide="10" role="region" aria-label="Slide 10: Simulasi Urutan Perakitan PC">
+        <div class="dnd-stage">
+          <!-- Header Interaksi & Tombol Operasional DnD -->
+          <div class="dnd-panel-header">
+            <div>
+              <div class="system-kicker">[SIMULASI_RAKIT] INTERAKSI URUTAN PERAKITAN HARDWARE</div>
+              <h3>Simulasi Urutan Perakitan PC</h3>
+              <p>Pindahkan kartu tahapan ke slot urutan 1 sampai 5 yang tepat (bisa drag &amp; drop, geser di layar sentuh, atau tap/klik kartu).</p>
+            </div>
+            <div class="footer-actions">
+              <button class="btn btn-secondary" id="btn-reset-dnd">Reset Posisi</button>
+              <button class="btn btn-green" id="btn-check-dnd">Cek Urutan &amp; Solusi</button>
+            </div>
+          </div>
+
+          <!-- Area Kerja Interaktif (Workbench) -->
+          <div class="dnd-workbench">
+            <!-- Rak Sumber: Kartu Acak (Diisi via script.js: initDragAndDrop()) -->
+            <div class="dnd-shelf">
+              <div class="shelf-title">Tahapan Tersedia:</div>
+              <div class="source-depot" id="dnd-source"></div>
+            </div>
+
+            <!-- Rak Target: 5 Slot Urutan Standar Perakitan -->
+            <div class="dnd-shelf">
+              <div class="shelf-title">Slot Urutan Perakitan:</div>
+              <div class="target-slots" id="dnd-targets"></div>
+            </div>
+          </div>
+
+          <!-- Pesan Feedback Evaluasi Urutan Perakitan -->
+          <div class="dnd-msg-box" id="dnd-feedback"></div>
+        </div>
+      </section>
+
+      <!-- ===============================================================
+        §10 — SLIDE 11–13: WADAH KUIS EVALUASI BLOK FUNGSI
+        Konten soal, opsi pilihan, dan evaluasi dirender via script.js: renderQuizSlides()
+      ================================================================ -->
+      
+      <!-- Slide 11: Kasus 01 (Multitasking & Beban Memori - RAM) -->
+      <section class="slide-body" id="slide-10" data-slide="11" role="region" aria-label="Slide 11: Tantangan Kasus 01"></section>
+
+      <!-- Slide 12: Kasus 02 (Anomali Suplai Listrik - PSU) -->
+      <section class="slide-body" id="slide-11" data-slide="12" role="region" aria-label="Slide 12: Tantangan Kasus 02"></section>
+
+      <!-- Slide 13: Kasus 03 (Integritas Retensi Data Permanen - SSD) -->
+      <section class="slide-body" id="slide-12" data-slide="13" role="region" aria-label="Slide 13: Tantangan Kasus 03"></section>
+
+      <!-- ===============================================================
+        §11 — SLIDE 14: LAPORAN REKAPITULASI CAPAIAN AKHIR
+      ================================================================ -->
+      <section class="slide-body" id="slide-13" data-slide="14" role="region" aria-label="Slide 14: Laporan Rekapitulasi Capaian Pembelajaran">
+        <div class="summary-stage">
+          <span class="summary-tag">MODUL SELESAI // LAPORAN REKAPITULASI</span>
+          <h2>Evaluasi Capaian Pembelajaran</h2>
+          <p>Rekapitulasi progres eksplorasi mandiri, verifikasi simulasi perakitan, dan akurasi analisis blok fungsi:</p>
+
+          <!-- 4 Kartu Panel Metrik Capaian -->
+          <div class="score-metrics">
+            <!-- Metrik 1: Komponen yang Telah Ditelaah -->
+            <div class="metric-panel">
+              <span class="metric-label">Modul Dipelajari</span>
+              <span class="metric-number" id="recap-materi">0 / 6</span>
+              <span class="metric-footnote">Eksplorasi Hardware</span>
+            </div>
+
+            <!-- Metrik 2: Hasil Simulasi Drag & Drop -->
+            <div class="metric-panel">
+              <span class="metric-label">Simulasi Rakit</span>
+              <span class="metric-number" id="recap-dnd">PENDING</span>
+              <span class="metric-footnote">Drag &amp; Drop Prosedur</span>
+            </div>
+
+            <!-- Metrik 3: Ketepatan Analisis Kasus Kuis -->
+            <div class="metric-panel">
+              <span class="metric-label">Tantangan Blok</span>
+              <span class="metric-number" id="recap-quiz">0 / 3</span>
+              <span class="metric-footnote">Akurasi Analisis</span>
+            </div>
+
+            <!-- Metrik 4: Skor Akumulasi Akhir (0–100) -->
+            <div class="metric-panel highlighted">
+              <span class="metric-label">Skor Akhir</span>
+              <span class="metric-number" id="recap-total-score">0 / 100</span>
+              <span class="metric-footnote" id="recap-predicate">Status: Belum Lengkap</span>
+            </div>
+          </div>
+
+          <!-- Footer Kartu Ringkasan Proyek & Tombol Reset Sesi -->
+          <div class="summary-author-footer">
+            <div>
+              <strong>Proyek UTS Multimedia (IF562528)</strong>
+              <span>Penyusun: <strong>Dhoni &amp; Devi</strong> | Prodi Teknik Informatika 2024 | Dosen: <strong>Suprapto, S.Kom., M.Kom.</strong></span>
+            </div>
+            <button class="btn btn-secondary" id="btn-restart-all">Ulangi Seluruh Sesi</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ===================================================================
+      §12 — TECHNICAL FOOTER NAVIGATION
+      Bar kontrol navigasi bawah tetap (fixed di dasar layar)
+    ==================================================================== -->
+    <footer class="slide-footer" role="navigation" aria-label="Kontrol Navigasi Slide">
+      <!-- Area Kiri: Utilitas Menu, Fullscreen, Badge, Judul, Progress Bar, & Counter -->
+      <div class="footer-meta">
+        <button class="btn-drawer-trigger" id="btn-nav-open" aria-label="Buka navigasi semua slide" title="Daftar Slide">&#9776; Slide</button>
+        <button class="btn-fullscreen-trigger" id="btn-fullscreen" aria-label="Mode layar penuh" title="Layar Penuh (Tekan F)">&#x26F6; Fullscreen</button>
+        <span class="footer-badge" id="footer-badge">SLIDE 01</span>
+        <span class="footer-title" id="footer-title">OVERVIEW</span>
+        
+        <!-- Progress Bar Horizontal -->
+        <div class="footer-progress" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="14" aria-label="Progres Pembelajaran">
+          <div class="footer-progress-bar" id="progress-fill"></div>
+        </div>
+        
+        <!-- Indikator Angka Slide Aktif -->
+        <span class="footer-counter" id="slide-counter">01 / 14</span>
+      </div>
+      
+      <!-- Area Kanan: Tombol Kendali Alur Slide -->
+      <div class="footer-actions">
+        <button class="btn btn-secondary" id="btn-prev" disabled aria-label="Ke slide sebelumnya">&larr; Sebelumnya</button>
+        <button class="btn btn-secondary" id="btn-map" style="display: none;" aria-label="Kembali ke peta komponen">Peta Komponen</button>
+        <button class="btn btn-primary" id="btn-next" aria-label="Ke slide selanjutnya">Selanjutnya &rarr;</button>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ===================================================================
+    §13 — SCRIPT LOADER
+    Pemuatan script.js di akhir dokumen
+  ==================================================================== -->
+  <script src="script.js"></script>
 </body>
 </html>

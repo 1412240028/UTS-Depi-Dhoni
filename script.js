@@ -1,48 +1,113 @@
 /**
  * ====================================================================
  * ANATOMI KOMPONEN & SIMULASI PERAKITAN PC (14 SLIDE)
+ * ====================================================================
  * Engine: Clean Technical White Workspace (High Contrast & Legibility)
- * Palette:
- *   - Base & Surface:   #FFFFFF & #E8F4FC
- *   - Solid Text:       #152641 (Bebas Abu-abu)
- *   - Primary Accent:   #136CFC (Blue)
- *   - Functional Accent:#C3F84A (Lime Green) & #256604 (Accessible Green Text)
- * Tim Penyusun: Dhoni & Devi (TIF 2024 - Universitas PGRI Ronggolawe Tuban)
+ * Palet Warna:
+ *   - Base & Surface:    #FFFFFF & #E8F4FC
+ *   - Solid Text:        #152641  (Bebas Abu-abu)
+ *   - Primary Accent:    #136CFC  (Blue — tombol, sorotan jalur)
+ *   - Functional Accent: #C3F84A  (Lime Green) & #256604 (Accessible Green Text)
+ *
+ * Tim Penyusun: Dhoni & Devi (TIF 2024 — Universitas PGRI Ronggolawe Tuban)
+ * Mata Kuliah : IF562528 Multimedia
+ * ====================================================================
+ *
+ * DAFTAR SECTION:
+ *  §1  Konstanta & State Global
+ *  §2  Data Direktori Slide (slideDirectory)
+ *  §3  Data Modul Hardware — 6 Komponen (hardwareModules)
+ *  §4  Data Simulasi Perakitan DnD (dndSteps)
+ *  §5  Data Kuis Evaluasi (quizData)
+ *  §6  Utilitas & Helper Functions
+ *  §7  State Management — localStorage
+ *  §8  Inisialisasi & Event Binding
+ *  §9  Fitur Fullscreen
+ *  §10 Modal Konfirmasi Reset
+ *  §11 Navigasi Slide
+ *  §12 Drawer Navigasi Slide
+ *  §13 Render Slide Konten (Menu & Materi)
+ *  §14 Simulasi Drag & Drop Perakitan
+ *  §15 Kuis Evaluasi Blok Fungsi
+ *  §16 Rekapitulasi & Reset Sesi
+ *  §17 Navigasi Keyboard
  * ====================================================================
  */
 
+
+/* =====================================================================
+ * §1 — KONSTANTA & STATE GLOBAL
+ * Konfigurasi tetap aplikasi dan variabel state yang digunakan di
+ * seluruh modul. Semua state disimpan ke localStorage melalui §7.
+ * ===================================================================== */
+
+/** Jumlah total slide dalam presentasi */
 const TOTAL_SLIDES = 14;
+
+/** Kunci penyimpanan state di localStorage */
 const STORAGE_KEY = 'UTS_DHONI_DEVI_PC_MODULE_STATE_V2';
 
+/** Indeks slide yang sedang aktif (0-based) */
 let currentSlide = 0;
 
-// Progres & Evaluasi
-const visitedComponents = new Set();
-let dndPassed = false;
-let dndAttempted = false;
-const quizScores = [false, false, false];
-const quizAnswered = [null, null, null]; // 'A', 'B', 'C', 'D' or null
+// --- Progres & Evaluasi ---
 
-// Titles list for navigation badge & drawer
+/** Set slide komponen hardware yang sudah dikunjungi (slide idx 2–7) */
+const visitedComponents = new Set();
+
+/** Apakah simulasi DnD sudah lolos (5/5 urutan benar) */
+let dndPassed = false;
+
+/** Apakah simulasi DnD sudah pernah dicoba (meski belum lolos) */
+let dndAttempted = false;
+
+/** Status benar/salah setiap soal kuis [kuis0, kuis1, kuis2] */
+const quizScores = [false, false, false];
+
+/** Pilihan jawaban terakhir per soal kuis ('A'/'B'/'C'/'D' atau null) */
+const quizAnswered = [null, null, null];
+
+
+/* =====================================================================
+ * §2 — DATA DIREKTORI SLIDE
+ * Array metadata untuk setiap slide: nomor tampilan, label badge,
+ * dan judul lengkap. Digunakan oleh drawer navigasi dan footer badge.
+ * ===================================================================== */
+
 const slideDirectory = [
-  { num: 1, label: "OVERVIEW", title: "Sampul Utama & Modul Pembelajaran" },
-  { num: 2, label: "PETA KOMPONEN", title: "Peta Skematik Blok Komponen" },
-  { num: 3, label: "MOTHERBOARD", title: "Blok 01: Papan Sirkuit Utama (PCB)" },
-  { num: 4, label: "CPU (PROCESSOR)", title: "Blok 02: Central Processing Unit" },
-  { num: 5, label: "RAM (MEMORY)", title: "Blok 03: Random Access Memory" },
-  { num: 6, label: "SSD (STORAGE)", title: "Blok 04: Solid State Drive (NVMe)" },
-  { num: 7, label: "GPU (GRAPHICS)", title: "Blok 05: Graphics Processing Unit" },
-  { num: 8, label: "PSU (POWER SUPPLY)", title: "Blok 06: Power Supply Unit" },
-  { num: 9, label: "SOP PERAKITAN", title: "Standar Keselamatan & SOP Teknis" },
-  { num: 10, label: "SIMULASI DND", title: "Simulasi Urutan Perakitan PC" },
-  { num: 11, label: "TANTANGAN 01", title: "Kasus 01: Multitasking & Beban Memori" },
-  { num: 12, label: "TANTANGAN 02", title: "Kasus 02: Anomali Suplai Listrik" },
-  { num: 13, label: "TANTANGAN 03", title: "Kasus 03: Integritas Penyimpanan Permanen" },
-  { num: 14, label: "REKAPITULASI", title: "Laporan Evaluasi Capaian Akhir" }
+  { num: 1,  label: "OVERVIEW",          title: "Sampul Utama & Modul Pembelajaran" },
+  { num: 2,  label: "PETA KOMPONEN",     title: "Peta Skematik Blok Komponen" },
+  { num: 3,  label: "MOTHERBOARD",       title: "Blok 01: Papan Sirkuit Utama (PCB)" },
+  { num: 4,  label: "CPU (PROCESSOR)",   title: "Blok 02: Central Processing Unit" },
+  { num: 5,  label: "RAM (MEMORY)",      title: "Blok 03: Random Access Memory" },
+  { num: 6,  label: "SSD (STORAGE)",     title: "Blok 04: Solid State Drive (NVMe)" },
+  { num: 7,  label: "GPU (GRAPHICS)",    title: "Blok 05: Graphics Processing Unit" },
+  { num: 8,  label: "PSU (POWER SUPPLY)",title: "Blok 06: Power Supply Unit" },
+  { num: 9,  label: "SOP PERAKITAN",     title: "Standar Keselamatan & SOP Teknis" },
+  { num: 10, label: "SIMULASI DND",      title: "Simulasi Urutan Perakitan PC" },
+  { num: 11, label: "TANTANGAN 01",      title: "Kasus 01: Multitasking & Beban Memori" },
+  { num: 12, label: "TANTANGAN 02",      title: "Kasus 02: Anomali Suplai Listrik" },
+  { num: 13, label: "TANTANGAN 03",      title: "Kasus 03: Integritas Penyimpanan Permanen" },
+  { num: 14, label: "REKAPITULASI",      title: "Laporan Evaluasi Capaian Akhir" }
 ];
 
-// ================= DATA 6 KOMPONEN UTAMA (SLIDE 3 - 8) =================
+
+/* =====================================================================
+ * §3 — DATA MODUL HARDWARE: 6 KOMPONEN UTAMA (SLIDE 3–8)
+ * Setiap objek berisi:
+ *   - slideIdx  : indeks slide (0-based) tempat komponen ini ditampilkan
+ *   - code      : kode identifikasi teknis (mis. BLOK_01)
+ *   - name      : nama komponen
+ *   - subtitle  : nama teknis lengkap
+ *   - analogy   : analogi fungsional
+ *   - desc      : deskripsi paragraf utama
+ *   - caption   : label diagram skematik SVG
+ *   - svg       : markup SVG animasi vektor teknis (inline)
+ *   - points[]  : 4 poin teknis utama yang ditampilkan sebagai checklist
+ * ===================================================================== */
+
 const hardwareModules = [
+  /* ---- Blok 01: Motherboard ---- */
   {
     slideIdx: 2,
     code: "BLOK_01",
@@ -80,7 +145,7 @@ const hardwareModules = [
         <rect x="195" y="132" width="48" height="48" rx="4" fill="#192e4e" stroke="#395f98" stroke-width="1.5"/>
         <text x="198" y="161" fill="#ffffff" font-family="JetBrains Mono" font-size="10" font-weight="800">CHIPSET</text>
         
-        <!-- Circuit Signal Traces with Pulse Animation -->
+        <!-- Circuit Signal Traces dengan Animasi Pulse -->
         <path d="M140 78 H160" stroke="#136cfc" stroke-width="3" stroke-linecap="square" class="anim-trace"/>
         <path d="M107 110 V145" stroke="#136cfc" stroke-width="3" stroke-linecap="square" class="anim-trace"/>
         <path d="M140 98 L195 142" stroke="#c3f84a" stroke-width="2.5" stroke-linecap="square" class="anim-trace"/>
@@ -94,6 +159,8 @@ const hardwareModules = [
       "Menghubungkan slot storage NVMe M.2 langsung ke lajur PCIe controller."
     ]
   },
+
+  /* ---- Blok 02: CPU / Processor ---- */
   {
     slideIdx: 3,
     code: "BLOK_02",
@@ -120,7 +187,7 @@ const hardwareModules = [
         <line x1="95" y1="124" x2="185" y2="124" stroke="#395f98" stroke-dasharray="4,2"/>
         <line x1="140" y1="70" x2="140" y2="150" stroke="#395f98" stroke-dasharray="4,2"/>
         
-        <!-- Monospace Identifier -->
+        <!-- Monospace Identifier Label -->
         <text x="104" y="112" fill="#ffffff" font-family="JetBrains Mono" font-size="12" font-weight="800">CPU_CORE</text>
         <text x="100" y="130" fill="#c3f84a" font-family="JetBrains Mono" font-size="10" font-weight="800">5.8 GHz // x64</text>
       </svg>
@@ -132,6 +199,8 @@ const hardwareModules = [
       "Instalasi diposisikan tepat dengan referensi sudut pin penanda (Key Triangle)."
     ]
   },
+
+  /* ---- Blok 03: RAM ---- */
   {
     slideIdx: 4,
     code: "BLOK_03",
@@ -147,17 +216,17 @@ const hardwareModules = [
         <rect x="20" y="65" width="240" height="85" rx="4" fill="#152641" stroke="#395f98" stroke-width="2"/>
         <line x1="20" y1="75" x2="260" y2="75" stroke="#136cfc" stroke-width="2.5"/>
         
-        <!-- DRAM BGA Chips with Flashing Activity LEDs -->
-        <rect x="36" y="85" width="26" height="44" rx="2" fill="#192e4e" stroke="#395f98" class="anim-ram-led"/>
-        <rect x="70" y="85" width="26" height="44" rx="2" fill="#192e4e" stroke="#395f98" class="anim-ram-led" style="animation-delay: 0.2s;"/>
+        <!-- DRAM BGA Chips dengan LED Aktivitas Berkedip -->
+        <rect x="36"  y="85" width="26" height="44" rx="2" fill="#192e4e" stroke="#395f98" class="anim-ram-led"/>
+        <rect x="70"  y="85" width="26" height="44" rx="2" fill="#192e4e" stroke="#395f98" class="anim-ram-led" style="animation-delay: 0.2s;"/>
         <rect x="104" y="85" width="26" height="44" rx="2" fill="#192e4e" stroke="#395f98" class="anim-ram-led" style="animation-delay: 0.4s;"/>
         <rect x="148" y="85" width="26" height="44" rx="2" fill="#192e4e" stroke="#395f98" class="anim-ram-led" style="animation-delay: 0.6s;"/>
         <rect x="182" y="85" width="26" height="44" rx="2" fill="#192e4e" stroke="#395f98" class="anim-ram-led" style="animation-delay: 0.8s;"/>
         <rect x="216" y="85" width="26" height="44" rx="2" fill="#192e4e" stroke="#395f98" class="anim-ram-led" style="animation-delay: 1.0s;"/>
         
-        <!-- Gold Fingers with Key Notch -->
-        <rect x="24" y="150" width="102" height="10" fill="#c3f84a"/>
-        <rect x="126" y="150" width="16" height="14" fill="#0f1c30"/>
+        <!-- Gold Fingers dengan Key Notch -->
+        <rect x="24"  y="150" width="102" height="10" fill="#c3f84a"/>
+        <rect x="126" y="150" width="16"  height="14" fill="#0f1c30"/>
         <rect x="142" y="150" width="114" height="10" fill="#c3f84a"/>
         
         <text x="50" y="185" fill="#ffffff" font-family="JetBrains Mono" font-size="11" font-weight="800">DDR5 // 32GB // 6000MT/s</text>
@@ -170,6 +239,8 @@ const hardwareModules = [
       "Kancing pengunci slot DIMM memastikan pin kontak terpasang sempurna."
     ]
   },
+
+  /* ---- Blok 04: SSD / Storage ---- */
   {
     slideIdx: 5,
     code: "BLOK_04",
@@ -196,8 +267,8 @@ const hardwareModules = [
         <rect x="178" y="80" width="60" height="55" rx="2" fill="#192e4e" stroke="#395f98" stroke-width="1.5"/>
         <text x="184" y="111" fill="#ffffff" font-family="JetBrains Mono" font-size="10" font-weight="800">NAND_02</text>
         
-        <!-- Streaming Data Packets -->
-        <circle cx="100" cy="92" r="3" fill="#c3f84a" class="anim-ssd-pkt"/>
+        <!-- Streaming Data Packets (Animasi) -->
+        <circle cx="100" cy="92"  r="3" fill="#c3f84a" class="anim-ssd-pkt"/>
         <circle cx="100" cy="112" r="3" fill="#136cfc" class="anim-ssd-pkt" style="animation-delay: 0.3s;"/>
         <circle cx="100" cy="126" r="3" fill="#c3f84a" class="anim-ssd-pkt" style="animation-delay: 0.6s;"/>
         
@@ -214,6 +285,8 @@ const hardwareModules = [
       "Ketiadaan bagian mekanik bergerak menjadikannya tahan guncangan fisik."
     ]
   },
+
+  /* ---- Blok 05: GPU / VGA Card ---- */
   {
     slideIdx: 6,
     code: "BLOK_05",
@@ -233,10 +306,10 @@ const hardwareModules = [
         <rect x="65" y="165" width="140" height="10" fill="#c3f84a"/>
         
         <!-- Cooling Fan Cavities -->
-        <circle cx="95" cy="105" r="40" fill="#0f1c30" stroke="#395f98" stroke-width="1.5"/>
+        <circle cx="95"  cy="105" r="40" fill="#0f1c30" stroke="#395f98" stroke-width="1.5"/>
         <circle cx="185" cy="105" r="40" fill="#0f1c30" stroke="#395f98" stroke-width="1.5"/>
         
-        <!-- Rotating Fan Rotor 1 -->
+        <!-- Rotating Fan Rotor 1 (Animasi) -->
         <g class="anim-fan-rotor" style="transform-origin: 95px 105px;">
           <circle cx="95" cy="105" r="14" fill="#136cfc"/>
           <path d="M95 105 L95 70 A10 10 0 0 1 106 79 Z" fill="#ffffff"/>
@@ -245,7 +318,7 @@ const hardwareModules = [
           <path d="M95 105 L60 105 A10 10 0 0 1 69 94 Z" fill="#ffffff"/>
         </g>
         
-        <!-- Rotating Fan Rotor 2 -->
+        <!-- Rotating Fan Rotor 2 (Animasi) -->
         <g class="anim-fan-rotor" style="transform-origin: 185px 105px;">
           <circle cx="185" cy="105" r="14" fill="#136cfc"/>
           <path d="M185 105 L185 70 A10 10 0 0 1 196 79 Z" fill="#ffffff"/>
@@ -264,6 +337,8 @@ const hardwareModules = [
       "Mendukung output display modern melalui DisplayPort dan HDMI."
     ]
   },
+
+  /* ---- Blok 06: PSU / Power Supply ---- */
   {
     slideIdx: 7,
     code: "BLOK_06",
@@ -283,16 +358,16 @@ const hardwareModules = [
         <circle cx="95" cy="105" r="14" fill="#192e4e"/>
         
         <!-- AC Input & Rocker Switch -->
-        <rect x="180" y="60" width="45" height="28" rx="2" fill="#0c1728" stroke="#395f98"/>
+        <rect x="180" y="60"  width="45" height="28" rx="2" fill="#0c1728" stroke="#395f98"/>
         <rect x="180" y="100" width="24" height="14" rx="2" fill="#136cfc"/>
         
-        <!-- Electric Spark Indicator Line -->
+        <!-- Electric Spark Indicator Line (Animasi) -->
         <path d="M95 78 L85 105 H104 L92 132" stroke="#c3f84a" stroke-width="3.5" stroke-linecap="square" class="anim-power-spark"/>
         
-        <!-- Cable Rail Outlets -->
+        <!-- Cable Rail Outlets (+12V, +5V, GND) -->
         <path d="M150 150 Q180 195 240 190" stroke="#c3f84a" stroke-width="3.5" fill="none"/>
-        <path d="M160 150 Q190 205 245 200" stroke="#136cfc" stroke-width="3" fill="none"/>
-        <path d="M170 150 Q200 215 250 210" stroke="#ffffff" stroke-width="3" fill="none"/>
+        <path d="M160 150 Q190 205 245 200" stroke="#136cfc" stroke-width="3"   fill="none"/>
+        <path d="M170 150 Q200 215 250 210" stroke="#ffffff" stroke-width="3"   fill="none"/>
         
         <text x="65" y="170" fill="#c3f84a" font-family="JetBrains Mono" font-size="11" font-weight="800">80+ GOLD // 750W ATX</text>
       </svg>
@@ -306,17 +381,65 @@ const hardwareModules = [
   }
 ];
 
-// ================= DATA 5 TAHAPAN PERAKITAN DND (SLIDE 10) =================
+
+/* =====================================================================
+ * §4 — DATA SIMULASI PERAKITAN: 5 TAHAPAN DnD (SLIDE 10)
+ * Setiap objek merepresentasikan satu tahapan urutan perakitan:
+ *   - id     : DOM id unik kartu drag
+ *   - label  : teks yang ditampilkan pada kartu
+ *   - order  : urutan teknis yang benar (1–5)
+ *   - hint   : teks petunjuk pada placeholder slot
+ * ===================================================================== */
+
 const dndSteps = [
-  { id: "step-1", label: "Siapkan Motherboard di Meja Kerja Non-Konduktif", order: 1, hint: "Slot 1: Fondasi awal sirkuit diletakkan di luar casing" },
-  { id: "step-2", label: "Pasang CPU, Oleskan Pasta Termal, & Pasang Cooler", order: 2, hint: "Slot 2: Unit pemroses inti dan sistem pendingin dipasang" },
-  { id: "step-3", label: "Tancapkan Keping RAM ke Slot DIMM Hingga Mengunci", order: 3, hint: "Slot 3: Memori kerja dipasang ke slot dual-channel" },
-  { id: "step-4", label: "Pasang PSU ke Casing & Baut Motherboard ke Stand-off", order: 4, hint: "Slot 4: Rangkaian inti dipasang ke dalam rangka sasis" },
-  { id: "step-5", label: "Pasang SSD NVMe, GPU ke PCIe, & Hubungkan Kabel Daya", order: 5, hint: "Slot 5: Storage, kartu grafis, dan daya akhir dihubungkan" }
+  {
+    id: "step-1",
+    label: "Siapkan Motherboard di Meja Kerja Non-Konduktif",
+    order: 1,
+    hint: "Slot 1: Fondasi awal sirkuit diletakkan di luar casing"
+  },
+  {
+    id: "step-2",
+    label: "Pasang CPU, Oleskan Pasta Termal, & Pasang Cooler",
+    order: 2,
+    hint: "Slot 2: Unit pemroses inti dan sistem pendingin dipasang"
+  },
+  {
+    id: "step-3",
+    label: "Tancapkan Keping RAM ke Slot DIMM Hingga Mengunci",
+    order: 3,
+    hint: "Slot 3: Memori kerja dipasang ke slot dual-channel"
+  },
+  {
+    id: "step-4",
+    label: "Pasang PSU ke Casing & Baut Motherboard ke Stand-off",
+    order: 4,
+    hint: "Slot 4: Rangkaian inti dipasang ke dalam rangka sasis"
+  },
+  {
+    id: "step-5",
+    label: "Pasang SSD NVMe, GPU ke PCIe, & Hubungkan Kabel Daya",
+    order: 5,
+    hint: "Slot 5: Storage, kartu grafis, dan daya akhir dihubungkan"
+  }
 ];
 
-// ================= DATA 3 LATIHAN BLOK FUNGSI (SLIDE 11 - 13) =================
+
+/* =====================================================================
+ * §5 — DATA KUIS EVALUASI: 3 SOAL (SLIDE 11–13)
+ * Setiap objek berisi:
+ *   - slideIdx   : indeks slide (0-based) tempat soal ditampilkan
+ *   - number     : nomor soal dalam format '01'/'02'/'03'
+ *   - title      : judul kicker kasus skenario
+ *   - question   : teks pertanyaan lengkap
+ *   - choices[]  : array 4 pilihan jawaban {key, text}
+ *   - correctKey : kunci jawaban benar ('A'/'B'/'C'/'D')
+ *   - correctName: nama jawaban benar (untuk pesan feedback)
+ *   - solution   : penjelasan kunci jawaban untuk pembahasan
+ * ===================================================================== */
+
 const quizData = [
+  /* ---- Kasus 01: Multitasking & Beban Memori ---- */
   {
     slideIdx: 10,
     number: "01",
@@ -332,6 +455,8 @@ const quizData = [
     correctName: "RAM (Random Access Memory)",
     solution: "RAM menampung instruksi program aktif untuk CPU. Ketika kuota RAM habis terpakai, sistem beralih menggunakan virtual memory di storage yang jauh lebih lambat, memicu kemacetan sistem."
   },
+
+  /* ---- Kasus 02: Anomali Suplai Listrik ---- */
   {
     slideIdx: 11,
     number: "02",
@@ -347,6 +472,8 @@ const quizData = [
     correctName: "PSU (Power Supply)",
     solution: "PSU adalah unit konversi daya utama dari stopkontak AC ke tegangan rendah DC. Kerusakan atau kegagalan koneksi PSU menyebabkan seluruh sirkuit komputer mati total tanpa daya."
   },
+
+  /* ---- Kasus 03: Integritas Penyimpanan Permanen ---- */
   {
     slideIdx: 12,
     number: "03",
@@ -364,12 +491,28 @@ const quizData = [
   }
 ];
 
-// ================= DEFENSIVE DOM QUERY HELPER =================
+
+/* =====================================================================
+ * §6 — UTILITAS & HELPER FUNCTIONS
+ * Fungsi-fungsi pendek yang dipakai berulang di seluruh modul.
+ * ===================================================================== */
+
+/**
+ * Shortcut getElementById — mengembalikan null jika elemen tidak ditemukan
+ * (defensive DOM query, tidak akan throw error).
+ * @param {string} id - ID elemen DOM
+ * @returns {HTMLElement|null}
+ */
 function $(id) {
   return document.getElementById(id);
 }
 
-// ================= ARIA LIVE SCREEN READER ANNOUNCER =================
+/**
+ * Mengumumkan pesan ke screen reader melalui ARIA live region.
+ * Mengosongkan konten terlebih dahulu agar screen reader mendeteksi
+ * perubahan meski pesannya sama.
+ * @param {string} msg - Teks yang akan diumumkan
+ */
 function announce(msg) {
   const el = $('aria-announcer');
   if (!el) return;
@@ -379,7 +522,34 @@ function announce(msg) {
   }, 40);
 }
 
-// ================= LOCAL STORAGE STATE MANAGEMENT =================
+/**
+ * Mengacak array secara in-place menggunakan algoritma Fisher-Yates
+ * (tidak bias — setiap permutasi memiliki probabilitas yang sama).
+ * @param {Array} arr - Array yang akan diacak
+ * @returns {Array} Salinan array baru yang telah diacak
+ */
+function fisherYatesShuffle(arr) {
+  const a = [...arr]; // Salin dulu agar tidak mengubah array asli
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+
+/* =====================================================================
+ * §7 — STATE MANAGEMENT (localStorage)
+ * Menyimpan dan memuat seluruh state sesi ke/dari localStorage agar
+ * progres pengguna tidak hilang saat halaman di-refresh.
+ * ===================================================================== */
+
+/**
+ * Menyimpan seluruh state sesi ke localStorage.
+ * Payload: visitedComponents, dndPassed, dndAttempted, quizScores,
+ *          quizAnswered, currentSlide.
+ * Gagal secara senyap jika storage tidak tersedia (mis. mode privat).
+ */
 function saveState() {
   try {
     const payload = {
@@ -396,27 +566,41 @@ function saveState() {
   }
 }
 
+/**
+ * Memuat state dari localStorage dan merestorasi semua variabel global.
+ * @returns {boolean} true jika state berhasil dimuat, false jika tidak ada data
+ */
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return false;
     const data = JSON.parse(raw);
 
+    // Restorasi komponen yang sudah dikunjungi
     if (Array.isArray(data.visited)) {
       visitedComponents.clear();
       data.visited.forEach(v => visitedComponents.add(v));
     }
-    if (typeof data.dndPassed === 'boolean') dndPassed = data.dndPassed;
+
+    // Restorasi status simulasi DnD
+    if (typeof data.dndPassed    === 'boolean') dndPassed    = data.dndPassed;
     if (typeof data.dndAttempted === 'boolean') dndAttempted = data.dndAttempted;
+
+    // Restorasi skor kuis (validasi panjang array)
     if (Array.isArray(data.quizScores) && data.quizScores.length === 3) {
       data.quizScores.forEach((s, i) => quizScores[i] = Boolean(s));
     }
+
+    // Restorasi jawaban kuis terakhir
     if (Array.isArray(data.quizAnswered) && data.quizAnswered.length === 3) {
       data.quizAnswered.forEach((a, i) => quizAnswered[i] = a);
     }
+
+    // Restorasi posisi slide terakhir (validasi range)
     if (typeof data.currentSlide === 'number' && data.currentSlide >= 0 && data.currentSlide < TOTAL_SLIDES) {
       currentSlide = data.currentSlide;
     }
+
     return true;
   } catch (err) {
     console.warn("Gagal memuat state dari storage:", err);
@@ -424,54 +608,62 @@ function loadState() {
   }
 }
 
-// ================= UNBIASED FISHER-YATES SHUFFLE =================
-function fisherYatesShuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
 
-// ================= INTI INISIALISASI =================
+/* =====================================================================
+ * §8 — INISIALISASI & EVENT BINDING
+ * Entry point utama aplikasi. Semua render dan binding dilakukan
+ * setelah DOM selesai dimuat. Tidak ada inline onclick di HTML —
+ * seluruh event listener terpusat di bindUnifiedEvents().
+ * ===================================================================== */
+
+/**
+ * Entry point: dijalankan setelah seluruh DOM siap.
+ * Urutan inisialisasi: load state → render semua konten →
+ *   bind events → navigasi ke slide terakhir → aktifkan keyboard.
+ */
 document.addEventListener('DOMContentLoaded', () => {
-  loadState();
+  loadState();             // §7: Pulihkan state dari sesi sebelumnya
 
-  renderComponentMenu();
-  renderMateriSlides();
-  initDragAndDrop();
-  renderQuizSlides();
-  renderSlideNavDrawer();
-  bindUnifiedEvents();
-  goToSlide(currentSlide, false);
-  initKeyboardNavigation();
+  renderComponentMenu();   // §13: Render grid menu komponen (slide 2)
+  renderMateriSlides();    // §13: Render konten detail hardware (slide 3–8)
+  initDragAndDrop();       // §14: Render simulasi DnD (slide 10)
+  renderQuizSlides();      // §15: Render soal kuis (slide 11–13)
+  renderSlideNavDrawer();  // §12: Render daftar item di drawer navigasi
+
+  bindUnifiedEvents();     // §8:  Bind semua event listener (tidak ada inline onclick)
+  goToSlide(currentSlide, false); // §11: Tampilkan slide yang sesuai state
+  initKeyboardNavigation();       // §17: Aktifkan navigasi keyboard
 });
 
-// ================= EVENT BINDINGS (NO INLINE ONCLICK) =================
+/**
+ * Mendaftarkan seluruh event listener aplikasi.
+ * Pola: satu fungsi terpusat — tidak ada onclick pada HTML.
+ * Menggunakan event delegation untuk elemen yang di-render secara dinamis (quiz).
+ */
 function bindUnifiedEvents() {
-  // Cover Buttons
+
+  // --- Tombol Cover (Slide 1) ---
   const btnStart = $('btn-start-module');
   if (btnStart) btnStart.addEventListener('click', () => goToSlide(1));
 
   const btnGotoSop = $('btn-goto-sop');
   if (btnGotoSop) btnGotoSop.addEventListener('click', () => goToSlide(8));
 
-  // DnD Buttons
+  // --- Tombol Simulasi DnD (Slide 10) ---
   const btnResetDnd = $('btn-reset-dnd');
   if (btnResetDnd) btnResetDnd.addEventListener('click', () => initDragAndDrop());
 
   const btnCheckDnd = $('btn-check-dnd');
   if (btnCheckDnd) btnCheckDnd.addEventListener('click', () => checkDndOrder());
 
-  // Depot DnD listeners
+  // Drop target: depot sumber (kembalikan kartu ke depot)
   const sourceDepot = $('dnd-source');
   if (sourceDepot) {
     sourceDepot.addEventListener('dragover', allowDrop);
-    sourceDepot.addEventListener('drop', dropToSource);
+    sourceDepot.addEventListener('drop',     dropToSource);
   }
 
-  // Recap & Reset Modal Buttons
+  // --- Tombol Rekapitulasi & Modal Reset (Slide 14) ---
   const btnRestartAll = $('btn-restart-all');
   if (btnRestartAll) btnRestartAll.addEventListener('click', showConfirmResetModal);
 
@@ -486,10 +678,11 @@ function bindUnifiedEvents() {
     });
   }
 
+  // Klik backdrop modal = tutup modal
   const modalBackdrop = $('confirm-modal-backdrop');
   if (modalBackdrop) modalBackdrop.addEventListener('click', hideConfirmResetModal);
 
-  // Footer Navigation Buttons
+  // --- Tombol Navigasi Footer ---
   const btnPrev = $('btn-prev');
   if (btnPrev) btnPrev.addEventListener('click', () => changeSlide(-1));
 
@@ -499,37 +692,42 @@ function bindUnifiedEvents() {
   const btnMap = $('btn-map');
   if (btnMap) btnMap.addEventListener('click', () => goToSlide(1));
 
-  // Slide Drawer Navigation
+  // --- Drawer Navigasi Slide ---
   const btnNavOpen = $('btn-nav-open');
   if (btnNavOpen) btnNavOpen.addEventListener('click', openSlideNav);
 
   const btnCloseNav = $('btn-close-nav');
   if (btnCloseNav) btnCloseNav.addEventListener('click', closeSlideNav);
 
+  // Klik backdrop drawer = tutup drawer
   const navBackdrop = $('slide-nav-backdrop');
   if (navBackdrop) navBackdrop.addEventListener('click', closeSlideNav);
 
-  // Fullscreen Button & Change Listeners
+  // --- Tombol Fullscreen ---
   const btnFullscreen = $('btn-fullscreen');
   if (btnFullscreen) btnFullscreen.addEventListener('click', toggleFullscreen);
 
-  document.addEventListener('fullscreenchange', updateFullscreenButton);
+  // Listener perubahan state fullscreen (browser-native & vendor prefix)
+  document.addEventListener('fullscreenchange',       updateFullscreenButton);
   document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
 
-  // Unified Event Delegation for Quiz Actions
+  // --- Event Delegation: Interaksi Kuis (Slide 11–13) ---
+  // Menggunakan delegation karena elemen quiz dirender secara dinamis.
   document.addEventListener('click', (e) => {
-    // Option selection
+
+    // Klik pada pilihan jawaban (option tile)
     const tile = e.target.closest('.option-tile[data-quiz-idx]');
     if (tile) {
       const grid = tile.closest('.options-grid');
+      // Abaikan jika grid sudah terkunci (jawaban sudah dipilih)
       if (grid && grid.classList.contains('quiz-locked')) return;
       const qIdx = parseInt(tile.dataset.quizIdx, 10);
-      const key = tile.dataset.quizKey;
+      const key  = tile.dataset.quizKey;
       checkQuizAnswer(qIdx, key, tile);
       return;
     }
 
-    // Reset question
+    // Klik tombol "Ulangi Soal"
     const resetBtn = e.target.closest('[data-quiz-reset]');
     if (resetBtn) {
       const qIdx = parseInt(resetBtn.dataset.quizReset, 10);
@@ -537,7 +735,7 @@ function bindUnifiedEvents() {
       return;
     }
 
-    // Show solution
+    // Klik tombol "Lihat Solusi"
     const solBtn = e.target.closest('[data-quiz-solution]');
     if (solBtn) {
       const qIdx = parseInt(solBtn.dataset.quizSolution, 10);
@@ -547,9 +745,22 @@ function bindUnifiedEvents() {
   });
 }
 
-// ================= FITUR FULLSCREEN =================
+
+/* =====================================================================
+ * §9 — FITUR FULLSCREEN
+ * Menggunakan Fullscreen API standar dengan fallback vendor prefix
+ * untuk kompatibilitas lintas browser (Chrome, Firefox, Safari).
+ * State fullscreen juga dipantau via CSS class `.is-fullscreen` pada
+ * <html> untuk mendukung pembesaran font presentasi.
+ * ===================================================================== */
+
+/**
+ * Mengaktifkan atau menonaktifkan mode layar penuh.
+ * Mencoba requestFullscreen() → webkitRequestFullscreen() → msRequestFullscreen().
+ */
 function toggleFullscreen() {
   if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+    // Masuk ke mode fullscreen
     const elem = document.documentElement;
     if (elem.requestFullscreen) {
       elem.requestFullscreen().catch(err => console.warn("Fullscreen request error:", err));
@@ -559,6 +770,7 @@ function toggleFullscreen() {
       elem.msRequestFullscreen();
     }
   } else {
+    // Keluar dari mode fullscreen
     if (document.exitFullscreen) {
       document.exitFullscreen().catch(err => console.warn("Exit fullscreen error:", err));
     } else if (document.webkitExitFullscreen) {
@@ -569,23 +781,43 @@ function toggleFullscreen() {
   }
 }
 
+/**
+ * Memperbarui tampilan tombol fullscreen dan class CSS sesuai state aktual.
+ * Dipanggil oleh event 'fullscreenchange' dan 'webkitfullscreenchange'.
+ */
 function updateFullscreenButton() {
   const isFs = Boolean(document.fullscreenElement || document.webkitFullscreenElement);
+
+  // Toggle class pada <html> untuk CSS font scaling fullscreen
   document.documentElement.classList.toggle('is-fullscreen', isFs);
 
+  // Perbarui label, icon, title, dan aria-pressed tombol
   const btn = $('btn-fullscreen');
   if (btn) {
     btn.classList.toggle('is-active', isFs);
     btn.innerHTML = isFs ? '&#x25A3; Fullscreen' : '&#x26F6; Fullscreen';
-    btn.title = isFs ? 'Keluar Layar Penuh (Tekan Esc atau F)' : 'Mode Layar Penuh (Tekan F)';
+    btn.title      = isFs ? 'Keluar Layar Penuh (Tekan Esc atau F)' : 'Mode Layar Penuh (Tekan F)';
     btn.setAttribute('aria-pressed', isFs ? 'true' : 'false');
   }
+
+  // Umumkan perubahan ke screen reader
   announce(isFs ? 'Mode layar penuh aktif.' : 'Keluar dari mode layar penuh.');
 }
 
-// ================= MODAL RESET KONFIRMASI =================
+
+/* =====================================================================
+ * §10 — MODAL KONFIRMASI RESET
+ * Dialog konfirmasi sebelum me-reset seluruh progres sesi.
+ * Implementasi: visibility+opacity (tidak display:none) agar transisi
+ * CSS berjalan mulus. Fokus otomatis ke tombol "Batal" saat dibuka.
+ * ===================================================================== */
+
+/**
+ * Membuka modal konfirmasi reset sesi.
+ * Memindahkan fokus keyboard ke tombol "Batal" untuk aksesibilitas.
+ */
 function showConfirmResetModal() {
-  const modal = $('confirm-modal');
+  const modal    = $('confirm-modal');
   const backdrop = $('confirm-modal-backdrop');
   if (modal && backdrop) {
     modal.classList.add('open');
@@ -595,8 +827,11 @@ function showConfirmResetModal() {
   }
 }
 
+/**
+ * Menutup modal konfirmasi reset sesi.
+ */
 function hideConfirmResetModal() {
-  const modal = $('confirm-modal');
+  const modal    = $('confirm-modal');
   const backdrop = $('confirm-modal-backdrop');
   if (modal && backdrop) {
     modal.classList.remove('open');
@@ -604,7 +839,128 @@ function hideConfirmResetModal() {
   }
 }
 
-// ================= SLIDE NAVIGATION DRAWER =================
+
+/* =====================================================================
+ * §11 — NAVIGASI SLIDE
+ * Mengontrol perpindahan antar slide: tampil/sembunyi menggunakan
+ * class `.active` (bukan display:none) agar CSS transition berjalan.
+ * State selalu disimpan ke localStorage setiap perpindahan.
+ * ===================================================================== */
+
+/**
+ * Berpindah slide relatif dari posisi saat ini.
+ * @param {number} direction - +1 (maju) atau -1 (mundur)
+ */
+function changeSlide(direction) {
+  goToSlide(currentSlide + direction);
+}
+
+/**
+ * Langsung berpindah ke slide dengan indeks tertentu.
+ * - Memperbarui visitedComponents jika target adalah slide materi (2–7)
+ * - Memperbarui rekapitulasi jika target adalah slide 14
+ * - Menyimpan state, memperbarui UI navigasi dan drawer
+ * - Memindahkan fokus ke slide container (bukan heading, agar bebas border biru)
+ * - Mengumumkan perubahan ke screen reader
+ * @param {number}  targetIdx      - Indeks slide tujuan (0-based)
+ * @param {boolean} announceSlide  - Apakah mengumumkan ke screen reader (default true)
+ */
+function goToSlide(targetIdx, announceSlide = true) {
+  if (targetIdx < 0 || targetIdx >= TOTAL_SLIDES) return;
+  currentSlide = targetIdx;
+
+  // Tandai komponen sebagai sudah dikunjungi (slide materi hardware: indeks 2–7)
+  if (currentSlide >= 2 && currentSlide <= 7) {
+    visitedComponents.add(currentSlide);
+    renderComponentMenu(); // Perbarui badge status di menu grid
+  }
+
+  // Perbarui rekapitulasi jika pengguna masuk ke slide akhir
+  if (currentSlide === 13) {
+    updateFinalRecap();
+  }
+
+  updateSlideNavigation();      // Tampilkan slide aktif, perbarui badge & progress
+  updateDrawerActiveState();    // Sorot item aktif di drawer
+  saveState();                  // Simpan ke localStorage
+
+  // Fokus ke container slide (bukan heading) agar tidak muncul border biru :focus-visible
+  const activeSlide = $(`slide-${currentSlide}`);
+  if (activeSlide) {
+    activeSlide.setAttribute('tabindex', '-1');
+    activeSlide.focus({ preventScroll: true });
+  }
+
+  // Umumkan perubahan ke screen reader
+  if (announceSlide && slideDirectory[currentSlide]) {
+    announce(`Beralih ke Slide ${slideDirectory[currentSlide].num}: ${slideDirectory[currentSlide].title}`);
+  }
+}
+
+/**
+ * Memperbarui semua elemen UI yang terkait navigasi slide:
+ * - Menampilkan/menyembunyikan slide dengan class `.active`
+ * - Memperbarui badge, label judul, counter, dan progress bar di footer
+ * - Mengatur disabled/visible tombol Prev, Next, dan Peta Komponen
+ */
+function updateSlideNavigation() {
+  // Toggle class .active pada semua slide
+  const slides = document.querySelectorAll('.slide-body');
+  slides.forEach((s, idx) => {
+    s.classList.toggle('active', idx === currentSlide);
+  });
+
+  // Ambil metadata slide aktif dari direktori
+  const dirItem  = slideDirectory[currentSlide] || { num: currentSlide + 1, label: "OVERVIEW", title: "" };
+  const slideNum = `SLIDE ${String(dirItem.num).padStart(2, '0')}`;
+  const slideLabel = dirItem.label;
+
+  // Perbarui elemen footer
+  const badgeEl       = $('footer-badge');
+  const titleEl       = $('footer-title');
+  const counterEl     = $('slide-counter');
+  const progressFill  = $('progress-fill');
+  const progressBar   = document.querySelector('.footer-progress');
+
+  if (badgeEl)   badgeEl.innerText   = slideNum;
+  if (titleEl)   titleEl.innerText   = slideLabel;
+  if (counterEl) counterEl.innerText = `${String(currentSlide + 1).padStart(2, '0')} / ${TOTAL_SLIDES}`;
+
+  // Perbarui lebar progress bar
+  if (progressFill) {
+    const percent = ((currentSlide + 1) / TOTAL_SLIDES) * 100;
+    progressFill.style.width = `${percent}%`;
+  }
+  if (progressBar) {
+    progressBar.setAttribute('aria-valuenow', currentSlide + 1);
+  }
+
+  // Nonaktifkan tombol di batas slide pertama dan terakhir
+  const btnPrev = $('btn-prev');
+  if (btnPrev) btnPrev.disabled = currentSlide === 0;
+
+  const btnNext = $('btn-next');
+  if (btnNext) btnNext.disabled = currentSlide === TOTAL_SLIDES - 1;
+
+  // Tampilkan tombol "Peta Komponen" hanya di slide materi hardware (slide 3–8)
+  const btnMap = $('btn-map');
+  if (btnMap) {
+    btnMap.style.display = (currentSlide >= 2 && currentSlide <= 7) ? 'inline-flex' : 'none';
+  }
+}
+
+
+/* =====================================================================
+ * §12 — DRAWER NAVIGASI SLIDE
+ * Panel laci dari sisi kiri layar berisi daftar seluruh slide.
+ * Dibuka via tombol "≡ Slide" di footer; ditutup via tombol × atau
+ * klik backdrop. Mendukung navigasi langsung ke slide manapun.
+ * ===================================================================== */
+
+/**
+ * Me-render daftar item navigasi di dalam drawer dari data slideDirectory.
+ * Dipanggil sekali saat inisialisasi; aktif item diperbarui via updateDrawerActiveState().
+ */
 function renderSlideNavDrawer() {
   const listEl = $('slide-nav-list');
   if (!listEl) return;
@@ -627,8 +983,11 @@ function renderSlideNavDrawer() {
   });
 }
 
+/**
+ * Membuka drawer navigasi dan memindahkan fokus ke tombol tutup.
+ */
 function openSlideNav() {
-  const drawer = $('slide-nav-drawer');
+  const drawer   = $('slide-nav-drawer');
   const backdrop = $('slide-nav-backdrop');
   if (drawer && backdrop) {
     drawer.classList.add('open');
@@ -639,8 +998,11 @@ function openSlideNav() {
   }
 }
 
+/**
+ * Menutup drawer navigasi.
+ */
 function closeSlideNav() {
-  const drawer = $('slide-nav-drawer');
+  const drawer   = $('slide-nav-drawer');
   const backdrop = $('slide-nav-backdrop');
   if (drawer && backdrop) {
     drawer.classList.remove('open');
@@ -648,6 +1010,10 @@ function closeSlideNav() {
   }
 }
 
+/**
+ * Memperbarui highlight item aktif di drawer sesuai slide saat ini.
+ * Dipanggil setiap kali goToSlide() berjalan.
+ */
 function updateDrawerActiveState() {
   const items = document.querySelectorAll('.nav-slide-item');
   items.forEach((item, idx) => {
@@ -655,81 +1021,20 @@ function updateDrawerActiveState() {
   });
 }
 
-// ================= KONTROL NAVIGASI SLIDE =================
-function changeSlide(direction) {
-  goToSlide(currentSlide + direction);
-}
 
-function goToSlide(targetIdx, announceSlide = true) {
-  if (targetIdx < 0 || targetIdx >= TOTAL_SLIDES) return;
-  currentSlide = targetIdx;
+/* =====================================================================
+ * §13 — RENDER SLIDE KONTEN (Menu Grid & Materi Detail)
+ * Konten slide 2 (menu komponen) dan slide 3–8 (materi detail hardware)
+ * dibangun secara dinamis dari array hardwareModules (§3).
+ * ===================================================================== */
 
-  if (currentSlide >= 2 && currentSlide <= 7) {
-    visitedComponents.add(currentSlide);
-    renderComponentMenu();
-  }
-
-  if (currentSlide === 13) {
-    updateFinalRecap();
-  }
-
-  updateSlideNavigation();
-  updateDrawerActiveState();
-  saveState();
-
-  // Focus management & accessibility announcement (fokus ke slide container, bukan teks judul agar bebas border biru)
-  const activeSlide = $(`slide-${currentSlide}`);
-  if (activeSlide) {
-    activeSlide.setAttribute('tabindex', '-1');
-    activeSlide.focus({ preventScroll: true });
-  }
-
-  if (announceSlide && slideDirectory[currentSlide]) {
-    announce(`Beralih ke Slide ${slideDirectory[currentSlide].num}: ${slideDirectory[currentSlide].title}`);
-  }
-}
-
-function updateSlideNavigation() {
-  const slides = document.querySelectorAll('.slide-body');
-  slides.forEach((s, idx) => {
-    s.classList.toggle('active', idx === currentSlide);
-  });
-
-  const dirItem = slideDirectory[currentSlide] || { num: currentSlide + 1, label: "OVERVIEW", title: "" };
-  const slideNum = `SLIDE ${String(dirItem.num).padStart(2, '0')}`;
-  const slideLabel = dirItem.label;
-
-  const badgeEl = $('footer-badge');
-  const titleEl = $('footer-title');
-  const counterEl = $('slide-counter');
-  const progressFill = $('progress-fill');
-  const progressBar = document.querySelector('.footer-progress');
-
-  if (badgeEl) badgeEl.innerText = slideNum;
-  if (titleEl) titleEl.innerText = slideLabel;
-  if (counterEl) counterEl.innerText = `${String(currentSlide + 1).padStart(2, '0')} / ${TOTAL_SLIDES}`;
-  
-  if (progressFill) {
-    const percent = ((currentSlide + 1) / TOTAL_SLIDES) * 100;
-    progressFill.style.width = `${percent}%`;
-  }
-  if (progressBar) {
-    progressBar.setAttribute('aria-valuenow', currentSlide + 1);
-  }
-
-  const btnPrev = $('btn-prev');
-  if (btnPrev) btnPrev.disabled = currentSlide === 0;
-
-  const btnNext = $('btn-next');
-  if (btnNext) btnNext.disabled = currentSlide === TOTAL_SLIDES - 1;
-
-  const btnMap = $('btn-map');
-  if (btnMap) {
-    btnMap.style.display = (currentSlide >= 2 && currentSlide <= 7) ? 'inline-flex' : 'none';
-  }
-}
-
-// ================= SLIDE 2: MENU GRID =================
+/**
+ * Me-render grid menu eksplorasi komponen pada Slide 2.
+ * Setiap kotak komponen mencerminkan status kunjungan dan dapat diklik
+ * untuk berpindah langsung ke slide detail komponen terkait.
+ * Dipanggil ulang setiap kali goToSlide() ke slide materi (2–7) agar
+ * status badge [SELESAI] / [BELUM_DIBACA] selalu terkini.
+ */
 function renderComponentMenu() {
   const grid = $('component-menu-grid');
   if (!grid) return;
@@ -742,7 +1047,7 @@ function renderComponentMenu() {
     box.setAttribute('role', 'button');
     box.setAttribute('tabindex', '0');
     box.setAttribute('aria-label', `${item.name}: ${item.subtitle}. Status: ${isVisited ? 'Sudah dipelajari' : 'Belum dibaca'}`);
-    
+
     box.innerHTML = `
       <div class="comp-box-top">
         <span class="comp-id">${item.code}</span>
@@ -753,7 +1058,8 @@ function renderComponentMenu() {
       <div class="comp-link">${isVisited ? 'Telaah Ulang &rarr;' : 'Buka Skematik &rarr;'}</div>
     `;
 
-    box.addEventListener('click', () => goToSlide(item.slideIdx));
+    // Navigasi via klik atau Enter/Space (aksesibilitas keyboard)
+    box.addEventListener('click',   () => goToSlide(item.slideIdx));
     box.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
@@ -764,13 +1070,19 @@ function renderComponentMenu() {
     grid.appendChild(box);
   });
 
+  // Perbarui label progress di bawah grid
   const progressLabel = $('menu-progress-label');
   if (progressLabel) {
     progressLabel.innerText = `${visitedComponents.size} / 6 Komponen Dipelajari`;
   }
 }
 
-// ================= SLIDE 3 - 8: MATERI DETAIL =================
+/**
+ * Me-render konten detail teknis untuk masing-masing slide hardware (Slide 3–8).
+ * Setiap slide berisi: diagram skematik SVG animasi (kiri) dan
+ * lembar detail teknis dengan checklist poin (kanan).
+ * Dipanggil sekali saat inisialisasi.
+ */
 function renderMateriSlides() {
   hardwareModules.forEach(item => {
     const targetEl = $(`slide-${item.slideIdx}`);
@@ -803,27 +1115,47 @@ function renderMateriSlides() {
   });
 }
 
-// ================= SLIDE 10: SIMULASI DRAG & DROP & TOUCH =================
+
+/* =====================================================================
+ * §14 — SIMULASI DRAG & DROP PERAKITAN (SLIDE 10)
+ * Mendukung tiga mode interaksi:
+ *   1. HTML5 Drag & Drop API (desktop)
+ *   2. Touch Events (mobile/tablet) dengan ghost element visual
+ *   3. Tap/Klik fallback (klik kartu → pindah ke slot kosong pertama)
+ *
+ * State variabel touch (touchDraggedItem, touchGhostEl) dideklarasikan
+ * di luar fungsi agar tetap terjangkau oleh semua event handler touch.
+ * ===================================================================== */
+
+/** Kartu yang sedang di-drag melalui touch event */
 let touchDraggedItem = null;
+
+/** Elemen ghost clone yang mengikuti jari saat touch drag */
 let touchGhostEl = null;
 
+/**
+ * Menangani aksi klik/tap pada kartu DnD.
+ * - Jika kartu berada di slot → kembalikan ke depot
+ * - Jika kartu berada di depot → pindahkan ke slot kosong pertama
+ * @param {HTMLElement} itemEl - Elemen kartu yang diklik
+ */
 function handleItemClick(itemEl) {
-  const sourceDepot = $('dnd-source');
-  const targetSlots = document.querySelectorAll('.assembly-slot');
+  const sourceDepot  = $('dnd-source');
+  const targetSlots  = document.querySelectorAll('.assembly-slot');
   if (!sourceDepot) return;
 
   const parentSlot = itemEl.closest('.assembly-slot');
 
   if (parentSlot) {
-    // Sedang berada di slot urutan -> kembalikan ke depot awal
+    // Kartu di slot → kembalikan ke depot awal
     const placeholder = parentSlot.querySelector('.slot-placeholder');
     if (placeholder) placeholder.style.display = 'block';
     parentSlot.style.borderColor = '';
-    parentSlot.style.background = '';
+    parentSlot.style.background  = '';
     sourceDepot.appendChild(itemEl);
     announce(`Kartu ${itemEl.innerText} dikembalikan ke depot awal.`);
   } else {
-    // Sedang berada di depot sumber -> pindahkan ke slot pertama yang kosong
+    // Kartu di depot → pindahkan ke slot kosong pertama yang ditemukan
     let targetSlot = null;
     for (const slot of targetSlots) {
       if (!slot.querySelector('.drag-item')) {
@@ -835,20 +1167,28 @@ function handleItemClick(itemEl) {
       const placeholder = targetSlot.querySelector('.slot-placeholder');
       if (placeholder) placeholder.style.display = 'none';
       targetSlot.style.borderColor = '';
-      targetSlot.style.background = '';
+      targetSlot.style.background  = '';
       targetSlot.appendChild(itemEl);
       announce(`Kartu ${itemEl.innerText} ditempatkan pada slot ${targetSlot.dataset.expected}.`);
     }
   }
 }
 
+/**
+ * Menginisialisasi (atau me-reset) simulasi DnD.
+ * - Mengosongkan depot dan slot
+ * - Mengacak urutan kartu tahapan (Fisher-Yates)
+ * - Membuat kartu drag dengan semua event listener (desktop + touch + klik)
+ * - Membuat slot target sesuai urutan teknis yang benar
+ */
 function initDragAndDrop() {
-  const sourceDepot = $('dnd-source');
-  const targetSlots = $('dnd-targets');
-  const feedbackBox = $('dnd-feedback');
+  const sourceDepot  = $('dnd-source');
+  const targetSlots  = $('dnd-targets');
+  const feedbackBox  = $('dnd-feedback');
 
   if (!sourceDepot || !targetSlots) return;
 
+  // Bersihkan konten sebelumnya
   sourceDepot.innerHTML = '';
   targetSlots.innerHTML = '';
   if (feedbackBox) {
@@ -856,26 +1196,26 @@ function initDragAndDrop() {
     feedbackBox.innerHTML = '';
   }
 
-  // Pengacakan Fisher-Yates bebas bias
+  // Render kartu tahapan dalam urutan acak
   const randomized = fisherYatesShuffle(dndSteps);
   randomized.forEach(step => {
     const item = document.createElement('div');
-    item.className = 'drag-item';
-    item.draggable = true;
-    item.id = step.id;
+    item.className   = 'drag-item';
+    item.draggable   = true;
+    item.id          = step.id;
     item.dataset.order = step.order;
-    item.innerText = step.label;
-    item.title = "Drag ke slot, geser dengan jari, atau tap/klik untuk memindahkan";
-    item.setAttribute('role', 'button');
+    item.innerText   = step.label;
+    item.title       = "Drag ke slot, geser dengan jari, atau tap/klik untuk memindahkan";
+    item.setAttribute('role',     'button');
     item.setAttribute('tabindex', '0');
 
-    // Drag API Desktop
+    // Event: HTML5 Drag API (desktop)
     item.addEventListener('dragstart', (e) => {
       e.dataTransfer.setData('text/plain', e.target.id);
     });
 
-    // Click / Enter Fallback
-    item.addEventListener('click', (e) => handleItemClick(e.currentTarget));
+    // Event: Klik dan Enter/Space (fallback aksesibilitas)
+    item.addEventListener('click',   (e) => handleItemClick(e.currentTarget));
     item.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
@@ -883,19 +1223,21 @@ function initDragAndDrop() {
       }
     });
 
-    // Touch Event Handling (Mobile / Tablet)
+    // Event: Touch (mobile/tablet) — dengan ghost element
     bindTouchDnD(item);
 
     sourceDepot.appendChild(item);
   });
 
+  // Render slot target dalam urutan teknis yang benar (1–5)
   dndSteps.forEach(step => {
     const slot = document.createElement('div');
-    slot.className = 'assembly-slot';
-    slot.dataset.expected = step.order;
-    slot.addEventListener('dragover', allowDrop);
+    slot.className          = 'assembly-slot';
+    slot.dataset.expected   = step.order;
+
+    slot.addEventListener('dragover',  allowDrop);
     slot.addEventListener('dragleave', (e) => e.currentTarget.classList.remove('hovered'));
-    slot.addEventListener('drop', (e) => dropToTargetSlot(e, slot));
+    slot.addEventListener('drop',      (e) => dropToTargetSlot(e, slot));
 
     slot.innerHTML = `
       <div class="slot-index">${step.order}</div>
@@ -904,36 +1246,48 @@ function initDragAndDrop() {
     targetSlots.appendChild(slot);
   });
 
-  dndPassed = false;
+  // Reset status simulasi
+  dndPassed    = false;
   dndAttempted = false;
   saveState();
 }
 
+/**
+ * Mendaftarkan event listener touch (touchstart, touchmove, touchend)
+ * pada sebuah kartu DnD untuk mendukung drag & drop di layar sentuh.
+ * Strategi: clone kartu sebagai ghost element mengikuti posisi jari;
+ * saat touchend, deteksi elemen di bawah jari via elementFromPoint().
+ * @param {HTMLElement} itemEl - Kartu DnD yang akan diberi touch support
+ */
 function bindTouchDnD(itemEl) {
+
+  // touchstart: mulai drag, buat ghost clone
   itemEl.addEventListener('touchstart', (e) => {
-    if (e.touches.length !== 1) return;
+    if (e.touches.length !== 1) return; // Hanya single touch
     touchDraggedItem = itemEl;
 
     const touch = e.touches[0];
     touchGhostEl = itemEl.cloneNode(true);
     touchGhostEl.classList.add('drag-ghost');
     touchGhostEl.style.left = `${touch.clientX}px`;
-    touchGhostEl.style.top = `${touch.clientY}px`;
+    touchGhostEl.style.top  = `${touch.clientY}px`;
     document.body.appendChild(touchGhostEl);
     document.body.classList.add('touch-dragging');
   }, { passive: true });
 
+  // touchmove: geser ghost, highlight slot yang dilintasi
   itemEl.addEventListener('touchmove', (e) => {
     if (!touchGhostEl || !touchDraggedItem) return;
     const touch = e.touches[0];
     touchGhostEl.style.left = `${touch.clientX}px`;
-    touchGhostEl.style.top = `${touch.clientY}px`;
+    touchGhostEl.style.top  = `${touch.clientY}px`;
 
-    // Visual hover highlight on potential slot
+    // Sembunyikan ghost sementara untuk mendapatkan elemen di bawah jari
     touchGhostEl.style.display = 'none';
     const elemBelow = document.elementFromPoint(touch.clientX, touch.clientY);
     touchGhostEl.style.display = '';
 
+    // Highlight slot yang sedang dilintasi
     document.querySelectorAll('.assembly-slot').forEach(s => s.classList.remove('hovered'));
     if (elemBelow) {
       const slot = elemBelow.closest('.assembly-slot');
@@ -941,6 +1295,7 @@ function bindTouchDnD(itemEl) {
     }
   }, { passive: true });
 
+  // touchend: lepaskan kartu ke slot atau depot berdasarkan posisi jari
   itemEl.addEventListener('touchend', (e) => {
     if (!touchDraggedItem) return;
     const touch = e.changedTouches[0];
@@ -952,23 +1307,26 @@ function bindTouchDnD(itemEl) {
       touchGhostEl.remove();
       touchGhostEl = null;
     }
+
     document.body.classList.remove('touch-dragging');
     document.querySelectorAll('.assembly-slot').forEach(s => s.classList.remove('hovered'));
 
     if (targetElement) {
-      const targetSlot = targetElement.closest('.assembly-slot');
+      const targetSlot   = targetElement.closest('.assembly-slot');
       const targetSource = targetElement.closest('#dnd-source');
 
-      if (targetSlot) {
-        moveItemToSlot(touchDraggedItem, targetSlot);
-      } else if (targetSource) {
-        moveItemToSource(touchDraggedItem);
-      }
+      if (targetSlot)   moveItemToSlot(touchDraggedItem, targetSlot);
+      else if (targetSource) moveItemToSource(touchDraggedItem);
     }
     touchDraggedItem = null;
   });
 }
 
+/**
+ * Mencegah perilaku default drag (diperlukan agar drop event terpanggil).
+ * Juga menambahkan highlight visual pada slot yang dilintasi.
+ * @param {DragEvent} e
+ */
 function allowDrop(e) {
   e.preventDefault();
   if (e.currentTarget.classList.contains('assembly-slot')) {
@@ -976,86 +1334,119 @@ function allowDrop(e) {
   }
 }
 
+/**
+ * Memindahkan kartu drag ke dalam slot target.
+ * - Jika slot sudah terisi, kartu lama dikembalikan ke depot
+ * - Placeholder di slot tujuan disembunyikan
+ * - Placeholder di slot asal diperlihatkan kembali
+ * @param {HTMLElement} dragged - Kartu yang dipindahkan
+ * @param {HTMLElement} slot    - Slot tujuan
+ */
 function moveItemToSlot(dragged, slot) {
   slot.classList.remove('hovered');
   slot.style.borderColor = '';
-  slot.style.background = '';
+  slot.style.background  = '';
 
+  // Jika slot sudah ada isinya (bukan kartu yang sama), kembalikan ke depot
   const currentOccupant = slot.querySelector('.drag-item');
   if (currentOccupant && currentOccupant !== dragged) {
     const source = $('dnd-source');
     if (source) source.appendChild(currentOccupant);
   }
 
-  // Pulihkan placeholder pada slot lama jika sebelumnya berada di slot
+  // Pulihkan placeholder di slot asal (jika kartu dipindah dari slot lain)
   const prevParent = dragged.parentElement;
   if (prevParent && prevParent.classList.contains('assembly-slot') && prevParent !== slot) {
     const prevPlaceholder = prevParent.querySelector('.slot-placeholder');
     if (prevPlaceholder) prevPlaceholder.style.display = 'block';
     prevParent.style.borderColor = '';
-    prevParent.style.background = '';
+    prevParent.style.background  = '';
   }
 
+  // Sembunyikan placeholder di slot tujuan dan tempatkan kartu
   const placeholder = slot.querySelector('.slot-placeholder');
   if (placeholder) placeholder.style.display = 'none';
   slot.appendChild(dragged);
 }
 
+/**
+ * Memindahkan kartu drag kembali ke depot sumber.
+ * Memulihkan placeholder pada slot asal kartu.
+ * @param {HTMLElement} dragged - Kartu yang dikembalikan
+ */
 function moveItemToSource(dragged) {
   const prevParent = dragged.parentElement;
   if (prevParent && prevParent.classList.contains('assembly-slot')) {
     const prevPlaceholder = prevParent.querySelector('.slot-placeholder');
     if (prevPlaceholder) prevPlaceholder.style.display = 'block';
     prevParent.style.borderColor = '';
-    prevParent.style.background = '';
+    prevParent.style.background  = '';
   }
   const source = $('dnd-source');
   if (source) source.appendChild(dragged);
 }
 
+/**
+ * Handler drop native HTML5 ke slot target perakitan.
+ * Mengambil ID kartu dari dataTransfer lalu memanggil moveItemToSlot().
+ * @param {DragEvent} e    - Event drop
+ * @param {HTMLElement} slot - Slot tujuan drop
+ */
 function dropToTargetSlot(e, slot) {
   e.preventDefault();
-  const id = e.dataTransfer.getData('text/plain');
+  const id     = e.dataTransfer.getData('text/plain');
   const dragged = $(id);
   if (!dragged) return;
   moveItemToSlot(dragged, slot);
 }
 
+/**
+ * Handler drop native HTML5 kembali ke depot sumber.
+ * @param {DragEvent} e - Event drop
+ */
 function dropToSource(e) {
   e.preventDefault();
-  const id = e.dataTransfer.getData('text/plain');
+  const id     = e.dataTransfer.getData('text/plain');
   const dragged = $(id);
   if (!dragged) return;
   moveItemToSource(dragged);
 }
 
+/**
+ * Memverifikasi urutan kartu di semua slot dan menampilkan hasil.
+ * - Mewarnai slot biru (benar) atau merah (salah)
+ * - Menampilkan pesan feedback di #dnd-feedback
+ * - Menyimpan state hasil verifikasi ke localStorage
+ */
 function checkDndOrder() {
   dndAttempted = true;
-  const slots = document.querySelectorAll('.assembly-slot');
+  const slots    = document.querySelectorAll('.assembly-slot');
   const feedback = $('dnd-feedback');
-  let placed = 0;
+  let placed  = 0;
   let correct = 0;
 
+  // Evaluasi setiap slot
   slots.forEach(slot => {
     const expected = parseInt(slot.dataset.expected, 10);
-    const card = slot.querySelector('.drag-item');
+    const card     = slot.querySelector('.drag-item');
     if (card) {
       placed++;
       if (parseInt(card.dataset.order, 10) === expected) {
         correct++;
-        slot.style.borderColor = '#136cfc';
-        slot.style.background = '#e8f4fc';
+        slot.style.borderColor = '#136cfc'; // Biru = benar
+        slot.style.background  = '#e8f4fc';
       } else {
-        slot.style.borderColor = '#ef4444';
-        slot.style.background = '#fee2e2';
+        slot.style.borderColor = '#ef4444'; // Merah = salah
+        slot.style.background  = '#fee2e2';
       }
     } else {
-      slot.style.borderColor = '#ef4444';
+      slot.style.borderColor = '#ef4444'; // Slot kosong = error
     }
   });
 
   if (!feedback) return;
 
+  // Pesan peringatan: masih ada slot kosong
   if (placed < 5) {
     feedback.className = 'dnd-msg-box visible error';
     feedback.innerHTML = `[PERINGATAN]: Masih ada slot kosong (${placed}/5). Masukkan seluruh 5 komponen ke dalam slot sebelum melakukan verifikasi.`;
@@ -1064,6 +1455,7 @@ function checkDndOrder() {
     return;
   }
 
+  // Evaluasi hasil: lolos atau perlu revisi
   if (correct === 5) {
     dndPassed = true;
     feedback.className = 'dnd-msg-box visible success';
@@ -1072,19 +1464,32 @@ function checkDndOrder() {
   } else {
     dndPassed = false;
     feedback.className = 'dnd-msg-box visible error';
-    feedback.innerHTML = `[KESALAHAN_URUTAN]: Akurasi ${correct}/5 benar. Kunci urutan standar teknis:<br>1. Motherboard di meja non-konduktif &rarr; 2. Pasang CPU & Cooler &rarr; 3. Pasang RAM &rarr; 4. Pasang PSU & Baut ke Casing &rarr; 5. Pasang SSD, GPU, & Kabel Daya.`;
+    feedback.innerHTML = `[KESALAHAN_URUTAN]: Akurasi ${correct}/5 benar. Kunci urutan standar teknis:<br>1. Motherboard di meja non-konduktif &rarr; 2. Pasang CPU &amp; Cooler &rarr; 3. Pasang RAM &rarr; 4. Pasang PSU &amp; Baut ke Casing &rarr; 5. Pasang SSD, GPU, &amp; Kabel Daya.`;
     announce(`Kesalahan urutan: Akurasi ${correct} dari 5 benar.`);
   }
 
   saveState();
 }
 
-// ================= SLIDE 11 - 13: LATIHAN BLOK FUNGSI =================
+
+/* =====================================================================
+ * §15 — KUIS EVALUASI BLOK FUNGSI (SLIDE 11–13)
+ * Tiga soal pilihan ganda berbasis skenario kasus teknis.
+ * Konten dirender secara dinamis dari quizData (§5).
+ * Jawaban dikunci setelah dipilih (class quiz-locked).
+ * State jawaban disimpan agar tetap terpulihkan saat reload halaman.
+ * ===================================================================== */
+
+/**
+ * Me-render semua slide kuis dari quizData ke elemen DOM target.
+ * Jika ada jawaban tersimpan di state, tampilan dipulihkan via applyQuizAnswerVisual().
+ */
 function renderQuizSlides() {
   quizData.forEach((q, qIdx) => {
     const targetEl = $(`slide-${q.slideIdx}`);
     if (!targetEl) return;
 
+    // Bangun HTML pilihan jawaban
     const optionsHtml = q.choices.map(c => `
       <button class="option-tile" data-quiz-idx="${qIdx}" data-quiz-key="${c.key}" role="radio" aria-checked="false">
         <span class="opt-prefix">[${c.key}]</span>
@@ -1112,30 +1517,44 @@ function renderQuizSlides() {
       </div>
     `;
 
-    // Pulihkan status quiz jika ada dalam saved state
+    // Pulihkan tampilan jika ada jawaban tersimpan dari sesi sebelumnya
     if (quizAnswered[qIdx] !== null) {
       applyQuizAnswerVisual(qIdx, quizAnswered[qIdx], false);
     }
   });
 }
 
+/**
+ * Memproses jawaban yang dipilih pengguna pada soal tertentu.
+ * - Mengunci grid opsi (quiz-locked)
+ * - Mewarnai tombol benar (hijau) atau salah (merah)
+ * - Menampilkan pesan feedback
+ * - Memperbarui state quizScores dan quizAnswered, lalu menyimpannya
+ * @param {number}      qIdx      - Indeks soal (0-based)
+ * @param {string}      selectedKey - Kunci pilihan ('A'/'B'/'C'/'D')
+ * @param {HTMLElement} btnEl     - Elemen tombol yang diklik
+ */
 function checkQuizAnswer(qIdx, selectedKey, btnEl) {
-  const q = quizData[qIdx];
-  const grid = $(`quiz-options-${qIdx}`);
+  const q      = quizData[qIdx];
+  const grid   = $(`quiz-options-${qIdx}`);
   const msgBox = $(`quiz-msg-${qIdx}`);
 
+  // Kunci grid agar tidak bisa mengubah jawaban
   if (grid) grid.classList.add('quiz-locked');
 
+  // Reset semua aria-checked sebelum menerapkan yang baru
   const allBtns = document.querySelectorAll(`#quiz-options-${qIdx} .option-tile`);
   allBtns.forEach(b => {
     b.classList.remove('selected-ok', 'selected-err');
     b.setAttribute('aria-checked', 'false');
   });
 
+  // Simpan jawaban ke state
   quizAnswered[qIdx] = selectedKey;
   btnEl.setAttribute('aria-checked', 'true');
 
   if (selectedKey === q.correctKey) {
+    // Jawaban benar
     quizScores[qIdx] = true;
     btnEl.classList.add('selected-ok');
     if (msgBox) {
@@ -1144,6 +1563,7 @@ function checkQuizAnswer(qIdx, selectedKey, btnEl) {
     }
     announce(`Jawaban tepat! Komponen ${q.correctName} adalah blok fungsi yang sesuai.`);
   } else {
+    // Jawaban salah
     quizScores[qIdx] = false;
     btnEl.classList.add('selected-err');
     if (msgBox) {
@@ -1156,9 +1576,16 @@ function checkQuizAnswer(qIdx, selectedKey, btnEl) {
   saveState();
 }
 
+/**
+ * Mengembalikan tampilan visual jawaban tersimpan ke slide kuis
+ * setelah halaman dimuat ulang atau slide dirender ulang.
+ * @param {number}  qIdx          - Indeks soal (0-based)
+ * @param {string}  selectedKey   - Kunci jawaban yang tersimpan
+ * @param {boolean} shouldAnnounce - Apakah mengumumkan ke screen reader
+ */
 function applyQuizAnswerVisual(qIdx, selectedKey, shouldAnnounce = false) {
-  const q = quizData[qIdx];
-  const grid = $(`quiz-options-${qIdx}`);
+  const q      = quizData[qIdx];
+  const grid   = $(`quiz-options-${qIdx}`);
   const msgBox = $(`quiz-msg-${qIdx}`);
   if (!grid) return;
 
@@ -1185,8 +1612,15 @@ function applyQuizAnswerVisual(qIdx, selectedKey, shouldAnnounce = false) {
   });
 }
 
+/**
+ * Me-reset soal kuis tertentu ke kondisi awal (belum dijawab).
+ * - Menghapus class quiz-locked dan warna pilihan
+ * - Mengosongkan pesan feedback
+ * - Memperbarui state dan localStorage
+ * @param {number} qIdx - Indeks soal (0-based)
+ */
 function resetQuizQuestion(qIdx) {
-  quizScores[qIdx] = false;
+  quizScores[qIdx]  = false;
   quizAnswered[qIdx] = null;
 
   const grid = $(`quiz-options-${qIdx}`);
@@ -1208,9 +1642,15 @@ function resetQuizQuestion(qIdx) {
   saveState();
 }
 
+/**
+ * Menampilkan kunci jawaban benar pada soal kuis tertentu.
+ * - Mengunci grid, hapus warna merah, sorot jawaban benar dengan hijau
+ * - Tampilkan penjelasan solusi di msgBox
+ * @param {number} qIdx - Indeks soal (0-based)
+ */
 function showQuizSolution(qIdx) {
-  const q = quizData[qIdx];
-  const grid = $(`quiz-options-${qIdx}`);
+  const q      = quizData[qIdx];
+  const grid   = $(`quiz-options-${qIdx}`);
   const msgBox = $(`quiz-msg-${qIdx}`);
 
   if (grid) grid.classList.add('quiz-locked');
@@ -1232,24 +1672,42 @@ function showQuizSolution(qIdx) {
   announce(`Kunci jawaban: ${q.correctKey}, ${q.correctName}.`);
 }
 
-// ================= SLIDE 14: REKAPITULASI SKOR AKHIR & COUNT-UP =================
+
+/* =====================================================================
+ * §16 — REKAPITULASI & RESET SESI (SLIDE 14)
+ * Menghitung dan menampilkan skor akhir berdasarkan:
+ *   - Modul dipelajari  : 30 poin maks (visitedComponents / 6)
+ *   - Simulasi DnD      : 30 poin (lolos) / 15 poin (dicoba) / 0 (skip)
+ *   - Kuis evaluasi     : 40 poin maks (quizCorrect / 3)
+ * Skor ditampilkan dengan animasi count-up ease-out quadratic.
+ * ===================================================================== */
+
+/**
+ * Animasi count-up angka skor dengan easing ease-out quadratic.
+ * Menggunakan requestAnimationFrame untuk performa optimal.
+ * @param {HTMLElement} el          - Elemen yang menampilkan angka
+ * @param {number}      targetScore - Nilai akhir yang dituju
+ * @param {string}      suffix      - Teks suffix setelah angka (default " / 100")
+ */
 function animateScoreCount(el, targetScore, suffix = " / 100") {
   if (!el) return;
   let currentVal = 0;
-  const duration = 650;
+  const duration  = 650; // Durasi animasi dalam milidetik
   const startTime = performance.now();
 
   function step(now) {
-    const elapsed = now - startTime;
+    const elapsed  = now - startTime;
     const progress = Math.min(elapsed / duration, 1);
-    // Ease out quad
-    const ease = 1 - (1 - progress) * (1 - progress);
-    currentVal = Math.round(ease * targetScore);
+
+    // Ease out quadratic: melambat menjelang nilai akhir
+    const ease   = 1 - (1 - progress) * (1 - progress);
+    currentVal   = Math.round(ease * targetScore);
     el.innerText = `${currentVal}${suffix}`;
 
     if (progress < 1) {
       requestAnimationFrame(step);
     } else {
+      // Pastikan nilai akhir tepat dan tambahkan animasi pop-in
       el.innerText = `${targetScore}${suffix}`;
       el.classList.add('score-animate');
     }
@@ -1257,107 +1715,142 @@ function animateScoreCount(el, targetScore, suffix = " / 100") {
   requestAnimationFrame(step);
 }
 
+/**
+ * Memperbarui semua elemen rekapitulasi di Slide 14.
+ * Menghitung skor akhir dan menentukan predikat capaian.
+ * Dipanggil otomatis setiap kali pengguna masuk ke slide 14 (goToSlide).
+ */
 function updateFinalRecap() {
   const visitedCount = visitedComponents.size;
+
+  // Tampilkan jumlah komponen yang sudah dipelajari
   const recapMateriEl = $('recap-materi');
   if (recapMateriEl) recapMateriEl.innerText = `${visitedCount} / 6`;
 
+  // Tampilkan status simulasi DnD
   const dndEl = $('recap-dnd');
   if (dndEl) {
     if (dndPassed) {
-      dndEl.innerText = "LOLOS (5/5)";
-      dndEl.style.color = "var(--blue)";
+      dndEl.innerText    = "LOLOS (5/5)";
+      dndEl.style.color  = "var(--blue)";
     } else if (dndAttempted) {
-      dndEl.innerText = "REVISI";
-      dndEl.style.color = "var(--dark-blue)";
+      dndEl.innerText    = "REVISI";
+      dndEl.style.color  = "var(--dark-blue)";
     } else {
-      dndEl.innerText = "PENDING";
-      dndEl.style.color = "var(--dark-blue)";
+      dndEl.innerText    = "PENDING";
+      dndEl.style.color  = "var(--dark-blue)";
     }
   }
 
+  // Tampilkan skor kuis
   const quizCorrectCount = quizScores.filter(Boolean).length;
   const recapQuizEl = $('recap-quiz');
   if (recapQuizEl) recapQuizEl.innerText = `${quizCorrectCount} / 3`;
 
-  // Kalkulasi Skor Akhir (Skala 100)
-  const materiScore = (visitedCount / 6) * 30;
-  const dndScore = dndPassed ? 30 : (dndAttempted ? 15 : 0);
-  const quizScore = (quizCorrectCount / 3) * 40;
-  const totalScore = Math.round(materiScore + dndScore + quizScore);
+  // --- Kalkulasi Skor Akhir (Skala 0–100) ---
+  const materiScore = (visitedCount / 6)       * 30; // Maks 30 poin
+  const dndScore    = dndPassed ? 30 : (dndAttempted ? 15 : 0); // Maks 30 poin
+  const quizScore   = (quizCorrectCount / 3)   * 40; // Maks 40 poin
+  const totalScore  = Math.round(materiScore + dndScore + quizScore);
 
+  // Animasi count-up skor total
   const totalScoreEl = $('recap-total-score');
   if (totalScoreEl) {
     animateScoreCount(totalScoreEl, totalScore);
   }
 
+  // Tentukan predikat capaian berdasarkan skor
   const predicateEl = $('recap-predicate');
   if (predicateEl) {
     if (totalScore >= 85) {
-      predicateEl.innerText = "Status: Sangat Memuaskan [A]";
-      predicateEl.style.color = "var(--green-text)";
+      predicateEl.innerText    = "Status: Sangat Memuaskan [A]";
+      predicateEl.style.color  = "var(--green-text)";
     } else if (totalScore >= 70) {
-      predicateEl.innerText = "Status: Kompeten [B]";
-      predicateEl.style.color = "var(--blue)";
+      predicateEl.innerText    = "Status: Kompeten [B]";
+      predicateEl.style.color  = "var(--blue)";
     } else {
-      predicateEl.innerText = "Status: Butuh Pengulangan [C]";
-      predicateEl.style.color = "var(--dark-blue)";
+      predicateEl.innerText    = "Status: Butuh Pengulangan [C]";
+      predicateEl.style.color  = "var(--dark-blue)";
     }
   }
 
+  // Umumkan ringkasan ke screen reader
   announce(`Rekapitulasi: Modul ${visitedCount}/6, Simulasi ${dndPassed ? 'Lolos' : 'Pending'}, Tantangan ${quizCorrectCount}/3, Total Skor ${totalScore} dari 100.`);
 }
 
+/**
+ * Mereset seluruh sesi pembelajaran ke kondisi awal.
+ * - Menghapus semua state progres di memori dan localStorage
+ * - Me-render ulang komponen yang bergantung pada state
+ * - Navigasi kembali ke Slide 1 (cover)
+ * Hanya dipanggil setelah pengguna mengonfirmasi melalui modal reset.
+ */
 function restartAll() {
+  // Hapus semua state di memori
   visitedComponents.clear();
-  dndPassed = false;
+  dndPassed    = false;
   dndAttempted = false;
   for (let i = 0; i < quizScores.length; i++) {
-    quizScores[i] = false;
+    quizScores[i]  = false;
     quizAnswered[i] = null;
   }
 
-  try {
-    localStorage.removeItem(STORAGE_KEY);
-  } catch (err) {}
+  // Hapus dari localStorage
+  try { localStorage.removeItem(STORAGE_KEY); } catch (err) {}
 
+  // Render ulang konten yang bergantung pada state
   renderComponentMenu();
   initDragAndDrop();
   renderQuizSlides();
+
+  // Kembali ke slide pertama
   goToSlide(0);
   announce("Seluruh sesi dan data evaluasi berhasil direset ke awal.");
 }
 
-// ================= NAVIGASI KEYBOARD (DEFENSIVE) =================
+
+/* =====================================================================
+ * §17 — NAVIGASI KEYBOARD
+ * Shortcut keyboard untuk navigasi presentasi tanpa mouse/touch.
+ * Keyboard diabaikan jika fokus ada di elemen interaktif (input, tombol)
+ * atau jika modal sedang terbuka.
+ *
+ * Shortcut:
+ *   ArrowRight / PageDown → Slide berikutnya
+ *   ArrowLeft  / PageUp   → Slide sebelumnya
+ *   Home                  → Slide pertama
+ *   End                   → Slide terakhir
+ *   F / f                 → Toggle fullscreen
+ *   Escape                → Tutup modal / drawer (jika terbuka)
+ * ===================================================================== */
+
+/**
+ * Mendaftarkan event listener keydown pada window untuk navigasi keyboard.
+ * Semua logika bersifat defensive — tidak akan mengganggu input form.
+ */
 function initKeyboardNavigation() {
   window.addEventListener('keydown', (e) => {
-    // Abaikan jika fokus ada di form input, tombol, atau modal sedang terbuka
-    const tag = (e.target && e.target.tagName) ? e.target.tagName.toUpperCase() : '';
+    // Periksa apakah fokus ada di elemen form/interaktif
+    const tag          = (e.target && e.target.tagName) ? e.target.tagName.toUpperCase() : '';
     const isInteractive = ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON'].includes(tag) || (e.target && e.target.isContentEditable);
-    const modal = $('confirm-modal');
-    const isModalOpen = modal && modal.classList.contains('open');
-    const drawer = $('slide-nav-drawer');
+
+    // Periksa apakah modal atau drawer sedang terbuka
+    const modal        = $('confirm-modal');
+    const isModalOpen  = modal && modal.classList.contains('open');
+    const drawer       = $('slide-nav-drawer');
     const isDrawerOpen = drawer && drawer.classList.contains('open');
 
-    // Handle Escape key globally for drawer and modal
+    // Escape: tutup modal atau drawer yang sedang terbuka
     if (e.key === 'Escape') {
-      if (isModalOpen) {
-        hideConfirmResetModal();
-        return;
-      }
-      if (isDrawerOpen) {
-        closeSlideNav();
-        return;
-      }
+      if (isModalOpen)  { hideConfirmResetModal(); return; }
+      if (isDrawerOpen) { closeSlideNav();         return; }
     }
 
-    // Jika sedang di dalam modal, biarkan keyboard fokus berjalan di modal
+    // Jika modal sedang terbuka, biarkan keyboard fokus berjalan di modal
     if (isModalOpen) return;
 
+    // Navigasi slide (berlaku meski fokus di tombol)
     if (e.key === 'ArrowRight' || e.key === 'PageDown') {
-      if (isInteractive && tag === 'BUTTON') {
-        // jika sedang fokus di tombol selain navigasi, tetap biarkan tombolnya
-      }
       e.preventDefault();
       changeSlide(1);
     } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
@@ -1370,6 +1863,7 @@ function initKeyboardNavigation() {
       e.preventDefault();
       goToSlide(TOTAL_SLIDES - 1);
     } else if ((e.key === 'f' || e.key === 'F') && !isInteractive) {
+      // F: toggle fullscreen (hanya jika tidak di dalam input)
       e.preventDefault();
       toggleFullscreen();
     }

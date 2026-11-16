@@ -1,50 +1,99 @@
 /* ====================================================================
    ANATOMI KOMPONEN & SIMULASI PERAKITAN PC
-   Tema: Clean Technical White Workspace (High Contrast & Legibility)
-   Palet Resmi:
+   Tema  : Clean Technical White Workspace (High Contrast & Legibility)
+   Palet :
      - Background / Base: #FFFFFF (Putih Bersih) & #E8F4FC (Light Blue)
-     - Text & Structure:  #152641 (Dark Blue - Kontras Maksimal, Bebas Abu-abu)
-     - Primary Action:    #136CFC (Blue - Tombol & Sorotan Jalur)
-     - Accent & Highlight:#C3F84A (Lime Green - Lencana & Verifikasi)
-   Penyusun: Dhoni & Devi (TIF 2024 - Universitas PGRI Ronggolawe Tuban)
+     - Text & Structure:  #152641 (Dark Blue — Kontras Maksimal, Bebas Abu-abu)
+     - Primary Action:    #136CFC (Blue — Tombol & Sorotan Jalur)
+     - Accent & Highlight:#C3F84A (Lime Green — Lencana & Verifikasi)
+   Penyusun: Dhoni & Devi (TIF 2024 — Universitas PGRI Ronggolawe Tuban)
+   ====================================================================
+
+   DAFTAR SECTION:
+     §1  CSS Custom Properties (Design Tokens)
+     §2  Aksesibilitas — Focus Visible & Utilities
+     §3  Reset & Base Styles
+     §4  Mode Fullscreen Presentasi
+     §5  Layout Utama — Stage, Viewport, Slide Body
+     §6  Margin Slide Title (Slide 2 ke Atas)
+     §7  Footer Navigasi Bawah
+     §8  Komponen Tombol (Buttons)
+     §9  Slide 1 — Cover & Lembar Identifikasi
+     §10 Slide 2 — Menu Grid Komponen
+     §11 Slide 3–8 — Skematik & Materi Detail Hardware
+     §12 Animasi Vektor SVG Teknis
+     §13 Slide 9 — Aturan & SOP Perakitan
+     §14 Slide 10 — Simulasi Drag & Drop
+     §15 Slide 11–13 — Latihan Soal (Kuis)
+     §16 Slide 14 — Rekapitulasi Skor
+     §17 Drawer Navigasi Slide
+     §18 Modal Konfirmasi Reset
+     §19 Quiz Lock & State Accessibility
+     §20 Animasi Score Pop-In
+     §21 Touch Drag & Drop Mobile
+     §22 Responsif — Tablet (≤1024px)
+     §23 Responsif — Mobile (≤768px)
+     §24 Responsif — Small Mobile (≤480px)
+     §25 Responsif — Layar Pendek (≤720px tinggi)
    ==================================================================== */
 
+
+/* =====================================================================
+ * §1 — CSS CUSTOM PROPERTIES (DESIGN TOKENS)
+ * Seluruh warna, tipografi, dan ukuran radius diatur di sini.
+ * Referensi via var(--nama-token) di seluruh file.
+ * ===================================================================== */
+
 :root {
-  --blue: #136cfc;
-  --blue-hover: #0c56cc;
-  --blue-soft: #e0edff;
-  
-  --dark-blue: #152641;
-  --dark-surface: #0f1c30;
-  
-  --green: #c3f84a;
-  --green-hover: #b2ec32;
-  --green-dark: #152641;
-  --green-text: #256604;
-  --green-bg-light: #effcd3;
-  
-  --light-blue: #e8f4fc;
-  --white: #ffffff;
-  
-  /* High Contrast Borders (No washed out lines) */
-  --border-strong: #152641;
-  --border-blue: #136cfc;
-  --border-subtle: #bcdbf3;
-  
-  /* Text Tokens - 100% Solid High-Contrast, Bebas Abu-abu */
-  --text-primary: #152641;
-  --text-secondary: #136cfc;
-  --text-on-dark: #ffffff;
-  
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
-  
+  /* --- Warna Utama (Blue) --- */
+  --blue:            #136cfc;
+  --blue-hover:      #0c56cc;
+  --blue-soft:       #e0edff;
+
+  /* --- Warna Gelap (Dark Blue) --- */
+  --dark-blue:       #152641;
+  --dark-surface:    #0f1c30;
+
+  /* --- Warna Aksen (Lime Green) --- */
+  --green:           #c3f84a;
+  --green-hover:     #b2ec32;
+  --green-dark:      #152641;
+  --green-text:      #256604;
+  --green-bg-light:  #effcd3;
+
+  /* --- Warna Netral --- */
+  --light-blue:      #e8f4fc;
+  --white:           #ffffff;
+
+  /* --- Border Tokens --- */
+  --border-strong:   #152641;  /* Garis tegas, kontras penuh */
+  --border-blue:     #136cfc;
+  --border-subtle:   #bcdbf3;  /* Garis pembagi ringan */
+
+  /* --- Token Teks (100% Solid, Bebas Abu-abu) --- */
+  --text-primary:    #152641;
+  --text-secondary:  #136cfc;
+  --text-on-dark:    #ffffff;
+
+  /* --- Tipografi --- */
+  --font-sans:  'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono:  'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  /* --- Border Radius --- */
   --radius-xs: 4px;
   --radius-sm: 8px;
   --radius-md: 12px;
 }
 
-/* Accessibility Focus Visible (Hanya untuk kontrol interaktif, tidak untuk judul/teks) */
+
+/* =====================================================================
+ * §2 — AKSESIBILITAS: FOCUS VISIBLE & UTILITIES
+ * Focus ring hanya tampil pada elemen interaktif (tombol, input, link)
+ * — BUKAN pada heading atau teks — agar tidak ada border biru
+ * saat slide title difokuskan oleh JavaScript (goToSlide).
+ * ===================================================================== */
+
+/* Focus ring untuk semua elemen interaktif */
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
@@ -57,13 +106,15 @@ textarea:focus-visible,
   outline-offset: 2px;
 }
 
+/* Focus ring khusus tombol dengan shadow tambahan */
 .btn:focus-visible {
   outline: 3px solid var(--blue);
   outline-offset: 2px;
   box-shadow: 0 0 0 4px rgba(19, 108, 252, 0.25);
 }
 
-/* Hapus tuntas border / outline biru pada semua slide title dan teks */
+/* Hapus tuntas outline/border pada semua elemen non-interaktif:
+   heading, slide container, dan tabindex="-1" (fokus via JS) */
 h1, h2, h3, h4, h5, h6,
 h1:focus, h2:focus, h3:focus, h4:focus,
 h1:focus-visible, h2:focus-visible, h3:focus-visible, h4:focus-visible,
@@ -90,7 +141,7 @@ h1:focus-visible, h2:focus-visible, h3:focus-visible, h4:focus-visible,
   border-color: transparent;
 }
 
-/* Screen Reader Only Utility */
+/* Utilitas: sembunyi secara visual namun tetap dapat dibaca screen reader */
 .sr-only {
   position: absolute !important;
   width: 1px !important;
@@ -103,25 +154,52 @@ h1:focus-visible, h2:focus-visible, h3:focus-visible, h4:focus-visible,
   border: 0 !important;
 }
 
+
+/* =====================================================================
+ * §3 — RESET & BASE STYLES
+ * Box model universal, dimensi dasar HTML & body.
+ * ===================================================================== */
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-/* ================= PUTIH BERSIH FULL MONITOR BASE ================= */
 html {
   font-size: 16px;
-  transition: font-size 0.2s ease;
+  transition: font-size 0.2s ease; /* Transisi mulus saat fullscreen font scaling */
 }
 
-/* ================= MODE FULLSCREEN PRESENTASI (TEKS LEBIH BESAR & LEGA) ================= */
+html, body {
+  width: 100%;
+  height: 100%;
+  background-color: var(--white);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Mencegah scroll level body — scroll hanya di dalam viewport */
+  -webkit-font-smoothing: antialiased;
+}
+
+
+/* =====================================================================
+ * §4 — MODE FULLSCREEN PRESENTASI
+ * Font diperbesar secara bertahap (relatif terhadap ukuran layar) agar
+ * teks terbaca oleh audiens di layar proyektor saat presentasi.
+ * Class .is-fullscreen ditambahkan ke <html> via JavaScript (updateFullscreenButton)
+ * sebagai fallback jika :fullscreen pseudo-class tidak bekerja.
+ * ===================================================================== */
+
+/* Ukuran font dasar fullscreen */
 :fullscreen,
 :-webkit-full-screen,
 html.is-fullscreen {
   font-size: 18.5px;
 }
 
+/* Layar lebih besar: sedikit lebih besar */
 @media (min-width: 1366px) {
   :fullscreen,
   :-webkit-full-screen,
@@ -130,6 +208,7 @@ html.is-fullscreen {
   }
 }
 
+/* Layar sangat besar (mis. proyektor 1080p+) */
 @media (min-width: 1600px) {
   :fullscreen,
   :-webkit-full-screen,
@@ -138,7 +217,7 @@ html.is-fullscreen {
   }
 }
 
-/* Penyesuaian layout dan elemen dalam mode fullscreen untuk audiens */
+/* Layout container diperlebar agar memanfaatkan ruang layar penuh */
 :fullscreen .cover-layout,
 :fullscreen .rules-stage,
 :fullscreen .challenge-stage,
@@ -162,39 +241,46 @@ html.is-fullscreen .schematic-layout {
   max-width: 1420px;
 }
 
+/* Grid skematik lebih lebar di fullscreen */
 :fullscreen .schematic-layout,
 html.is-fullscreen .schematic-layout {
   grid-template-columns: 420px 1fr;
   gap: 36px;
 }
 
+/* SVG diagram sedikit lebih besar */
 :fullscreen .schematic-svg,
 html.is-fullscreen .schematic-svg {
   max-width: 340px;
 }
 
+/* Judul cover lebih besar untuk proyektor */
 :fullscreen .cover-title,
 html.is-fullscreen .cover-title {
   font-size: 3.2rem;
   line-height: 1.15;
 }
 
+/* Lead text cover lebih besar */
 :fullscreen .cover-lead,
 html.is-fullscreen .cover-lead {
   font-size: 1.15rem;
   line-height: 1.7;
 }
 
+/* Padding option tile kuis lebih besar */
 :fullscreen .option-tile,
 html.is-fullscreen .option-tile {
   padding: 18px 24px;
 }
 
+/* Padding kartu DnD lebih besar */
 :fullscreen .drag-item,
 html.is-fullscreen .drag-item {
   padding: 14px 18px;
 }
 
+/* Footer tidak ter-overlap saat fullscreen */
 :fullscreen .slide-footer,
 html.is-fullscreen .slide-footer {
   padding: 10px 32px;
@@ -202,6 +288,7 @@ html.is-fullscreen .slide-footer {
   box-sizing: border-box;
 }
 
+/* Stage memenuhi seluruh viewport layar */
 :fullscreen .slide-stage,
 html.is-fullscreen .slide-stage {
   height: 100vh !important;
@@ -210,23 +297,21 @@ html.is-fullscreen .slide-stage {
   overflow: hidden !important;
 }
 
-html, body {
-  width: 100%;
-  height: 100%;
-  background-color: var(--white);
-  color: var(--text-primary);
-  font-family: var(--font-sans);
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  -webkit-font-smoothing: antialiased;
-}
 
-/* Panggung Layar Penuh (Edge-to-Edge) Berlatar Putih */
+/* =====================================================================
+ * §5 — LAYOUT UTAMA: STAGE, VIEWPORT, SLIDE BODY
+ * .slide-stage    = kontainer luar edge-to-edge (flex column)
+ * .slide-main-viewport = area tengah yang dapat di-scroll (flex: 1)
+ * .slide-body     = setiap slide individual (position: absolute)
+ * Transisi slide menggunakan visibility+opacity (BUKAN display:none)
+ * agar CSS animation/transition berjalan dengan benar.
+ * ===================================================================== */
+
+/* Panggung penuh layar berlatar putih dengan grid blueprint */
 .slide-stage {
   width: 100vw;
   height: 100vh;
-  height: 100dvh;
+  height: 100dvh; /* Dynamic viewport height untuk mobile browser */
   background-color: var(--white);
   display: flex;
   flex-direction: column;
@@ -235,15 +320,12 @@ html, body {
   position: relative;
 }
 
-/* Grid Latar Belakang Garis Biru Halus (Technical Blueprint Paper) */
+/* Grid latar belakang: garis biru halus (Technical Blueprint Paper) */
 .slide-stage::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: 
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image:
     linear-gradient(rgba(19, 108, 252, 0.08) 1px, transparent 1px),
     linear-gradient(90deg, rgba(19, 108, 252, 0.08) 1px, transparent 1px);
   background-size: 36px 36px;
@@ -251,9 +333,9 @@ html, body {
   opacity: 0.7;
 }
 
-/* ================= VIEWPORT UTAMA ================= */
+/* Viewport tengah: mengambil sisa ruang antara header dan footer */
 .slide-main-viewport {
-  flex: 1 1 0;
+  flex: 1 1 0;      /* Tumbuh dan menyusut, min-height 0 agar footer tidak kepotong */
   min-height: 0;
   height: auto;
   position: relative;
@@ -262,10 +344,10 @@ html, body {
   width: 100%;
 }
 
+/* Setiap slide: overlay absolut, tersembunyi via visibility+opacity */
 .slide-body {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 0; left: 0;
   width: 100%;
   height: 100%;
   padding: 24px 44px;
@@ -275,82 +357,32 @@ html, body {
   align-items: center;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+
+  /* State tersembunyi: visibility 0 agar tidak dapat difokuskan */
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
   transform: translateX(18px);
-  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s linear 0.3s;
+  /* Visibility tertunda 0.3s agar transisi opacity selesai dulu */
+  transition:
+    opacity   0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s linear 0.3s;
 }
 
+/* State aktif: langsung visible (visibility: 0s delay) */
 .slide-body.active {
   visibility: visible;
   opacity: 1;
   pointer-events: auto;
   transform: translateX(0);
-  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s linear 0s;
+  transition:
+    opacity   0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s linear 0s;
 }
 
-/* ================= MARGIN LEBIH ATAS SLIDE TITLE (MULAI SLIDE 2 SETERUSNYA) ================= */
-.slide-body:not(#slide-0) {
-  padding-top: 38px;
-  justify-content: flex-start;
-}
-
-/* Margin atas khusus untuk blok judul slide 2 s/d 14 */
-#slide-1 .menu-head {
-  margin-top: 24px;
-}
-
-#slide-2 .schematic-layout,
-#slide-3 .schematic-layout,
-#slide-4 .schematic-layout,
-#slide-5 .schematic-layout,
-#slide-6 .schematic-layout,
-#slide-7 .schematic-layout {
-  margin-top: 20px;
-}
-
-#slide-8 .rules-heading {
-  margin-top: 24px;
-}
-
-#slide-9.slide-body {
-  justify-content: flex-start;
-  padding-top: 36px;
-}
-
-#slide-9 .dnd-panel-header {
-  margin-top: 14px;
-}
-
-#slide-10 .challenge-stage,
-#slide-11 .challenge-stage,
-#slide-12 .challenge-stage {
-  margin-top: 24px;
-}
-
-#slide-13 .summary-stage {
-  margin-top: 24px;
-}
-
-/* Penyesuaian margin-top spesifik elemen judul slide 2 dst */
-.menu-head h2,
-.sheet-title,
-.rules-heading h2,
-.dnd-panel-header h3,
-.challenge-box h3,
-.summary-stage h2 {
-  margin-top: 6px;
-}
-
-.dnd-stage {
-  width: 100%;
-  max-width: 1280px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Pembatas Konten Tengah Agar Selaras & Rapi di Monitor */
+/* Pembatas lebar konten agar selaras di monitor lebar */
 .cover-layout,
 .rules-stage,
 .challenge-stage,
@@ -367,7 +399,68 @@ html, body {
   margin-right: auto;
 }
 
-/* ================= FOOTER BAWAH ================= */
+/* Pembatas khusus DnD (lebih lebar) */
+.dnd-stage {
+  width: 100%;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+/* =====================================================================
+ * §6 — MARGIN SLIDE TITLE (SLIDE 2 KE ATAS)
+ * Slide 1 (cover) menggunakan justify-content: center.
+ * Mulai Slide 2, konten dimulai dari atas dengan padding-top lebih besar
+ * agar judul slide tidak terlalu mepet tepi viewport.
+ * ===================================================================== */
+
+/* Semua slide kecuali cover: mulai dari atas dengan padding ekstra */
+.slide-body:not(#slide-0) {
+  padding-top: 38px;
+  justify-content: flex-start;
+}
+
+/* Margin atas spesifik per tipe konten — disesuaikan per slide */
+#slide-1 .menu-head         { margin-top: 24px; }
+
+#slide-2 .schematic-layout,
+#slide-3 .schematic-layout,
+#slide-4 .schematic-layout,
+#slide-5 .schematic-layout,
+#slide-6 .schematic-layout,
+#slide-7 .schematic-layout  { margin-top: 20px; }
+
+#slide-8 .rules-heading     { margin-top: 24px; }
+
+/* Slide 10 (DnD): justifikasi flex-start dengan padding-top tersendiri */
+#slide-9.slide-body         { justify-content: flex-start; padding-top: 36px; }
+#slide-9 .dnd-panel-header  { margin-top: 14px; }
+
+#slide-10 .challenge-stage,
+#slide-11 .challenge-stage,
+#slide-12 .challenge-stage  { margin-top: 24px; }
+
+#slide-13 .summary-stage    { margin-top: 24px; }
+
+/* Margin-top global untuk elemen judul slide 2 ke atas */
+.menu-head h2,
+.sheet-title,
+.rules-heading h2,
+.dnd-panel-header h3,
+.challenge-box h3,
+.summary-stage h2 {
+  margin-top: 6px;
+}
+
+
+/* =====================================================================
+ * §7 — FOOTER NAVIGASI BAWAH
+ * Bar navigasi tetap di bawah layar berisi:
+ *   - footer-meta   : tombol Slide, Fullscreen, badge, label, progress, counter
+ *   - footer-actions: tombol Sebelumnya, Peta Komponen, Selanjutnya
+ * ===================================================================== */
+
 .slide-footer {
   position: relative;
   background: var(--white);
@@ -377,11 +470,12 @@ html, body {
   justify-content: space-between;
   align-items: center;
   z-index: 50;
-  flex-shrink: 0;
+  flex-shrink: 0; /* Tidak akan menyusut — footer selalu terlihat penuh */
   box-shadow: 0 -2px 10px rgba(21, 38, 65, 0.05);
   gap: 16px;
 }
 
+/* Area kiri footer: indikator dan utilitas */
 .footer-meta {
   display: flex;
   align-items: center;
@@ -390,6 +484,7 @@ html, body {
   min-width: 0;
 }
 
+/* Badge nomor slide (mis. SLIDE 03) */
 .footer-badge {
   font-family: var(--font-mono);
   font-size: 0.8rem;
@@ -403,6 +498,7 @@ html, body {
   flex-shrink: 0;
 }
 
+/* Label judul slide aktif */
 .footer-title {
   font-family: var(--font-mono);
   font-size: 0.88rem;
@@ -414,6 +510,7 @@ html, body {
   max-width: 220px;
 }
 
+/* Progress bar horizontal */
 .footer-progress {
   width: 110px;
   min-width: 40px;
@@ -425,14 +522,16 @@ html, body {
   overflow: hidden;
 }
 
+/* Isi progress bar (diperbarui via JS) */
 .footer-progress-bar {
   height: 100%;
   background: var(--blue);
-  width: 7.14%;
+  width: 7.14%; /* Nilai awal: 1/14 */
   border-radius: 999px;
   transition: width 0.25s ease;
 }
 
+/* Counter slide (mis. 03 / 14) */
 .footer-counter {
   font-family: var(--font-mono);
   font-size: 0.9rem;
@@ -442,6 +541,7 @@ html, body {
   flex-shrink: 0;
 }
 
+/* Area kanan footer: tombol navigasi aksi */
 .footer-actions {
   display: flex;
   align-items: center;
@@ -449,7 +549,18 @@ html, body {
   flex-shrink: 0;
 }
 
-/* ================= TOMBOL PROFESIONAL & TEGAS ================= */
+
+/* =====================================================================
+ * §8 — KOMPONEN TOMBOL (BUTTONS)
+ * Semua tombol berbasis class .btn dengan varian:
+ *   .btn-primary   : biru — aksi utama (Selanjutnya)
+ *   .btn-green     : lime green — aksi afirmasi (Mulai, Cek Urutan)
+ *   .btn-secondary : biru muda — aksi sekunder (Sebelumnya, Batal)
+ *   .btn-danger    : merah — aksi destruktif (Konfirmasi Reset)
+ * Tombol drawer & fullscreen menggunakan class khusus (§17).
+ * ===================================================================== */
+
+/* Base tombol */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -465,46 +576,47 @@ html, body {
   transition: all 0.15s ease;
   text-decoration: none;
   line-height: 1.25;
-  white-space: nowrap;
+  white-space: nowrap; /* Mencegah teks tombol terpotong */
   flex-shrink: 0;
 }
 
+/* Varian: Biru (aksi utama) */
 .btn-primary {
   background: var(--blue);
   color: var(--white);
   border-color: var(--border-strong);
   box-shadow: 2px 2px 0 var(--border-strong);
 }
-
 .btn-primary:hover:not(:disabled) {
   background: var(--blue-hover);
   transform: translateY(-1px);
   box-shadow: 3px 3px 0 var(--border-strong);
 }
 
+/* Varian: Lime Green (aksi afirmasi) */
 .btn-green {
   background: var(--green);
   color: var(--dark-blue);
   border-color: var(--border-strong);
   box-shadow: 2px 2px 0 var(--border-strong);
 }
-
 .btn-green:hover:not(:disabled) {
   background: var(--green-hover);
   transform: translateY(-1px);
   box-shadow: 3px 3px 0 var(--border-strong);
 }
 
+/* Varian: Biru Muda (aksi sekunder) */
 .btn-secondary {
   background: var(--light-blue);
   color: var(--dark-blue);
   border-color: var(--border-strong);
 }
-
 .btn-secondary:hover:not(:disabled) {
   background: #d6ebfb;
 }
 
+/* State disabled: semua varian */
 .btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
@@ -512,7 +624,24 @@ html, body {
   transform: none;
 }
 
-/* ================= SLIDE 1: COVER ================= */
+/* Varian: Merah (aksi destruktif) */
+.btn-danger {
+  background: #dc2626;
+  color: #ffffff;
+  border-color: #991b1b;
+  box-shadow: 2px 2px 0 #991b1b;
+}
+.btn-danger:hover:not(:disabled) {
+  background: #b91c1c;
+  transform: translateY(-1px);
+}
+
+
+/* =====================================================================
+ * §9 — SLIDE 1: COVER & LEMBAR IDENTIFIKASI
+ * Layout dua kolom: kiri (judul + lead + tombol), kanan (meta card).
+ * ===================================================================== */
+
 .cover-layout {
   display: grid;
   grid-template-columns: 1.3fr 1fr;
@@ -526,6 +655,7 @@ html, body {
   flex-direction: column;
 }
 
+/* Kicker teknis di atas judul */
 .system-kicker {
   font-family: var(--font-mono);
   font-size: 0.85rem;
@@ -536,6 +666,7 @@ html, body {
   display: inline-block;
 }
 
+/* Judul cover utama */
 .cover-title {
   font-size: 3rem;
   font-weight: 800;
@@ -544,6 +675,7 @@ html, body {
   margin-bottom: 18px;
 }
 
+/* Lead text deskripsi singkat */
 .cover-lead {
   font-size: 1.12rem;
   color: var(--dark-blue);
@@ -552,6 +684,7 @@ html, body {
   font-weight: 500;
 }
 
+/* Container tombol cover */
 .cover-buttons {
   display: flex;
   gap: 16px;
@@ -562,6 +695,7 @@ html, body {
   flex-direction: column;
 }
 
+/* Kartu metadata proyek (kanan cover) */
 .spec-meta-card {
   background: var(--light-blue);
   border: 2px solid var(--border-strong);
@@ -581,6 +715,7 @@ html, body {
   letter-spacing: 0.05em;
 }
 
+/* Baris data metadata (label : nilai) */
 .meta-row {
   display: flex;
   justify-content: space-between;
@@ -588,22 +723,18 @@ html, body {
   padding: 8px 0;
   border-bottom: 1.5px solid var(--border-subtle);
 }
+.meta-row:last-child { border-bottom: none; }
+.meta-row span       { color: var(--dark-blue); font-weight: 600; }
+.meta-row strong     { color: var(--blue); font-weight: 800; }
 
-.meta-row:last-child {
-  border-bottom: none;
-}
 
-.meta-row span {
-  color: var(--dark-blue);
-  font-weight: 600;
-}
+/* =====================================================================
+ * §10 — SLIDE 2: MENU GRID KOMPONEN
+ * Grid 3 kolom berisi 6 kartu komponen hardware yang bisa diklik.
+ * Status kunjungan tercermin pada badge dan warna border kartu.
+ * ===================================================================== */
 
-.meta-row strong {
-  color: var(--blue);
-  font-weight: 800;
-}
-
-/* ================= SLIDE 2: COMPONENT MENU ================= */
+/* Header menu: judul + label progress */
 .menu-head {
   display: flex;
   justify-content: space-between;
@@ -612,13 +743,11 @@ html, body {
   padding-bottom: 16px;
   border-bottom: 2px solid var(--border-strong);
 }
-
 .menu-head h2 {
   font-size: 1.8rem;
   font-weight: 800;
   color: var(--dark-blue);
 }
-
 .menu-head p {
   font-size: 1.02rem;
   color: var(--dark-blue);
@@ -626,6 +755,7 @@ html, body {
   margin-top: 4px;
 }
 
+/* Grid 3 kolom untuk 6 kartu komponen */
 .component-matrix {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -633,6 +763,7 @@ html, body {
   margin-bottom: 20px;
 }
 
+/* Kartu komponen individual */
 .comp-box {
   background: var(--white);
   border: 2px solid var(--border-strong);
@@ -643,7 +774,6 @@ html, body {
   position: relative;
   box-shadow: 3px 3px 0 var(--border-strong);
 }
-
 .comp-box:hover {
   background: var(--light-blue);
   border-color: var(--blue);
@@ -651,11 +781,13 @@ html, body {
   box-shadow: 4px 4px 0 var(--blue);
 }
 
+/* State: sudah dikunjungi */
 .comp-box.visited {
   border-color: var(--blue);
   background: #f7fcff;
 }
 
+/* Row atas kartu: kode BLOK + badge status */
 .comp-box-top {
   display: flex;
   justify-content: space-between;
@@ -663,6 +795,7 @@ html, body {
   margin-bottom: 12px;
 }
 
+/* Kode identifikasi (mis. BLOK_01) */
 .comp-id {
   font-family: var(--font-mono);
   font-size: 0.8rem;
@@ -673,13 +806,13 @@ html, body {
   border-radius: var(--radius-xs);
 }
 
+/* Badge status [BELUM_DIBACA] atau [SELESAI] */
 .comp-status {
   font-family: var(--font-mono);
   font-size: 0.8rem;
   font-weight: 800;
   color: var(--dark-blue);
 }
-
 .comp-box.visited .comp-status {
   color: var(--green-text);
   background: var(--green-bg-light);
@@ -688,20 +821,10 @@ html, body {
   border: 1px solid var(--green-text);
 }
 
-.comp-box h3 {
-  font-size: 1.35rem;
-  font-weight: 800;
-  color: var(--dark-blue);
-  margin-bottom: 6px;
-}
+.comp-box h3 { font-size: 1.35rem; font-weight: 800; color: var(--dark-blue); margin-bottom: 6px; }
+.comp-box p  { font-size: 0.95rem; color: var(--dark-blue); font-weight: 600; margin-bottom: 14px; }
 
-.comp-box p {
-  font-size: 0.95rem;
-  color: var(--dark-blue);
-  font-weight: 600;
-  margin-bottom: 14px;
-}
-
+/* Link/CTA di bawah kartu */
 .comp-link {
   font-family: var(--font-mono);
   font-size: 0.85rem;
@@ -709,6 +832,7 @@ html, body {
   color: var(--blue);
 }
 
+/* Bar status progress di bawah grid */
 .status-bar-line {
   background: var(--light-blue);
   border: 2px solid var(--border-strong);
@@ -722,12 +846,15 @@ html, body {
   align-items: center;
   justify-content: space-between;
 }
+.status-bar-line strong { color: var(--blue); }
 
-.status-bar-line strong {
-  color: var(--blue);
-}
 
-/* ================= SLIDE 3 - 8: SCHEMATICS & MATERI ================= */
+/* =====================================================================
+ * §11 — SLIDE 3–8: SKEMATIK & MATERI DETAIL HARDWARE
+ * Layout dua kolom: kiri (SVG diagram animasi), kanan (lembar detail).
+ * ===================================================================== */
+
+/* Grid skematik 2 kolom */
 .schematic-layout {
   display: grid;
   grid-template-columns: 380px 1fr;
@@ -736,6 +863,7 @@ html, body {
   width: 100%;
 }
 
+/* Panel kiri: SVG diagram teknis berlatar gelap */
 .schematic-viewport {
   background: var(--dark-blue);
   border: 2px solid var(--border-strong);
@@ -750,6 +878,7 @@ html, body {
   min-height: 380px;
 }
 
+/* Badge kode pada sudut kiri atas viewport skematik */
 .schematic-badge {
   align-self: flex-start;
   font-family: var(--font-mono);
@@ -763,12 +892,14 @@ html, body {
   letter-spacing: 0.05em;
 }
 
+/* Diagram SVG */
 .schematic-svg {
   width: 100%;
   max-width: 300px;
   height: auto;
 }
 
+/* Label caption di sudut kanan bawah viewport */
 .schematic-footer-label {
   align-self: flex-end;
   font-family: var(--font-mono);
@@ -777,6 +908,7 @@ html, body {
   color: var(--light-blue);
 }
 
+/* Panel kanan: lembar detail teknis */
 .detail-sheet {
   background: var(--white);
   border: 2px solid var(--border-strong);
@@ -788,6 +920,7 @@ html, body {
   box-shadow: 4px 4px 0 var(--border-strong);
 }
 
+/* Tag header kategori komponen */
 .sheet-header-tag {
   font-family: var(--font-mono);
   font-size: 0.82rem;
@@ -797,6 +930,7 @@ html, body {
   text-transform: uppercase;
 }
 
+/* Judul nama komponen */
 .sheet-title {
   font-size: 1.85rem;
   font-weight: 800;
@@ -804,6 +938,7 @@ html, body {
   margin: 4px 0 8px 0;
 }
 
+/* Baris analogi fungsional */
 .sheet-analogy {
   font-size: 1rem;
   color: var(--blue);
@@ -816,6 +951,7 @@ html, body {
   border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
 }
 
+/* Paragraf deskripsi teknis */
 .sheet-desc {
   font-size: 1rem;
   color: var(--dark-blue);
@@ -824,14 +960,13 @@ html, body {
   margin-bottom: 16px;
 }
 
+/* Daftar poin teknis (checklist) */
 .technical-checklist {
   list-style: none;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-bottom: 0;
 }
-
 .technical-checklist li {
   font-size: 0.95rem;
   color: var(--dark-blue);
@@ -840,7 +975,7 @@ html, body {
   padding-left: 22px;
   position: relative;
 }
-
+/* Bullet persegi biru di depan setiap poin */
 .technical-checklist li::before {
   content: "■";
   position: absolute;
@@ -850,88 +985,100 @@ html, body {
   top: 2px;
 }
 
-/* ================= ANIMASI VEKTOR SVG TEKNIS ================= */
+
+/* =====================================================================
+ * §12 — ANIMASI VEKTOR SVG TEKNIS
+ * Semua animasi berjalan terus-menerus (infinite) untuk memberikan
+ * kesan sistem yang aktif dan beroperasi.
+ * ===================================================================== */
+
+/* Animasi jalur sinyal sirkuit (Motherboard trace) */
 @keyframes circuitPulseTrace {
-  0% { stroke-dashoffset: 160; opacity: 0.3; }
-  50% { opacity: 1; filter: drop-shadow(0 0 5px #c3f84a); }
+  0%   { stroke-dashoffset: 160; opacity: 0.3; }
+  50%  { opacity: 1; filter: drop-shadow(0 0 5px #c3f84a); }
   100% { stroke-dashoffset: 0; opacity: 0.3; }
 }
-
 .anim-trace {
   stroke-dasharray: 16, 8;
   animation: circuitPulseTrace 2.2s linear infinite;
 }
 
+/* Animasi denyut silicon die CPU */
 @keyframes cpuDiePulse {
   0%, 100% { fill: #10243e; stroke: #136cfc; }
-  50% { fill: #133966; stroke: #c3f84a; filter: drop-shadow(0 0 10px #c3f84a); }
+  50%      { fill: #133966; stroke: #c3f84a; filter: drop-shadow(0 0 10px #c3f84a); }
 }
-
 .anim-cpu-die {
   animation: cpuDiePulse 2s ease-in-out infinite;
 }
 
+/* Animasi kedipan LED chip DRAM (RAM) */
 @keyframes ramClockBlink {
   0%, 100% { fill: #152641; }
-  50% { fill: #c3f84a; filter: drop-shadow(0 0 6px #c3f84a); }
+  50%      { fill: #c3f84a; filter: drop-shadow(0 0 6px #c3f84a); }
 }
-
 .anim-ram-led {
   animation: ramClockBlink 1.2s ease-in-out infinite;
 }
 
+/* Animasi paket data bergerak (SSD NVMe) */
 @keyframes ssdDataPacket {
-  0% { transform: translateY(0); opacity: 0.2; }
-  50% { opacity: 1; filter: drop-shadow(0 0 6px #c3f84a); }
+  0%   { transform: translateY(0);    opacity: 0.2; }
+  50%  { opacity: 1; filter: drop-shadow(0 0 6px #c3f84a); }
   100% { transform: translateY(16px); opacity: 0.2; }
 }
-
 .anim-ssd-pkt {
   animation: ssdDataPacket 1.3s ease-in-out infinite;
 }
 
+/* Animasi rotasi kipas GPU */
 @keyframes fanContinuousRotate {
   from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  to   { transform: rotate(360deg); }
 }
-
 .anim-fan-rotor {
   transform-origin: 50% 50%;
   animation: fanContinuousRotate 1.2s linear infinite;
 }
 
+/* Animasi percikan listrik PSU */
 @keyframes powerSparkLine {
   0%, 100% { stroke: #136cfc; opacity: 0.4; }
-  50% { stroke: #c3f84a; opacity: 1; filter: drop-shadow(0 0 8px #c3f84a); }
+  50%      { stroke: #c3f84a; opacity: 1; filter: drop-shadow(0 0 8px #c3f84a); }
 }
-
 .anim-power-spark {
   animation: powerSparkLine 1s ease-in-out infinite;
 }
 
-/* ================= SLIDE 9: RULES & SOP ================= */
+
+/* =====================================================================
+ * §13 — SLIDE 9: ATURAN & SOP PERAKITAN
+ * Tiga kotak SOP (proteksi ESD, sub-assembly, integrasi daya) dalam
+ * grid tiga kolom plus banner call-to-action di bawahnya.
+ * ===================================================================== */
+
 .rules-stage {
   width: 100%;
 }
 
+/* Bagian heading SOP */
 .rules-heading {
   text-align: left;
   margin-bottom: 24px;
 }
-
 .rules-heading h2 {
   font-size: 1.85rem;
   font-weight: 800;
   color: var(--dark-blue);
   margin-bottom: 6px;
 }
-
 .rules-heading p {
   font-size: 1.05rem;
   color: var(--dark-blue);
   font-weight: 600;
 }
 
+/* Grid tiga kolom untuk kotak-kotak SOP */
 .rules-trio {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -939,18 +1086,17 @@ html, body {
   margin-bottom: 24px;
 }
 
+/* Kotak SOP individual */
 .rule-box {
   background: var(--white);
   border: 2px solid var(--border-strong);
-  border-top: 6px solid var(--blue);
+  border-top: 6px solid var(--blue); /* Aksen warna di atas */
   border-radius: var(--radius-sm);
   padding: 24px 22px;
   box-shadow: 3px 3px 0 var(--border-strong);
 }
-
-.rule-box:nth-child(2) {
-  border-top-color: var(--green);
-}
+/* Kotak kedua: aksen hijau */
+.rule-box:nth-child(2) { border-top-color: var(--green); }
 
 .rule-box-header {
   font-family: var(--font-mono);
@@ -959,14 +1105,12 @@ html, body {
   color: var(--blue);
   margin-bottom: 12px;
 }
-
 .rule-box h3 {
   font-size: 1.2rem;
   font-weight: 800;
   color: var(--dark-blue);
   margin-bottom: 10px;
 }
-
 .rule-box p {
   font-size: 0.96rem;
   color: var(--dark-blue);
@@ -974,6 +1118,7 @@ html, body {
   line-height: 1.6;
 }
 
+/* Banner CTA: lanjut ke simulasi */
 .rules-banner-action {
   background: var(--light-blue);
   border: 2px solid var(--border-strong);
@@ -984,20 +1129,25 @@ html, body {
   align-items: center;
   box-shadow: 3px 3px 0 var(--border-strong);
 }
-
 .rules-banner-action strong {
   color: var(--dark-blue);
   font-size: 1.05rem;
   display: block;
 }
-
 .rules-banner-action span {
   color: var(--dark-blue);
   font-size: 0.92rem;
   font-weight: 600;
 }
 
-/* ================= SLIDE 10: SIMULASI DRAG & DROP ================= */
+
+/* =====================================================================
+ * §14 — SLIDE 10: SIMULASI DRAG & DROP
+ * Layout workbench dua kolom: kiri (depot sumber), kanan (slot urutan).
+ * Kartu drag menggunakan cursor: grab; slot menggunakan dashed border.
+ * ===================================================================== */
+
+/* Header panel DnD: judul + tombol kontrol */
 .dnd-panel-header {
   display: flex;
   justify-content: space-between;
@@ -1006,19 +1156,18 @@ html, body {
   padding-bottom: 14px;
   border-bottom: 2px solid var(--border-strong);
 }
-
 .dnd-panel-header h3 {
   font-size: 1.55rem;
   font-weight: 800;
   color: var(--dark-blue);
 }
-
 .dnd-panel-header p {
   font-size: 0.95rem;
   color: var(--dark-blue);
   font-weight: 600;
 }
 
+/* Grid workbench dua kolom */
 .dnd-workbench {
   display: grid;
   grid-template-columns: 1fr 1.3fr;
@@ -1026,6 +1175,7 @@ html, body {
   margin-bottom: 16px;
 }
 
+/* Panel rak (depot sumber dan slot target) */
 .dnd-shelf {
   background: var(--white);
   border: 2px solid var(--border-strong);
@@ -1036,6 +1186,7 @@ html, body {
   box-shadow: 3px 3px 0 var(--border-strong);
 }
 
+/* Label judul rak */
 .shelf-title {
   font-family: var(--font-mono);
   font-size: 0.85rem;
@@ -1045,6 +1196,7 @@ html, body {
   margin-bottom: 12px;
 }
 
+/* Area depot sumber: latar biru bergaris putus */
 .source-depot {
   display: flex;
   flex-direction: column;
@@ -1056,10 +1208,11 @@ html, body {
   padding: 12px;
 }
 
+/* Kartu draggable */
 .drag-item {
   background: var(--white);
   border: 2px solid var(--border-strong);
-  border-left: 6px solid var(--blue);
+  border-left: 6px solid var(--blue); /* Aksen biru kiri */
   padding: 12px 16px;
   border-radius: var(--radius-xs);
   font-size: 0.94rem;
@@ -1073,25 +1226,17 @@ html, body {
   transition: all 0.15s ease;
   box-shadow: 2px 2px 0 var(--border-strong);
 }
+.drag-item:hover  { background: #f7fcff; border-color: var(--blue); transform: translateX(4px); }
+.drag-item:active { cursor: grabbing; transform: scale(0.98); background: var(--light-blue); }
 
-.drag-item:hover {
-  background: #f7fcff;
-  border-color: var(--blue);
-  transform: translateX(4px);
-}
-
-.drag-item:active {
-  cursor: grabbing;
-  transform: scale(0.98);
-  background: var(--light-blue);
-}
-
+/* Container slot urutan */
 .target-slots {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
+/* Slot target individual */
 .assembly-slot {
   border: 2px dashed var(--border-strong);
   background: var(--white);
@@ -1103,12 +1248,13 @@ html, body {
   gap: 14px;
   transition: all 0.15s ease;
 }
-
+/* State: kartu sedang melayang di atas slot */
 .assembly-slot.hovered {
   border-color: var(--blue);
   background: var(--light-blue);
 }
 
+/* Nomor urutan slot */
 .slot-index {
   font-family: var(--font-mono);
   font-size: 0.85rem;
@@ -1124,6 +1270,7 @@ html, body {
   flex-shrink: 0;
 }
 
+/* Teks hint placeholder di dalam slot kosong */
 .slot-placeholder {
   font-size: 0.88rem;
   color: var(--dark-blue);
@@ -1132,6 +1279,7 @@ html, body {
   font-family: var(--font-mono);
 }
 
+/* Kotak pesan feedback DnD & Kuis */
 .dnd-msg-box {
   display: none;
   padding: 14px 18px;
@@ -1142,24 +1290,32 @@ html, body {
   font-weight: 700;
   border: 2px solid var(--border-strong);
 }
-
 .dnd-msg-box.visible { display: block; }
+
+/* State sukses: latar hijau */
 .dnd-msg-box.success {
   background: #d4f783;
   color: var(--dark-blue);
   border-color: var(--border-strong);
 }
+
+/* State error: latar merah */
 .dnd-msg-box.error {
   background: #fee2e2;
   color: #991b1b;
   border-color: #ef4444;
 }
 
-/* ================= SLIDE 11 - 13: LATIHAN SOAL ================= */
-.challenge-stage {
-  width: 100%;
-}
 
+/* =====================================================================
+ * §15 — SLIDE 11–13: LATIHAN SOAL (KUIS)
+ * Grid 2 kolom untuk 4 pilihan jawaban. Tombol terkunci setelah
+ * dipilih (class .quiz-locked) dan diwarnai benar/salah.
+ * ===================================================================== */
+
+.challenge-stage { width: 100%; }
+
+/* Kotak pertanyaan skenario */
 .challenge-box {
   background: var(--white);
   border: 2px solid var(--border-strong);
@@ -1169,6 +1325,7 @@ html, body {
   box-shadow: 4px 4px 0 var(--border-strong);
 }
 
+/* Label kicker kasus */
 .challenge-kicker {
   font-family: var(--font-mono);
   font-size: 0.85rem;
@@ -1186,6 +1343,7 @@ html, body {
   line-height: 1.6;
 }
 
+/* Grid 2 kolom pilihan jawaban */
 .options-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1193,6 +1351,7 @@ html, body {
   margin-bottom: 20px;
 }
 
+/* Tombol pilihan jawaban */
 .option-tile {
   background: var(--white);
   border: 2px solid var(--border-strong);
@@ -1210,13 +1369,13 @@ html, body {
   gap: 14px;
   box-shadow: 3px 3px 0 var(--border-strong);
 }
-
 .option-tile:hover:not(:disabled) {
   border-color: var(--blue);
   background: var(--light-blue);
   transform: translateY(-2px);
 }
 
+/* State: jawaban benar (hijau) */
 .option-tile.selected-ok {
   border-color: var(--border-strong) !important;
   background: var(--green) !important;
@@ -1225,6 +1384,7 @@ html, body {
   box-shadow: 3px 3px 0 var(--border-strong);
 }
 
+/* State: jawaban salah (merah) */
 .option-tile.selected-err {
   border-color: #ef4444 !important;
   background: #fee2e2 !important;
@@ -1232,6 +1392,7 @@ html, body {
   box-shadow: 3px 3px 0 #ef4444;
 }
 
+/* Prefix label kunci pilihan [A]/[B]/[C]/[D] */
 .opt-prefix {
   font-family: var(--font-mono);
   font-size: 0.85rem;
@@ -1242,18 +1403,26 @@ html, body {
   border-radius: 2px;
 }
 
+/* Area tombol kontrol soal (Ulangi & Lihat Solusi) */
 .challenge-ctrls {
   display: flex;
   justify-content: flex-end;
   gap: 14px;
 }
 
-/* ================= SLIDE 14: SUMMARY & SCORE ================= */
+
+/* =====================================================================
+ * §16 — SLIDE 14: REKAPITULASI SKOR
+ * Panel metrik 4 kolom: Modul, Simulasi, Tantangan, Skor Akhir.
+ * Skor akhir ditampilkan dengan animasi count-up (§20).
+ * ===================================================================== */
+
 .summary-stage {
   width: 100%;
   text-align: center;
 }
 
+/* Badge "MODUL SELESAI" */
 .summary-tag {
   font-family: var(--font-mono);
   font-size: 0.85rem;
@@ -1273,7 +1442,6 @@ html, body {
   color: var(--dark-blue);
   margin-bottom: 8px;
 }
-
 .summary-stage p {
   font-size: 1.05rem;
   color: var(--dark-blue);
@@ -1281,6 +1449,7 @@ html, body {
   margin-bottom: 28px;
 }
 
+/* Grid 4 kolom panel metrik skor */
 .score-metrics {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -1288,6 +1457,7 @@ html, body {
   margin-bottom: 28px;
 }
 
+/* Panel metrik individual */
 .metric-panel {
   background: var(--white);
   border: 2px solid var(--border-strong);
@@ -1299,39 +1469,20 @@ html, body {
   box-shadow: 3px 3px 0 var(--border-strong);
 }
 
+/* Panel skor total: biru dan border-top tebal */
 .metric-panel.highlighted {
   border-color: var(--border-strong);
   background: var(--light-blue);
   border-top: 6px solid var(--blue);
 }
 
-.metric-label {
-  font-family: var(--font-mono);
-  font-size: 0.82rem;
-  font-weight: 800;
-  color: var(--dark-blue);
-  text-transform: uppercase;
-  margin-bottom: 8px;
-}
+.metric-label    { font-family: var(--font-mono); font-size: 0.82rem; font-weight: 800; color: var(--dark-blue); text-transform: uppercase; margin-bottom: 8px; }
+.metric-number   { font-family: var(--font-mono); font-size: 1.85rem; font-weight: 800; color: var(--blue); margin-bottom: 6px; }
+.metric-footnote { font-size: 0.85rem; color: var(--dark-blue); font-weight: 700; }
 
-.metric-number {
-  font-family: var(--font-mono);
-  font-size: 1.85rem;
-  font-weight: 800;
-  color: var(--blue);
-  margin-bottom: 6px;
-}
+.metric-panel.highlighted .metric-number { color: var(--blue); }
 
-.metric-panel.highlighted .metric-number {
-  color: var(--blue);
-}
-
-.metric-footnote {
-  font-size: 0.85rem;
-  color: var(--dark-blue);
-  font-weight: 700;
-}
-
+/* Footer rekap: informasi tim + tombol reset sesi */
 .summary-author-footer {
   background: var(--light-blue);
   border: 2px solid var(--border-strong);
@@ -1343,20 +1494,18 @@ html, body {
   text-align: left;
   box-shadow: 3px 3px 0 var(--border-strong);
 }
+.summary-author-footer strong { font-size: 1.05rem; color: var(--dark-blue); }
+.summary-author-footer span   { font-size: 0.92rem; color: var(--dark-blue); font-weight: 600; display: block; }
 
-.summary-author-footer strong {
-  font-size: 1.05rem;
-  color: var(--dark-blue);
-}
 
-.summary-author-footer span {
-  font-size: 0.92rem;
-  color: var(--dark-blue);
-  font-weight: 600;
-  display: block;
-}
+/* =====================================================================
+ * §17 — DRAWER NAVIGASI SLIDE
+ * Panel laci dari sisi kiri layar dengan daftar 14 slide.
+ * Overlay backdrop menggelapkan konten di belakangnya.
+ * State: transform translateX(-100%) → translateX(0) saat .open.
+ * ===================================================================== */
 
-/* ================= SLIDE NAVIGATION DRAWER ================= */
+/* Tombol pemicu drawer di footer */
 .btn-drawer-trigger {
   display: inline-flex;
   align-items: center;
@@ -1373,13 +1522,13 @@ html, body {
   transition: all 0.15s ease;
   white-space: nowrap;
 }
-
 .btn-drawer-trigger:hover {
   background: var(--blue-soft);
   border-color: var(--blue);
   color: var(--blue);
 }
 
+/* Tombol fullscreen di footer */
 .btn-fullscreen-trigger {
   display: inline-flex;
   align-items: center;
@@ -1396,19 +1545,20 @@ html, body {
   transition: all 0.15s ease;
   white-space: nowrap;
 }
-
 .btn-fullscreen-trigger:hover {
   background: var(--blue-soft);
   border-color: var(--blue);
   color: var(--blue);
 }
 
+/* State aktif: fullscreen sedang hidup */
 .btn-fullscreen-trigger.is-active {
   background: var(--green);
   color: var(--dark-blue);
   border-color: var(--border-strong);
 }
 
+/* Backdrop gelap saat drawer terbuka */
 .slide-nav-backdrop {
   position: fixed;
   inset: 0;
@@ -1419,18 +1569,16 @@ html, body {
   visibility: hidden;
   transition: opacity 0.25s ease, visibility 0s linear 0.25s;
 }
-
 .slide-nav-backdrop.open {
   opacity: 1;
   visibility: visible;
   transition: opacity 0.25s ease, visibility 0s linear 0s;
 }
 
+/* Panel drawer laci */
 .slide-nav-drawer {
   position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
+  top: 0; left: 0; bottom: 0;
   width: 340px;
   max-width: 86vw;
   background: var(--white);
@@ -1438,15 +1586,13 @@ html, body {
   z-index: 910;
   display: flex;
   flex-direction: column;
-  transform: translateX(-100%);
+  transform: translateX(-100%); /* Tersembunyi di luar layar */
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 6px 0 24px rgba(21, 38, 65, 0.18);
 }
+.slide-nav-drawer.open { transform: translateX(0); }
 
-.slide-nav-drawer.open {
-  transform: translateX(0);
-}
-
+/* Header drawer: judul + tombol tutup */
 .slide-nav-header {
   display: flex;
   justify-content: space-between;
@@ -1455,7 +1601,6 @@ html, body {
   border-bottom: 2px solid var(--border-strong);
   background: var(--light-blue);
 }
-
 .slide-nav-header h3 {
   font-size: 1.05rem;
   font-weight: 800;
@@ -1465,6 +1610,7 @@ html, body {
   letter-spacing: 0.03em;
 }
 
+/* Tombol tutup drawer (×) */
 .btn-close-nav {
   background: none;
   border: 1px solid var(--border-strong);
@@ -1477,12 +1623,9 @@ html, body {
   border-radius: var(--radius-xs);
   transition: background 0.15s;
 }
+.btn-close-nav:hover { background: var(--dark-blue); color: var(--white); }
 
-.btn-close-nav:hover {
-  background: var(--dark-blue);
-  color: var(--white);
-}
-
+/* Daftar scroll slide dalam drawer */
 .slide-nav-list {
   flex: 1;
   overflow-y: auto;
@@ -1492,6 +1635,7 @@ html, body {
   gap: 2px;
 }
 
+/* Tombol item slide dalam drawer */
 .nav-slide-item {
   display: flex;
   align-items: center;
@@ -1508,11 +1652,9 @@ html, body {
   transition: background 0.15s;
   font-family: var(--font-sans);
 }
+.nav-slide-item:hover { background: var(--light-blue); }
 
-.nav-slide-item:hover {
-  background: var(--light-blue);
-}
-
+/* State aktif: slide yang sedang ditampilkan */
 .nav-slide-item.active {
   background: var(--light-blue);
   color: var(--blue);
@@ -1520,6 +1662,7 @@ html, body {
   font-weight: 800;
 }
 
+/* Badge nomor slide dalam drawer */
 .nav-slide-item .nav-num {
   font-family: var(--font-mono);
   font-size: 0.76rem;
@@ -1532,12 +1675,9 @@ html, body {
   text-align: center;
   flex-shrink: 0;
 }
+.nav-slide-item.active .nav-num { background: var(--blue); color: var(--white); }
 
-.nav-slide-item.active .nav-num {
-  background: var(--blue);
-  color: var(--white);
-}
-
+/* Judul slide dalam drawer (terpotong jika panjang) */
 .nav-slide-item .nav-title-text {
   flex: 1;
   white-space: nowrap;
@@ -1545,7 +1685,14 @@ html, body {
   text-overflow: ellipsis;
 }
 
-/* ================= RESET CONFIRMATION MODAL ================= */
+
+/* =====================================================================
+ * §18 — MODAL KONFIRMASI RESET
+ * Dialog overlay terpusat dengan animasi scale + opacity.
+ * Backdrop menggelapkan seluruh layar saat modal terbuka.
+ * ===================================================================== */
+
+/* Backdrop modal */
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -1556,17 +1703,16 @@ html, body {
   visibility: hidden;
   transition: opacity 0.2s ease, visibility 0s linear 0.2s;
 }
-
 .modal-backdrop.open {
   opacity: 1;
   visibility: visible;
   transition: opacity 0.2s ease, visibility 0s linear 0s;
 }
 
+/* Dialog modal */
 .confirm-modal {
   position: fixed;
-  top: 50%;
-  left: 50%;
+  top: 50%; left: 50%;
   transform: translate(-50%, -50%) scale(0.92);
   background: var(--white);
   border: 2px solid var(--border-strong);
@@ -1578,14 +1724,19 @@ html, body {
   box-shadow: 6px 6px 0 var(--border-strong);
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s linear 0.25s;
+  transition:
+    opacity   0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s linear 0.25s;
 }
-
 .confirm-modal.open {
   opacity: 1;
   visibility: visible;
   transform: translate(-50%, -50%) scale(1);
-  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s linear 0s;
+  transition:
+    opacity   0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s linear 0s;
 }
 
 .confirm-modal h3 {
@@ -1594,7 +1745,6 @@ html, body {
   color: var(--dark-blue);
   margin-bottom: 12px;
 }
-
 .confirm-modal p {
   font-size: 0.96rem;
   color: var(--dark-blue);
@@ -1603,40 +1753,43 @@ html, body {
   margin-bottom: 22px;
 }
 
+/* Area tombol modal */
 .modal-actions {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
 }
 
-.btn-danger {
-  background: #dc2626;
-  color: #ffffff;
-  border-color: #991b1b;
-  box-shadow: 2px 2px 0 #991b1b;
-}
 
-.btn-danger:hover:not(:disabled) {
-  background: #b91c1c;
-  transform: translateY(-1px);
-}
+/* =====================================================================
+ * §19 — QUIZ LOCK & STATE ACCESSIBILITY
+ * Saat grid kuis terkunci (.quiz-locked), semua option tile
+ * dinonaktifkan secara visual kecuali yang dipilih/benar.
+ * ===================================================================== */
 
-/* ================= QUIZ LOCK & ACCESSIBILITY STATES ================= */
+/* Semua tile dalam grid terkunci: cursor not-allowed, agak transparan */
 .quiz-locked .option-tile {
   cursor: not-allowed;
   opacity: 0.65;
 }
 
+/* Tile yang terpilih (benar atau salah) tetap penuh & dapat dibaca */
 .quiz-locked .option-tile.selected-ok,
 .quiz-locked .option-tile.selected-err {
   opacity: 1;
   cursor: default;
 }
 
-/* ================= SCORE POP-IN ANIMATION ================= */
+
+/* =====================================================================
+ * §20 — ANIMASI SCORE POP-IN
+ * Angka skor akhir muncul dengan efek scale + fade setelah count-up
+ * selesai. Class .score-animate ditambahkan via JavaScript.
+ * ===================================================================== */
+
 @keyframes scorePopIn {
-  0% { transform: scale(0.6); opacity: 0; }
-  60% { transform: scale(1.12); }
+  0%   { transform: scale(0.6); opacity: 0; }
+  60%  { transform: scale(1.12); }
   100% { transform: scale(1); opacity: 1; }
 }
 
@@ -1644,13 +1797,21 @@ html, body {
   animation: scorePopIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* ================= TOUCH DRAG AND DROP MOBILE ================= */
+
+/* =====================================================================
+ * §21 — TOUCH DRAG & DROP MOBILE
+ * Saat touch drag aktif: body mendapat class .touch-dragging untuk
+ * membekukan scroll. Ghost element mengikuti jari saat drag.
+ * ===================================================================== */
+
+/* Bekukan scroll dan interaksi saat touch drag berlangsung */
 .touch-dragging {
   overflow: hidden !important;
   user-select: none !important;
   touch-action: none !important;
 }
 
+/* Clone kartu yang mengikuti posisi jari (ghost) */
 .drag-ghost {
   position: fixed !important;
   z-index: 1000 !important;
@@ -1664,18 +1825,30 @@ html, body {
   margin: 0 !important;
 }
 
-/* ================= ADAPTIVE RESPONSIVENESS (DESKTOP & HP/MOBILE) ================= */
+
+/* =====================================================================
+ * §22 — RESPONSIF: TABLET (≤1024px)
+ * Grid dua kolom berubah menjadi satu kolom untuk layar medium.
+ * ===================================================================== */
+
 @media (max-width: 1024px) {
+  /* Cover & skematik: satu kolom */
   .cover-layout, .schematic-layout {
     grid-template-columns: 1fr;
     gap: 24px;
   }
+
+  /* Grid komponen & skor: dua kolom */
   .component-matrix, .score-metrics {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  /* DnD & opsi kuis: satu kolom */
   .dnd-workbench, .options-grid {
     grid-template-columns: 1fr;
   }
+
+  /* Viewport skematik: tinggi maksimum */
   .schematic-viewport {
     min-height: auto;
     max-height: 280px;
@@ -1685,217 +1858,92 @@ html, body {
     max-height: 200px;
     width: auto;
   }
+
+  /* SOP: dua kolom */
   .rules-trio {
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
   }
 }
 
+
+/* =====================================================================
+ * §23 — RESPONSIF: MOBILE (≤768px)
+ * Layout dua tingkat pada footer; grid satu kolom untuk semua section.
+ * Padding slide disesuaikan agar tidak ter-overlap oleh footer.
+ * ===================================================================== */
+
 @media (max-width: 768px) {
+
+  /* Area slide: padding bawah ekstra agar tidak tertutup footer dua tingkat */
   .slide-body {
     padding: 16px 16px 115px 16px;
     justify-content: flex-start;
   }
+  #slide-9.slide-body { padding-top: 16px; }
 
-  #slide-9.slide-body {
-    padding-top: 16px;
-  }
+  /* --- Cover --- */
+  .cover-layout  { grid-template-columns: 1fr; gap: 18px; }
+  .cover-title   { font-size: 1.85rem; line-height: 1.2; margin-bottom: 12px; }
+  .cover-lead    { font-size: 0.95rem; margin-bottom: 20px; }
+  .cover-buttons { flex-direction: column; gap: 10px; width: 100%; }
+  .cover-buttons .btn { width: 100%; }
+  .spec-meta-card { padding: 18px 20px; }
 
-  .cover-layout {
-    grid-template-columns: 1fr;
-    gap: 18px;
-  }
+  /* --- Menu Komponen --- */
+  .component-matrix { grid-template-columns: 1fr; gap: 12px; }
+  .comp-box { padding: 16px 18px; }
 
-  .cover-title {
-    font-size: 1.85rem;
-    line-height: 1.2;
-    margin-bottom: 12px;
-  }
+  /* --- Skematik Hardware --- */
+  .schematic-layout  { grid-template-columns: 1fr; gap: 16px; }
+  .schematic-viewport { min-height: auto; max-height: 240px; padding: 16px; }
+  .schematic-svg     { max-height: 160px; width: auto; }
+  .detail-sheet      { padding: 20px 18px; }
+  .sheet-title       { font-size: 1.5rem; }
+  .sheet-analogy     { font-size: 0.92rem; }
+  .sheet-desc        { font-size: 0.95rem; margin-bottom: 14px; }
+  .technical-checklist li { font-size: 0.9rem; }
 
-  .cover-lead {
-    font-size: 0.95rem;
-    margin-bottom: 20px;
-  }
+  /* --- SOP Perakitan --- */
+  .rules-trio { grid-template-columns: 1fr; gap: 12px; }
+  .rule-box   { padding: 18px 18px; }
 
-  .cover-buttons {
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
-  }
-
-  .cover-buttons .btn {
-    width: 100%;
-  }
-
-  .spec-meta-card {
-    padding: 18px 20px;
-  }
-
-  .component-matrix {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .comp-box {
-    padding: 16px 18px;
-  }
-
-  .schematic-layout {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .schematic-viewport {
-    min-height: auto;
-    max-height: 240px;
-    padding: 16px;
-  }
-
-  .schematic-svg {
-    max-height: 160px;
-    width: auto;
-  }
-
-  .detail-sheet {
-    padding: 20px 18px;
-  }
-
-  .sheet-title {
-    font-size: 1.5rem;
-  }
-
-  .sheet-analogy {
-    font-size: 0.92rem;
-  }
-
-  .sheet-desc {
-    font-size: 0.95rem;
-    margin-bottom: 14px;
-  }
-
-  .technical-checklist li {
-    font-size: 0.9rem;
-  }
-
-  .rules-trio {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .rule-box {
-    padding: 18px 18px;
-  }
-
+  /* --- DnD --- */
   .dnd-panel-header {
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
     text-align: left;
   }
+  .dnd-panel-header .footer-actions { width: 100%; display: flex; gap: 8px; }
+  .dnd-panel-header .footer-actions .btn { flex: 1; padding: 10px 12px; font-size: 0.85rem; }
+  .dnd-workbench  { grid-template-columns: 1fr; gap: 14px; }
+  .source-depot   { min-height: 150px; padding: 10px; gap: 8px; }
+  .drag-item      { padding: 10px 14px; font-size: 0.88rem; }
+  .assembly-slot  { padding: 8px 12px; min-height: 46px; gap: 10px; }
+  .slot-placeholder { font-size: 0.82rem; }
 
-  .dnd-panel-header .footer-actions {
-    width: 100%;
-    display: flex;
-    gap: 8px;
-  }
+  /* --- Kuis --- */
+  .challenge-box   { padding: 20px 18px; margin-bottom: 14px; }
+  .challenge-box h3 { font-size: 1.15rem; line-height: 1.5; }
+  .options-grid    { grid-template-columns: 1fr; gap: 10px; margin-bottom: 14px; }
+  .option-tile     { padding: 12px 16px; font-size: 0.92rem; gap: 10px; }
+  .challenge-ctrls { width: 100%; display: flex; gap: 8px; justify-content: stretch; }
+  .challenge-ctrls .btn { flex: 1; padding: 10px 12px; font-size: 0.85rem; }
 
-  .dnd-panel-header .footer-actions .btn {
-    flex: 1;
-    padding: 10px 12px;
-    font-size: 0.85rem;
-  }
+  /* --- Rekapitulasi --- */
+  .score-metrics { grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 18px; }
+  .metric-panel  { padding: 16px 12px; }
+  .metric-number { font-size: 1.5rem; }
+  .summary-stage h2 { font-size: 1.75rem; }
+  .summary-author-footer { flex-direction: column; gap: 12px; text-align: center; padding: 16px; }
+  .summary-author-footer .btn { width: 100%; }
 
-  .dnd-workbench {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-
-  .source-depot {
-    min-height: 150px;
-    padding: 10px;
-    gap: 8px;
-  }
-
-  .drag-item {
-    padding: 10px 14px;
-    font-size: 0.88rem;
-  }
-
-  .assembly-slot {
-    padding: 8px 12px;
-    min-height: 46px;
-    gap: 10px;
-  }
-
-  .slot-placeholder {
-    font-size: 0.82rem;
-  }
-
-  .challenge-box {
-    padding: 20px 18px;
-    margin-bottom: 14px;
-  }
-
-  .challenge-box h3 {
-    font-size: 1.15rem;
-    line-height: 1.5;
-  }
-
-  .options-grid {
-    grid-template-columns: 1fr;
-    gap: 10px;
-    margin-bottom: 14px;
-  }
-
-  .option-tile {
-    padding: 12px 16px;
-    font-size: 0.92rem;
-    gap: 10px;
-  }
-
-  .challenge-ctrls {
-    width: 100%;
-    display: flex;
-    gap: 8px;
-    justify-content: stretch;
-  }
-
-  .challenge-ctrls .btn {
-    flex: 1;
-    padding: 10px 12px;
-    font-size: 0.85rem;
-  }
-
-  .score-metrics {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin-bottom: 18px;
-  }
-
-  .metric-panel {
-    padding: 16px 12px;
-  }
-
-  .metric-number {
-    font-size: 1.5rem;
-  }
-
-  .summary-stage h2 {
-    font-size: 1.75rem;
-  }
-
-  .summary-author-footer {
-    flex-direction: column;
-    gap: 12px;
-    text-align: center;
-    padding: 16px;
-  }
-
-  .summary-author-footer .btn {
-    width: 100%;
-  }
-
-  /* ================= FOOTER RESPONSIVE DUA TINGKAT (MOBILE & TABLET) ================= */
+  /* ============================================================
+   * FOOTER DUA TINGKAT (MOBILE & TABLET)
+   * Baris 1 (footer-meta)   : Slide | Fullscreen | Badge | Counter
+   * Baris 2 (footer-actions): Sebelumnya | Peta Komponen | Selanjutnya
+   * ============================================================ */
   .slide-footer {
     display: flex;
     flex-direction: column;
@@ -1906,7 +1954,7 @@ html, body {
     box-shadow: 0 -3px 12px rgba(21, 38, 65, 0.08);
   }
 
-  /* BARIS 1: Kontrol Utilitas & Indikator Status */
+  /* Baris 1: utilitas + indikator status */
   .footer-meta {
     width: 100%;
     display: flex;
@@ -1917,11 +1965,11 @@ html, body {
     padding-bottom: 5px;
   }
 
+  /* Sembunyikan elemen yang tidak muat di mobile */
   .footer-title,
-  .footer-progress {
-    display: none;
-  }
+  .footer-progress { display: none; }
 
+  /* Tombol Slide & Fullscreen lebih kecil */
   .btn-drawer-trigger,
   .btn-fullscreen-trigger {
     padding: 5px 9px;
@@ -1932,8 +1980,9 @@ html, body {
     justify-content: center;
   }
 
+  /* Badge didorong ke kanan dengan margin-left auto */
   .footer-badge {
-    margin-left: auto; /* Mendorong badge dan counter ke ujung kanan */
+    margin-left: auto;
     font-size: 0.72rem;
     padding: 3px 7px;
   }
@@ -1945,7 +1994,7 @@ html, body {
     text-align: right;
   }
 
-  /* BARIS 2: Tombol Aksi Navigasi */
+  /* Baris 2: tombol aksi navigasi */
   .footer-actions {
     width: 100%;
     display: flex;
@@ -1953,6 +2002,7 @@ html, body {
     gap: 6px;
   }
 
+  /* Semua tombol aksi tumbuh merata */
   .footer-actions .btn {
     flex: 1 1 0;
     min-width: 0;
@@ -1967,6 +2017,7 @@ html, body {
     align-items: center;
   }
 
+  /* Tombol Peta Komponen sedikit lebih kecil */
   #btn-map {
     flex: 1 1 0;
     min-width: 0;
@@ -1974,92 +2025,52 @@ html, body {
     font-size: 0.78rem;
   }
 
-  .confirm-modal {
-    padding: 20px;
-    width: 92%;
-  }
-
-  .slide-nav-drawer {
-    width: 290px;
-  }
+  /* Modal & drawer lebih kecil di mobile */
+  .confirm-modal    { padding: 20px; width: 92%; }
+  .slide-nav-drawer { width: 290px; }
 }
+
+
+/* =====================================================================
+ * §24 — RESPONSIF: SMALL MOBILE (≤480px)
+ * Penyesuaian tambahan untuk layar smartphone kecil (< 5").
+ * ===================================================================== */
 
 @media (max-width: 480px) {
-  html {
-    font-size: 14.5px;
-  }
+  html { font-size: 14.5px; }
 
-  .slide-body {
-    padding: 12px 12px 115px 12px;
-  }
+  .slide-body { padding: 12px 12px 115px 12px; }
 
-  .slide-footer {
-    padding: 6px 10px;
-    gap: 6px;
-  }
+  .slide-footer { padding: 6px 10px; gap: 6px; }
 
   .btn-drawer-trigger,
-  .btn-fullscreen-trigger {
-    padding: 4px 7px;
-    font-size: 0.7rem;
-    height: 28px;
-  }
+  .btn-fullscreen-trigger { padding: 4px 7px; font-size: 0.7rem; height: 28px; }
 
-  .footer-badge {
-    font-size: 0.68rem;
-    padding: 2px 6px;
-  }
+  .footer-badge   { font-size: 0.68rem; padding: 2px 6px; }
+  .footer-counter { font-size: 0.76rem; min-width: 40px; }
 
-  .footer-counter {
-    font-size: 0.76rem;
-    min-width: 40px;
-  }
+  .footer-actions .btn { min-height: 36px; padding: 6px 4px; font-size: 0.76rem; }
 
-  .footer-actions .btn {
-    min-height: 36px;
-    padding: 6px 4px;
-    font-size: 0.76rem;
-  }
+  #btn-map { font-size: 0.72rem; padding: 6px 2px; }
 
-  #btn-map {
-    font-size: 0.72rem;
-    padding: 6px 2px;
-  }
+  .cover-title { font-size: 1.65rem; }
 
-  .cover-title {
-    font-size: 1.65rem;
-  }
-
-  .meta-row {
-    font-size: 0.88rem;
-    flex-direction: column;
-    gap: 2px;
-  }
+  /* Meta row: stack vertikal di layar sangat sempit */
+  .meta-row { font-size: 0.88rem; flex-direction: column; gap: 2px; }
 }
 
+
+/* =====================================================================
+ * §25 — RESPONSIF: LAYAR PENDEK (≤720px TINGGI)
+ * Penyesuaian untuk browser landscape HP atau laptop kecil.
+ * ===================================================================== */
+
 @media (max-height: 720px) {
-  .slide-footer {
-    padding: 8px 24px;
-  }
-  .schematic-viewport {
-    min-height: auto;
-    padding: 16px;
-  }
-  .detail-sheet {
-    padding: 18px 22px;
-  }
-  .cover-title {
-    font-size: 2.15rem;
-    margin-bottom: 10px;
-  }
-  .cover-lead {
-    font-size: 0.95rem;
-    margin-bottom: 14px;
-  }
-  .source-depot {
-    min-height: 180px;
-  }
-  .score-metrics {
-    margin-bottom: 14px;
-  }
+  .slide-footer     { padding: 8px 24px; }
+  .schematic-viewport { min-height: auto; padding: 16px; }
+  .detail-sheet     { padding: 18px 22px; }
+  .cover-title      { font-size: 2.15rem; margin-bottom: 10px; }
+  .cover-lead       { font-size: 0.95rem; margin-bottom: 14px; }
+  .source-depot     { min-height: 180px; }
+  .score-metrics    { margin-bottom: 14px; }
 }
