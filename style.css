@@ -127,6 +127,7 @@ h1:focus-visible, h2:focus-visible, h3:focus-visible, h4:focus-visible,
 .dnd-panel-header h3,
 .challenge-box h3,
 .summary-stage h2,
+.references-header h2,
 .system-kicker,
 .sheet-header-tag,
 .slide-body,
@@ -214,6 +215,7 @@ html.is-fullscreen .slide-stage {
   :fullscreen .rules-stage,
   :fullscreen .challenge-stage,
   :fullscreen .summary-stage,
+  :fullscreen .references-stage,
   :fullscreen .dnd-workbench,
   :fullscreen .dnd-panel-header,
   :fullscreen .menu-head,
@@ -224,6 +226,7 @@ html.is-fullscreen .slide-stage {
   html.is-fullscreen .rules-stage,
   html.is-fullscreen .challenge-stage,
   html.is-fullscreen .summary-stage,
+  html.is-fullscreen .references-stage,
   html.is-fullscreen .dnd-workbench,
   html.is-fullscreen .dnd-panel-header,
   html.is-fullscreen .menu-head,
@@ -382,11 +385,100 @@ html.is-fullscreen .slide-stage {
     visibility 0s linear 0s;
 }
 
+/* =====================================================================
+ * §5B — ANIMASI SLIDE-UP ELEMEN ALA POWERPOINT (PPT-STYLE ENTRANCE)
+ * Efek transisi berjenjang (staggered) halus untuk elemen dalam slide aktif:
+ *   - Tier 1: Kicker, judul utama, & tajuk pengantar (~0.05s delay)
+ *   - Tier 2: Konten tengah, visual skematik CAD, dan grid kartu (~0.14s delay)
+ *   - Tier 3: Tombol kendali alur & footer informasi section (~0.22s delay)
+ * Efek dibatasi ringan & elegan (translateY 18px) agar tidak berlebihan.
+ * Dinonaktifkan secara otomatis jika pengguna mengaktifkan reduced-motion.
+ * ===================================================================== */
+
+@keyframes pptSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Tier 1: Judul, kicker, dan tajuk utama */
+.slide-body.active .cover-left,
+.slide-body.active .menu-head,
+.slide-body.active .rules-heading,
+.slide-body.active .dnd-panel-header,
+.slide-body.active .challenge-box,
+.slide-body.active .summary-tag,
+.slide-body.active .summary-stage h2,
+.slide-body.active .summary-stage > p,
+.slide-body.active .references-header {
+  animation: pptSlideUp 0.38s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+}
+
+/* Tier 2: Konten visual skematik CAD, detail sheet, dan kartu materi */
+.slide-body.active .cover-right,
+.slide-body.active .schematic-viewport,
+.slide-body.active .detail-sheet,
+.slide-body.active .component-matrix,
+.slide-body.active .rules-trio,
+.slide-body.active .dnd-workbench,
+.slide-body.active .options-grid,
+.slide-body.active .score-metrics,
+.slide-body.active .references-grid {
+  animation: pptSlideUp 0.42s cubic-bezier(0.16, 1, 0.3, 1) 0.14s both;
+}
+
+/* Tier 3: Tombol aksi alur dan bar status/footer slide */
+.slide-body.active .cover-buttons,
+.slide-body.active .status-bar-line,
+.slide-body.active .rules-banner-action,
+.slide-body.active .challenge-ctrls,
+.slide-body.active .summary-author-footer,
+.slide-body.active .references-footer-note {
+  animation: pptSlideUp 0.42s cubic-bezier(0.16, 1, 0.3, 1) 0.22s both;
+}
+
+/* Aksesibilitas: Nonaktifkan animasi jika sistem mendeteksi reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .slide-body.active .cover-left,
+  .slide-body.active .cover-right,
+  .slide-body.active .cover-buttons,
+  .slide-body.active .menu-head,
+  .slide-body.active .component-matrix,
+  .slide-body.active .status-bar-line,
+  .slide-body.active .schematic-viewport,
+  .slide-body.active .detail-sheet,
+  .slide-body.active .rules-heading,
+  .slide-body.active .rules-trio,
+  .slide-body.active .rules-banner-action,
+  .slide-body.active .dnd-panel-header,
+  .slide-body.active .dnd-workbench,
+  .slide-body.active .challenge-box,
+  .slide-body.active .options-grid,
+  .slide-body.active .challenge-ctrls,
+  .slide-body.active .summary-tag,
+  .slide-body.active .summary-stage h2,
+  .slide-body.active .summary-stage > p,
+  .slide-body.active .score-metrics,
+  .slide-body.active .summary-author-footer,
+  .slide-body.active .references-header,
+  .slide-body.active .references-grid,
+  .slide-body.active .references-footer-note {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
 /* Pembatas lebar konten agar selaras di monitor lebar */
 .cover-layout,
 .rules-stage,
 .challenge-stage,
 .summary-stage,
+.references-stage,
 .dnd-workbench,
 .dnd-panel-header,
 .menu-head,
@@ -442,6 +534,7 @@ html.is-fullscreen .slide-stage {
 #slide-12 .challenge-stage  { margin-top: 24px; }
 
 #slide-13 .summary-stage    { margin-top: 24px; }
+#slide-14 .references-stage { margin-top: 24px; }
 
 /* Margin-top global untuk elemen judul slide 2 ke atas */
 .menu-head h2,
@@ -449,7 +542,8 @@ html.is-fullscreen .slide-stage {
 .rules-heading h2,
 .dnd-panel-header h3,
 .challenge-box h3,
-.summary-stage h2 {
+.summary-stage h2,
+.references-header h2 {
   margin-top: 6px;
 }
 
@@ -1558,8 +1652,121 @@ html.is-fullscreen .slide-stage {
 
 
 /* =====================================================================
+ * §16B — SLIDE 15: DAFTAR REFERENSI & RUJUKAN TEKNIS
+ * Kartu literatur akademik, standar industri perakitan, dan SOP K3.
+ * ===================================================================== */
+
+.references-stage {
+  width: 100%;
+}
+
+.references-header {
+  margin-bottom: 22px;
+}
+
+.references-header h2 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--dark-blue);
+  margin-bottom: 8px;
+}
+
+.references-header p {
+  font-size: 1rem;
+  color: var(--dark-blue);
+  font-weight: 600;
+  line-height: 1.55;
+}
+
+/* Grid 2 kolom kartu referensi pustaka */
+.references-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+/* Kartu rujukan individual */
+.ref-card {
+  background: var(--white);
+  border: 2px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 20px 22px;
+  box-shadow: 3px 3px 0 var(--border-strong);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.ref-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 5px 5px 0 var(--border-strong);
+}
+
+/* Tag kategori referensi (arsitektur, standar, SOP) */
+.ref-tag {
+  display: inline-block;
+  align-self: flex-start;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--blue);
+  background: var(--light-blue);
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-xs);
+  padding: 3px 9px;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.ref-card h4 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--dark-blue);
+  margin-bottom: 8px;
+  line-height: 1.35;
+}
+
+.ref-card p {
+  font-size: 0.9rem;
+  color: var(--text-dark);
+  line-height: 1.55;
+  font-weight: 500;
+}
+
+.ref-card em {
+  font-weight: 700;
+  color: var(--dark-blue);
+  font-style: italic;
+}
+
+/* Footer catatan referensi: informasi tim + tombol kembali ke cover */
+.references-footer-note {
+  background: var(--light-blue);
+  border: 2px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 3px 3px 0 var(--border-strong);
+}
+
+.references-footer-note span {
+  font-size: 0.92rem;
+  color: var(--dark-blue);
+  font-weight: 600;
+}
+
+.references-footer-note strong {
+  font-weight: 800;
+  color: var(--dark-blue);
+}
+
+
+/* =====================================================================
  * §17 — DRAWER NAVIGASI SLIDE
- * Panel laci dari sisi kiri layar dengan daftar 14 slide.
+ * Panel laci dari sisi kiri layar dengan daftar 15 slide.
  * Overlay backdrop menggelapkan konten di belakangnya.
  * State: transform translateX(-100%) → translateX(0) saat .open.
  * ===================================================================== */
@@ -2288,6 +2495,45 @@ html.is-fullscreen .slide-stage {
   .summary-author-footer .btn,
   :fullscreen .summary-author-footer .btn,
   html.is-fullscreen .summary-author-footer .btn {
+    width: 100% !important;
+  }
+
+  /* --- Referensi (Slide 15) --- */
+  .references-grid,
+  :fullscreen .references-grid,
+  html.is-fullscreen .references-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    margin-bottom: 18px !important;
+    width: 100% !important;
+  }
+
+  .ref-card,
+  :fullscreen .ref-card,
+  html.is-fullscreen .ref-card {
+    padding: 16px 14px !important;
+  }
+
+  .references-header h2,
+  :fullscreen .references-header h2,
+  html.is-fullscreen .references-header h2 {
+    font-size: 1.65rem !important;
+  }
+
+  .references-footer-note,
+  :fullscreen .references-footer-note,
+  html.is-fullscreen .references-footer-note {
+    flex-direction: column !important;
+    gap: 12px !important;
+    text-align: center !important;
+    padding: 16px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .references-footer-note .btn,
+  :fullscreen .references-footer-note .btn,
+  html.is-fullscreen .references-footer-note .btn {
     width: 100% !important;
   }
 

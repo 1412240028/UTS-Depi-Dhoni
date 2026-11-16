@@ -2,7 +2,7 @@
 <html lang="id">
 <!--
   ====================================================================
-  ANATOMI KOMPONEN & SIMULASI PERAKITAN PC (14 SLIDE)
+  ANATOMI KOMPONEN & SIMULASI PERAKITAN PC (15 SLIDE)
   ====================================================================
   Modul Multimedia Pembelajaran Interaktif Teknik Informatika
   Proyek UTS Multimedia (IF562528)
@@ -24,8 +24,9 @@
     §9  Slide 10: Simulasi Urutan Perakitan Drag & Drop
     §10 Slide 11–13: Wadah Kuis Evaluasi (Dirender via script.js)
     §11 Slide 14: Laporan Rekapitulasi Capaian Akhir
-    §12 Bar Navigasi Bawah (Technical Footer)
-    §13 Pemuatan Mesin Logika (script.js)
+    §12 Slide 15: Daftar Referensi & Rujukan Teknis
+    §13 Bar Navigasi Bawah (Technical Footer)
+    §14 Pemuatan Mesin Logika (script.js)
   ====================================================================
 -->
 
@@ -56,7 +57,7 @@
 
   <!-- ===================================================================
     §3 — DRAWER NAVIGASI SLIDE
-    Panel samping kiri untuk melompat langsung ke slide manapun (1–14)
+    Panel samping kiri untuk melompat langsung ke slide manapun (1–15)
   ==================================================================== -->
   <div class="slide-nav-backdrop" id="slide-nav-backdrop"></div>
   <nav class="slide-nav-drawer" id="slide-nav-drawer" role="navigation" aria-label="Navigasi Daftar Slide">
@@ -335,10 +336,58 @@
         </div>
       </section>
 
+      <!-- ===============================================================
+        §12 — SLIDE 15: DAFTAR REFERENSI & RUJUKAN TEKNIS
+      ================================================================ -->
+      <section class="slide-body" id="slide-14" data-slide="15" role="region" aria-label="Slide 15: Daftar Referensi dan Pustaka Teknis">
+        <div class="references-stage">
+          <div class="references-header">
+            <div class="system-kicker">[REFERENSI_AKADEMIK] RUJUKAN STANDAR &amp; PUSTAKA TEKNIS</div>
+            <h2>Daftar Referensi &amp; Literatur</h2>
+            <p>Rujukan literatur akademik arsitektur komputer, standar spesifikasi manufaktur komponen, dan kaidah perakitan sistem perangkat keras:</p>
+          </div>
+
+          <div class="references-grid">
+            <!-- Referensi 1: Arsitektur Komputer & Logika Digital -->
+            <div class="ref-card">
+              <div class="ref-tag">ARSITEKTUR &amp; ORGANISASI</div>
+              <h4>Hennessy, J. L., &amp; Patterson, D. A. (2019)</h4>
+              <p><em>Computer Architecture: A Quantitative Approach (6th Edition)</em>. Morgan Kaufmann Publishers. Rujukan fundamental siklus Fetch-Decode-Execute CPU, hierarki memori cache multi-level, serta jalur bus transfer data sistem.</p>
+            </div>
+
+            <!-- Referensi 2: Standar Industri & Manufaktur -->
+            <div class="ref-card">
+              <div class="ref-tag">SPESIFIKASI MANUFAKTUR</div>
+              <h4>Intel &amp; AMD Engineering Design Guidelines (2023)</h4>
+              <p><em>Desktop Platform Mechanical, Thermal, and Electrical Guidelines</em>. Dokumentasi standar soket CPU (LGA/AM5), batas ambang pelepasan termal (TDP), dan topologi ekspansi jalur bus PCIe Gen 4.0/5.0.</p>
+            </div>
+
+            <!-- Referensi 3: Standar Memori & Storage -->
+            <div class="ref-card">
+              <div class="ref-tag">MEMORI &amp; STORAGE</div>
+              <h4>JEDEC Solid State Association &amp; NVM Express Org</h4>
+              <p><em>JEDEC DDR5 SDRAM Standard (JESD79-5)</em> &amp; <em>NVMe Base Specification Revision 2.0</em>. Standardisasi transmisi clock bus memori kerja volatil dan antarmuka solid-state non-volatile berbasis PCIe lanes.</p>
+            </div>
+
+            <!-- Referensi 4: Standar Keselamatan Kerja & Prosedur K3 -->
+            <div class="ref-card">
+              <div class="ref-tag">SOP &amp; KESELAMATAN K3</div>
+              <h4>ANSI/ESD Association Standard (S20.20)</h4>
+              <p><em>Electrostatic Discharge Control Program Standard</em> &amp; Standar Operasional Prosedur (SOP) Perakitan Komputer Laboratorium Komputasi dan Multimedia Teknik Informatika Universitas PGRI Ronggolawe Tuban.</p>
+            </div>
+          </div>
+
+          <div class="references-footer-note">
+            <span>Disusun oleh Tim Mahasiswa: <strong>Dhoni &amp; Devi</strong> (TIF 2024) — Dosen Pengampu: <strong>Suprapto, S.Kom., M.Kom.</strong></span>
+            <button class="btn btn-secondary" id="btn-back-to-cover">&larr; Kembali ke Sampul</button>
+          </div>
+        </div>
+      </section>
+
     </main>
 
     <!-- ===================================================================
-      §12 — TECHNICAL FOOTER NAVIGATION
+      §13 — TECHNICAL FOOTER NAVIGATION
       Bar kontrol navigasi bawah tetap (fixed di dasar layar)
     ==================================================================== -->
     <footer class="slide-footer" role="navigation" aria-label="Kontrol Navigasi Slide">
@@ -350,12 +399,12 @@
         <span class="footer-title" id="footer-title">OVERVIEW</span>
         
         <!-- Progress Bar Horizontal -->
-        <div class="footer-progress" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="14" aria-label="Progres Pembelajaran">
+        <div class="footer-progress" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="15" aria-label="Progres Pembelajaran">
           <div class="footer-progress-bar" id="progress-fill"></div>
         </div>
         
         <!-- Indikator Angka Slide Aktif -->
-        <span class="footer-counter" id="slide-counter">01 / 14</span>
+        <span class="footer-counter" id="slide-counter">01 / 15</span>
       </div>
       
       <!-- Area Kanan: Tombol Kendali Alur Slide -->

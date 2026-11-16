@@ -27,31 +27,39 @@
    - Mode layar penuh dapat diaktifkan melalui tombol **`⛶ Fullscreen`** pada navbar atau menekan tombol **`F`** pada keyboard.
    - **Fluid Typography Scaling**: Tipografi otomatis membesar secara proporsional (hingga `21px` base font size) saat presentasi layar penuh, memastikan diagram, teks penjelasan, dan opsi kuis terbaca jelas oleh audiens di baris belakang kelas maupun proyektor.
 
-4. **Panel Laci Navigasi Slide (*Slide Navigation Drawer*)**
-   - Tombol **`☰ Slide`** di footer membuka panel laci dari sisi kiri layar.
-   - Pengguna dapat langsung meninjau seluruh daftar 14 slide dan melompat ke slide mana pun dalam 1 klik tanpa harus menekan tombol navigasi berkali-kali.
+4. **Animasi Masuk Berjenjang Ala Presentasi PowerPoint (*PPT-Style Slide-Up Animation*)**
+   - Transisi elemen antar-slide mengadopsi gaya presentasi profesional yang tenang (*subtle*, tidak berlebihan).
+   - Menggunakan 3 tingkatan waktu (*staggered tiers*):
+     - **Tier 1 (0.05s delay)**: Kicker teknis dan judul utama slide.
+     - **Tier 2 (0.14s delay)**: Konten inti, diagram skematik CAD, dan matriks kartu.
+     - **Tier 3 (0.22s delay)**: Tombol interaktif dan footer slide.
+   - Dilengkapi deteksi otomatis `prefers-reduced-motion` untuk menghormati pengguna yang sensitif terhadap animasi gerak.
 
-5. **Dialog Konfirmasi Ulangi Sesi (*Safe Reset Modal*)**
+5. **Panel Laci Navigasi Slide (*Slide Navigation Drawer*)**
+   - Tombol **`☰ Slide`** di footer membuka panel laci dari sisi kiri layar.
+   - Pengguna dapat langsung meninjau seluruh daftar 15 slide dan melompat ke slide mana pun dalam 1 klik tanpa harus menekan tombol navigasi berkali-kali.
+
+6. **Dialog Konfirmasi Ulangi Sesi (*Safe Reset Modal*)**
    - Tombol "Ulangi Seluruh Sesi" dilengkapi modal konfirmasi dialog modern (`#confirm-modal`) untuk mencegah hilangnya data progres belajar akibat ketidaksengajaan.
    - Mendukung penutupan dialog cepat via tombol `Escape` atau klik pada area *backdrop*.
 
-6. **Navbar Mobile Responsif Dua Tingkat (*Two-Tier Mobile Navbar*)**
+7. **Navbar Mobile Responsif Dua Tingkat (*Two-Tier Mobile Navbar*)**
    - Pada layar smartphone/tablet (`≤ 768px`), bilah navigasi bawah otomatis ditata menjadi 2 baris terstruktur:
-     - **Baris 1**: Utilitas (`☰ Slide`, `⛶ Fullscreen`) dan indikator status (`SLIDE XX`, counter `XX / 14`).
+     - **Baris 1**: Utilitas (`☰ Slide`, `⛶ Fullscreen`) dan indikator status (`SLIDE XX`, counter `XX / 15`).
      - **Baris 2**: Tombol aksi navigasi penuh (`← Sebelumnya`, `Peta Komponen`, `Selanjutnya →`) dengan lebar 100% layar tanpa teks terpotong atau terlipat.
 
-7. **Aksesibilitas Standar WCAG AA (*Accessibility-First*)**
+8. **Aksesibilitas Standar WCAG AA (*Accessibility-First*)**
    - Dilengkapi elemen pembaca layar **`#aria-announcer`** (`aria-live="polite"`) yang membacakan perpindahan slide dan hasil verifikasi evaluasi.
    - Setiap diagram skematik SVG memiliki elemen semantik `<title>`, atribut `role="img"`, dan `aria-label`.
    - Rasio kontras teks status memenuhi standar WCAG AA (`--green-text: #256604`).
    - Bebas dari gangguan *focus-outline* biru pada judul slide.
 
-8. **Kuis Evaluasi Anti-Manipulasi (*Locked State & Solution*)**
+9. **Kuis Evaluasi Anti-Manipulasi (*Locked State & Solution*)**
    - Pilihan kuis langsung terkunci setelah dijawab (`.quiz-locked`) untuk menjaga validitas evaluasi.
    - Dilengkapi tombol reset resmi per-soal ("Ulangi Soal") dan tombol pembahasan teknis mendalam ("Lihat Solusi").
 
-9. **Pengacakan Bebas Bias (*Fisher-Yates Shuffle Algorithm*)**
-   - Pengacakan tahapan simulasi perakitan PC menggunakan algoritma Fisher-Yates murni untuk menjamin distribusi permutasi yang adil dan seragam setiap kali direset.
+10. **Pengacakan Bebas Bias (*Fisher-Yates Shuffle Algorithm*)**
+    - Pengacakan tahapan simulasi perakitan PC menggunakan algoritma Fisher-Yates murni untuk menjamin distribusi permutasi yang adil dan seragam setiap kali direset.
 
 ---
 
@@ -68,7 +76,7 @@
 
 ---
 
-## 📑 Rincian 14 Slide Presentasi
+## 📑 Rincian 15 Slide Presentasi
 
 | No. Slide | Topik / Modul | Detail Interaktivitas & Visual |
 | :---: | :--- | :--- |
@@ -81,11 +89,12 @@
 | **Slide 07** | **GPU (VGA Card)** | Skematik Vektor SVG shroud pendingin dan rotor kipas ganda berputar mulus (`fanContinuousRotate`) |
 | **Slide 08** | **PSU (Power Supply)** | Skematik Vektor SVG konverter AC-DC, ventilasi heksagonal, dan sambaran spark tegangan tinggi (`powerSparkLine`) |
 | **Slide 09** | **Panduan & SOP Perakitan** | 3 Standar Operasional Prosedur: Proteksi ESD, Perakitan Inti di Luar Casing (*Sub-Assembly*), dan Integrasi Daya |
-| **Slide 10** | **Simulasi Perakitan PC** | Interaksi *drag & drop* atau *touch swipe* 5 tahapan perakitan ke slot urutan standar K3 teknis |
+| **Slide 10** | **Simulasi Perakitan PC** | Interaksi *drag & drop* atau *tap-to-move* 5 tahapan perakitan ke slot urutan standar K3 teknis |
 | **Slide 11** | **Tantangan Kasus 01** | Analisis blok fungsi: Bottleneck beban kerja *multitasking* dan memori *volatile* (RAM) |
 | **Slide 12** | **Tantangan Kasus 02** | Analisis blok fungsi: Anomali suplai energi listrik dan kegagalan daya total (PSU) |
 | **Slide 13** | **Tantangan Kasus 03** | Analisis blok fungsi: Karakteristik retensi data permanen *non-volatile* (SSD) |
 | **Slide 14** | **Rekapitulasi Capaian** | Evaluasi capaian pembelajaran: Modul (/6), status simulasi, akurasi soal (/3), dan **Animasi Skor Akhir (0–100)** |
+| **Slide 15** | **Daftar Referensi & Rujukan Teknis** | Rujukan literatur akademik (Hennessy & Patterson), standar industri (Intel/AMD/JEDEC/NVMe), dan SOP K3 (ANSI/ESD S20.20) |
 
 ---
 
@@ -95,7 +104,7 @@
   * `Panah Kanan` / `Page Down`: Maju ke slide selanjutnya.
   * `Panah Kiri` / `Page Up`: Mundur ke slide sebelumnya.
   * `Home`: Melompat langsung ke Slide 01 (Cover).
-  * `End`: Melompat langsung ke Slide 14 (Rekapitulasi).
+  * `End`: Melompat langsung ke Slide 15 (Daftar Referensi).
   * `F`: Beralih masuk / keluar mode **Full Screen (Layar Penuh)**.
   * `Escape`: Menutup Drawer Navigasi atau Modal Konfirmasi Reset.
 * **Tombol Antarmuka (Navbar Bawah):**
@@ -110,8 +119,8 @@
 
 ```text
 UTS_DHONI & DEVI/
-├── index.html    # Struktur semantik 14 slide, modal reset, drawer, dan live announcer
-├── style.css     # Sistem desain technical blueprint, responsivitas dua tingkat, dan transisi cubic-bezier
+├── index.html    # Struktur semantik 15 slide, modal reset, drawer, dan live announcer
+├── style.css     # Sistem desain technical blueprint, responsivitas dua tingkat, animasi PPT slide-up, dan transisi cubic-bezier
 ├── script.js     # Engine navigasi, touch DnD, state localStorage, kuis terkunci, dan Fisher-Yates
 └── README.md     # Dokumentasi komprehensif proyek media pembelajaran
 ```

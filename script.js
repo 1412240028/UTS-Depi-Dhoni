@@ -42,7 +42,7 @@
  * ===================================================================== */
 
 /** Jumlah total slide dalam presentasi */
-const TOTAL_SLIDES = 14;
+const TOTAL_SLIDES = 15;
 
 /** Kunci penyimpanan state di localStorage */
 const STORAGE_KEY = 'UTS_DHONI_DEVI_PC_MODULE_STATE_V2';
@@ -88,7 +88,8 @@ const slideDirectory = [
   { num: 11, label: "TANTANGAN 01",      title: "Kasus 01: Multitasking & Beban Memori" },
   { num: 12, label: "TANTANGAN 02",      title: "Kasus 02: Anomali Suplai Listrik" },
   { num: 13, label: "TANTANGAN 03",      title: "Kasus 03: Integritas Penyimpanan Permanen" },
-  { num: 14, label: "REKAPITULASI",      title: "Laporan Evaluasi Capaian Akhir" }
+  { num: 14, label: "REKAPITULASI",      title: "Laporan Evaluasi Capaian Akhir" },
+  { num: 15, label: "REFERENSI",         title: "Daftar Referensi & Rujukan Teknis" }
 ];
 
 
@@ -681,6 +682,10 @@ function bindUnifiedEvents() {
   // Klik backdrop modal = tutup modal
   const modalBackdrop = $('confirm-modal-backdrop');
   if (modalBackdrop) modalBackdrop.addEventListener('click', hideConfirmResetModal);
+
+  // --- Tombol Slide 15: Kembali ke Sampul ---
+  const btnBackToCover = $('btn-back-to-cover');
+  if (btnBackToCover) btnBackToCover.addEventListener('click', () => goToSlide(0));
 
   // --- Tombol Navigasi Footer ---
   const btnPrev = $('btn-prev');
