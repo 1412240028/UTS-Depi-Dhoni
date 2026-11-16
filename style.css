@@ -186,20 +186,101 @@ html, body {
 
 /* =====================================================================
  * §4 — MODE FULLSCREEN PRESENTASI
- * Font diperbesar secara bertahap (relatif terhadap ukuran layar) agar
- * teks terbaca oleh audiens di layar proyektor saat presentasi.
- * Class .is-fullscreen ditambahkan ke <html> via JavaScript (updateFullscreenButton)
- * sebagai fallback jika :fullscreen pseudo-class tidak bekerja.
+ * Font diperbesar secara bertahap khusus untuk desktop & proyektor presentasi.
+ * Pada layar mobile/tablet, mode fullscreen tetap mempertahankan tata letak
+ * satu kolom responsif agar tidak merusak layout.
  * ===================================================================== */
 
-/* Ukuran font dasar fullscreen */
-:fullscreen,
-:-webkit-full-screen,
-html.is-fullscreen {
-  font-size: 18.5px;
+/* Ukuran panggung layar penuh memenuhi 100vh di semua perangkat */
+:fullscreen .slide-stage,
+html.is-fullscreen .slide-stage {
+  height: 100vh !important;
+  height: 100dvh !important;
+  max-height: 100vh !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
 }
 
-/* Layar lebih besar: sedikit lebih besar */
+/* --- Penyesuaian Khusus Desktop / Layar Lebar saat Fullscreen (≥1025px) --- */
+@media (min-width: 1025px) {
+  :fullscreen,
+  :-webkit-full-screen,
+  html.is-fullscreen {
+    font-size: 18.5px;
+  }
+
+  /* Layout container diperlebar agar memanfaatkan ruang layar proyektor */
+  :fullscreen .cover-layout,
+  :fullscreen .rules-stage,
+  :fullscreen .challenge-stage,
+  :fullscreen .summary-stage,
+  :fullscreen .dnd-workbench,
+  :fullscreen .dnd-panel-header,
+  :fullscreen .menu-head,
+  :fullscreen .component-matrix,
+  :fullscreen .status-bar-line,
+  :fullscreen .schematic-layout,
+  html.is-fullscreen .cover-layout,
+  html.is-fullscreen .rules-stage,
+  html.is-fullscreen .challenge-stage,
+  html.is-fullscreen .summary-stage,
+  html.is-fullscreen .dnd-workbench,
+  html.is-fullscreen .dnd-panel-header,
+  html.is-fullscreen .menu-head,
+  html.is-fullscreen .component-matrix,
+  html.is-fullscreen .status-bar-line,
+  html.is-fullscreen .schematic-layout {
+    max-width: 1420px;
+  }
+
+  /* Grid skematik lebih lebar di fullscreen desktop */
+  :fullscreen .schematic-layout,
+  html.is-fullscreen .schematic-layout {
+    grid-template-columns: 420px 1fr;
+    gap: 36px;
+  }
+
+  /* SVG diagram sedikit lebih besar */
+  :fullscreen .schematic-svg,
+  html.is-fullscreen .schematic-svg {
+    max-width: 340px;
+  }
+
+  /* Judul cover lebih besar untuk proyektor */
+  :fullscreen .cover-title,
+  html.is-fullscreen .cover-title {
+    font-size: 3.2rem;
+    line-height: 1.15;
+  }
+
+  /* Lead text cover lebih besar */
+  :fullscreen .cover-lead,
+  html.is-fullscreen .cover-lead {
+    font-size: 1.15rem;
+    line-height: 1.7;
+  }
+
+  /* Padding option tile kuis lebih besar */
+  :fullscreen .option-tile,
+  html.is-fullscreen .option-tile {
+    padding: 18px 24px;
+  }
+
+  /* Padding kartu DnD lebih besar */
+  :fullscreen .drag-item,
+  html.is-fullscreen .drag-item {
+    padding: 14px 18px;
+  }
+
+  /* Footer desktop saat fullscreen */
+  :fullscreen .slide-footer,
+  html.is-fullscreen .slide-footer {
+    padding: 10px 32px;
+    flex-shrink: 0;
+    box-sizing: border-box;
+  }
+}
+
 @media (min-width: 1366px) {
   :fullscreen,
   :-webkit-full-screen,
@@ -208,93 +289,12 @@ html.is-fullscreen {
   }
 }
 
-/* Layar sangat besar (mis. proyektor 1080p+) */
 @media (min-width: 1600px) {
   :fullscreen,
   :-webkit-full-screen,
   html.is-fullscreen {
     font-size: 21px;
   }
-}
-
-/* Layout container diperlebar agar memanfaatkan ruang layar penuh */
-:fullscreen .cover-layout,
-:fullscreen .rules-stage,
-:fullscreen .challenge-stage,
-:fullscreen .summary-stage,
-:fullscreen .dnd-workbench,
-:fullscreen .dnd-panel-header,
-:fullscreen .menu-head,
-:fullscreen .component-matrix,
-:fullscreen .status-bar-line,
-:fullscreen .schematic-layout,
-html.is-fullscreen .cover-layout,
-html.is-fullscreen .rules-stage,
-html.is-fullscreen .challenge-stage,
-html.is-fullscreen .summary-stage,
-html.is-fullscreen .dnd-workbench,
-html.is-fullscreen .dnd-panel-header,
-html.is-fullscreen .menu-head,
-html.is-fullscreen .component-matrix,
-html.is-fullscreen .status-bar-line,
-html.is-fullscreen .schematic-layout {
-  max-width: 1420px;
-}
-
-/* Grid skematik lebih lebar di fullscreen */
-:fullscreen .schematic-layout,
-html.is-fullscreen .schematic-layout {
-  grid-template-columns: 420px 1fr;
-  gap: 36px;
-}
-
-/* SVG diagram sedikit lebih besar */
-:fullscreen .schematic-svg,
-html.is-fullscreen .schematic-svg {
-  max-width: 340px;
-}
-
-/* Judul cover lebih besar untuk proyektor */
-:fullscreen .cover-title,
-html.is-fullscreen .cover-title {
-  font-size: 3.2rem;
-  line-height: 1.15;
-}
-
-/* Lead text cover lebih besar */
-:fullscreen .cover-lead,
-html.is-fullscreen .cover-lead {
-  font-size: 1.15rem;
-  line-height: 1.7;
-}
-
-/* Padding option tile kuis lebih besar */
-:fullscreen .option-tile,
-html.is-fullscreen .option-tile {
-  padding: 18px 24px;
-}
-
-/* Padding kartu DnD lebih besar */
-:fullscreen .drag-item,
-html.is-fullscreen .drag-item {
-  padding: 14px 18px;
-}
-
-/* Footer tidak ter-overlap saat fullscreen */
-:fullscreen .slide-footer,
-html.is-fullscreen .slide-footer {
-  padding: 10px 32px;
-  flex-shrink: 0;
-  box-sizing: border-box;
-}
-
-/* Stage memenuhi seluruh viewport layar */
-:fullscreen .slide-stage,
-html.is-fullscreen .slide-stage {
-  height: 100vh !important;
-  max-height: 100vh !important;
-  box-sizing: border-box !important;
-  overflow: hidden !important;
 }
 
 
@@ -1888,129 +1888,426 @@ html.is-fullscreen .slide-stage {
 /* =====================================================================
  * §22 — RESPONSIF: TABLET (≤1024px)
  * Grid dua kolom berubah menjadi satu kolom untuk layar medium.
+ * Berlaku baik dalam mode normal maupun mode fullscreen.
  * ===================================================================== */
 
 @media (max-width: 1024px) {
   /* Cover & skematik: satu kolom */
-  .cover-layout, .schematic-layout {
-    grid-template-columns: 1fr;
-    gap: 24px;
+  .cover-layout,
+  .schematic-layout,
+  :fullscreen .cover-layout,
+  html.is-fullscreen .cover-layout,
+  :fullscreen .schematic-layout,
+  html.is-fullscreen .schematic-layout {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
   }
 
   /* Grid komponen & skor: dua kolom */
-  .component-matrix, .score-metrics {
-    grid-template-columns: repeat(2, 1fr);
+  .component-matrix,
+  .score-metrics,
+  :fullscreen .component-matrix,
+  html.is-fullscreen .component-matrix,
+  :fullscreen .score-metrics,
+  html.is-fullscreen .score-metrics {
+    grid-template-columns: repeat(2, 1fr) !important;
   }
 
   /* DnD & opsi kuis: satu kolom */
-  .dnd-workbench, .options-grid {
-    grid-template-columns: 1fr;
+  .dnd-workbench,
+  .options-grid,
+  :fullscreen .dnd-workbench,
+  html.is-fullscreen .dnd-workbench,
+  :fullscreen .options-grid,
+  html.is-fullscreen .options-grid {
+    grid-template-columns: 1fr !important;
   }
 
   /* Viewport skematik: tinggi maksimum */
-  .schematic-viewport {
-    min-height: auto;
-    max-height: 280px;
-    padding: 20px;
+  .schematic-viewport,
+  :fullscreen .schematic-viewport,
+  html.is-fullscreen .schematic-viewport {
+    min-height: auto !important;
+    max-height: 280px !important;
+    padding: 20px !important;
+    width: 100% !important;
   }
-  .schematic-svg {
-    max-height: 200px;
-    width: auto;
+
+  .schematic-svg,
+  :fullscreen .schematic-svg,
+  html.is-fullscreen .schematic-svg {
+    max-height: 200px !important;
+    max-width: 100% !important;
+    width: auto !important;
   }
 
   /* SOP: dua kolom */
-  .rules-trio {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+  .rules-trio,
+  :fullscreen .rules-trio,
+  html.is-fullscreen .rules-trio {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
   }
 }
 
 
 /* =====================================================================
  * §23 — RESPONSIF: MOBILE (≤768px)
- * Layout dua tingkat pada footer; grid satu kolom untuk semua section.
- * Padding slide disesuaikan agar tidak ter-overlap oleh footer.
+ * Layout satu kolom penuh dan footer dua baris.
+ * Diterapkan dengan spesifisitas tinggi agar kebal dari penimpaan
+ * aturan fullscreen desktop.
  * ===================================================================== */
 
 @media (max-width: 768px) {
 
-  /* Area slide: padding bawah ekstra agar tidak tertutup footer dua tingkat */
-  .slide-body {
-    padding: 16px 16px 115px 16px;
-    justify-content: flex-start;
+  /* Tipografi mobile saat fullscreen maupun normal */
+  html,
+  html.is-fullscreen,
+  :fullscreen {
+    font-size: 15.5px !important;
   }
-  #slide-9.slide-body { padding-top: 16px; }
+
+  .slide-main-viewport,
+  :fullscreen .slide-main-viewport,
+  html.is-fullscreen .slide-main-viewport {
+    overflow-x: hidden !important;
+    width: 100% !important;
+  }
+
+  /* Area slide: padding bawah ekstra agar tidak tertutup footer dua tingkat */
+  .slide-body,
+  :fullscreen .slide-body,
+  html.is-fullscreen .slide-body {
+    padding: 16px 16px 125px 16px !important;
+    justify-content: flex-start !important;
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    box-sizing: border-box !important;
+  }
+  #slide-9.slide-body { padding-top: 16px !important; }
 
   /* --- Cover --- */
-  .cover-layout  { grid-template-columns: 1fr; gap: 18px; }
-  .cover-title   { font-size: 1.85rem; line-height: 1.2; margin-bottom: 12px; }
-  .cover-lead    { font-size: 0.95rem; margin-bottom: 20px; }
-  .cover-buttons { flex-direction: column; gap: 10px; width: 100%; }
-  .cover-buttons .btn { width: 100%; }
-  .spec-meta-card { padding: 18px 20px; }
+  .cover-layout,
+  :fullscreen .cover-layout,
+  html.is-fullscreen .cover-layout {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+    width: 100% !important;
+  }
+
+  .cover-title,
+  :fullscreen .cover-title,
+  html.is-fullscreen .cover-title {
+    font-size: 1.85rem !important;
+    line-height: 1.2 !important;
+    margin-bottom: 12px !important;
+  }
+
+  .cover-lead,
+  :fullscreen .cover-lead,
+  html.is-fullscreen .cover-lead {
+    font-size: 0.95rem !important;
+    margin-bottom: 20px !important;
+  }
+
+  .cover-buttons,
+  :fullscreen .cover-buttons,
+  html.is-fullscreen .cover-buttons {
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  .cover-buttons .btn,
+  :fullscreen .cover-buttons .btn,
+  html.is-fullscreen .cover-buttons .btn {
+    width: 100% !important;
+  }
+
+  .spec-meta-card,
+  :fullscreen .spec-meta-card,
+  html.is-fullscreen .spec-meta-card {
+    padding: 18px 20px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
 
   /* --- Menu Komponen --- */
-  .component-matrix { grid-template-columns: 1fr; gap: 12px; }
-  .comp-box { padding: 16px 18px; }
+  .component-matrix,
+  :fullscreen .component-matrix,
+  html.is-fullscreen .component-matrix {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
 
-  /* --- Skematik Hardware --- */
-  .schematic-layout  { grid-template-columns: 1fr; gap: 16px; }
-  .schematic-viewport { min-height: auto; max-height: 240px; padding: 16px; }
-  .schematic-svg     { max-height: 160px; width: auto; }
-  .detail-sheet      { padding: 20px 18px; }
-  .sheet-title       { font-size: 1.5rem; }
-  .sheet-analogy     { font-size: 0.92rem; }
-  .sheet-desc        { font-size: 0.95rem; margin-bottom: 14px; }
-  .technical-checklist li { font-size: 0.9rem; }
+  .comp-box,
+  :fullscreen .comp-box,
+  html.is-fullscreen .comp-box {
+    padding: 16px 18px !important;
+  }
+
+  /* --- Skematik Hardware (Slide 3 s/d 8) — STACK VERTIKAL 1 KOLOM --- */
+  .schematic-layout,
+  :fullscreen .schematic-layout,
+  html.is-fullscreen .schematic-layout {
+    display: flex !important;
+    flex-direction: column !important;
+    grid-template-columns: none !important;
+    gap: 16px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .schematic-viewport,
+  :fullscreen .schematic-viewport,
+  html.is-fullscreen .schematic-viewport {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+    max-height: 240px !important;
+    padding: 16px !important;
+    box-sizing: border-box !important;
+  }
+
+  .schematic-svg,
+  :fullscreen .schematic-svg,
+  html.is-fullscreen .schematic-svg {
+    max-height: 160px !important;
+    max-width: 100% !important;
+    width: auto !important;
+  }
+
+  .detail-sheet,
+  :fullscreen .detail-sheet,
+  html.is-fullscreen .detail-sheet {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 20px 18px !important;
+    box-sizing: border-box !important;
+  }
+
+  .sheet-title,
+  :fullscreen .sheet-title,
+  html.is-fullscreen .sheet-title {
+    font-size: 1.5rem !important;
+  }
+
+  .sheet-analogy,
+  :fullscreen .sheet-analogy,
+  html.is-fullscreen .sheet-analogy {
+    font-size: 0.92rem !important;
+  }
+
+  .sheet-desc,
+  :fullscreen .sheet-desc,
+  html.is-fullscreen .sheet-desc {
+    font-size: 0.95rem !important;
+    margin-bottom: 14px !important;
+  }
+
+  .technical-checklist li,
+  :fullscreen .technical-checklist li,
+  html.is-fullscreen .technical-checklist li {
+    font-size: 0.9rem !important;
+  }
 
   /* --- SOP Perakitan --- */
-  .rules-trio { grid-template-columns: 1fr; gap: 12px; }
-  .rule-box   { padding: 18px 18px; }
+  .rules-trio,
+  :fullscreen .rules-trio,
+  html.is-fullscreen .rules-trio {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+
+  .rule-box,
+  :fullscreen .rule-box,
+  html.is-fullscreen .rule-box {
+    padding: 18px 18px !important;
+  }
 
   /* --- DnD --- */
-  .dnd-panel-header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-    text-align: left;
+  .dnd-panel-header,
+  :fullscreen .dnd-panel-header,
+  html.is-fullscreen .dnd-panel-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    text-align: left !important;
   }
-  .dnd-panel-header .footer-actions { width: 100%; display: flex; gap: 8px; }
-  .dnd-panel-header .footer-actions .btn { flex: 1; padding: 10px 12px; font-size: 0.85rem; }
-  .dnd-workbench  { grid-template-columns: 1fr; gap: 14px; }
-  .source-depot   { min-height: 80px; padding: 10px; gap: 8px; }
-  .drag-item      { padding: 10px 14px; font-size: 0.88rem; }
-  .assembly-slot  { padding: 8px 12px; min-height: 46px; gap: 10px; }
-  .slot-placeholder { font-size: 0.82rem; }
+
+  .dnd-panel-header .footer-actions,
+  :fullscreen .dnd-panel-header .footer-actions,
+  html.is-fullscreen .dnd-panel-header .footer-actions {
+    width: 100% !important;
+    display: flex !important;
+    gap: 8px !important;
+  }
+
+  .dnd-panel-header .footer-actions .btn,
+  :fullscreen .dnd-panel-header .footer-actions .btn,
+  html.is-fullscreen .dnd-panel-header .footer-actions .btn {
+    flex: 1 !important;
+    padding: 10px 12px !important;
+    font-size: 0.85rem !important;
+  }
+
+  .dnd-workbench,
+  :fullscreen .dnd-workbench,
+  html.is-fullscreen .dnd-workbench {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+    width: 100% !important;
+  }
+
+  .source-depot,
+  :fullscreen .source-depot,
+  html.is-fullscreen .source-depot {
+    min-height: 80px !important;
+    padding: 10px !important;
+    gap: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .drag-item,
+  :fullscreen .drag-item,
+  html.is-fullscreen .drag-item {
+    padding: 10px 14px !important;
+    font-size: 0.88rem !important;
+  }
+
+  .assembly-slot,
+  :fullscreen .assembly-slot,
+  html.is-fullscreen .assembly-slot {
+    padding: 8px 12px !important;
+    min-height: 46px !important;
+    gap: 10px !important;
+  }
+
+  .slot-placeholder,
+  :fullscreen .slot-placeholder,
+  html.is-fullscreen .slot-placeholder {
+    font-size: 0.82rem !important;
+  }
 
   /* --- Kuis --- */
-  .challenge-box   { padding: 20px 18px; margin-bottom: 14px; }
-  .challenge-box h3 { font-size: 1.15rem; line-height: 1.5; }
-  .options-grid    { grid-template-columns: 1fr; gap: 10px; margin-bottom: 14px; }
-  .option-tile     { padding: 12px 16px; font-size: 0.92rem; gap: 10px; }
-  .challenge-ctrls { width: 100%; display: flex; gap: 8px; justify-content: stretch; }
-  .challenge-ctrls .btn { flex: 1; padding: 10px 12px; font-size: 0.85rem; }
+  .challenge-box,
+  :fullscreen .challenge-box,
+  html.is-fullscreen .challenge-box {
+    padding: 20px 18px !important;
+    margin-bottom: 14px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .challenge-box h3,
+  :fullscreen .challenge-box h3,
+  html.is-fullscreen .challenge-box h3 {
+    font-size: 1.15rem !important;
+    line-height: 1.5 !important;
+  }
+
+  .options-grid,
+  :fullscreen .options-grid,
+  html.is-fullscreen .options-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    margin-bottom: 14px !important;
+    width: 100% !important;
+  }
+
+  .option-tile,
+  :fullscreen .option-tile,
+  html.is-fullscreen .option-tile {
+    padding: 12px 16px !important;
+    font-size: 0.92rem !important;
+    gap: 10px !important;
+  }
+
+  .challenge-ctrls,
+  :fullscreen .challenge-ctrls,
+  html.is-fullscreen .challenge-ctrls {
+    width: 100% !important;
+    display: flex !important;
+    gap: 8px !important;
+    justify-content: stretch !important;
+  }
+
+  .challenge-ctrls .btn,
+  :fullscreen .challenge-ctrls .btn,
+  html.is-fullscreen .challenge-ctrls .btn {
+    flex: 1 !important;
+    padding: 10px 12px !important;
+    font-size: 0.85rem !important;
+  }
 
   /* --- Rekapitulasi --- */
-  .score-metrics { grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 18px; }
-  .metric-panel  { padding: 16px 12px; }
-  .metric-number { font-size: 1.5rem; }
-  .summary-stage h2 { font-size: 1.75rem; }
-  .summary-author-footer { flex-direction: column; gap: 12px; text-align: center; padding: 16px; }
-  .summary-author-footer .btn { width: 100%; }
+  .score-metrics,
+  :fullscreen .score-metrics,
+  html.is-fullscreen .score-metrics {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+    margin-bottom: 18px !important;
+    width: 100% !important;
+  }
+
+  .metric-panel,
+  :fullscreen .metric-panel,
+  html.is-fullscreen .metric-panel {
+    padding: 16px 12px !important;
+  }
+
+  .metric-number,
+  :fullscreen .metric-number,
+  html.is-fullscreen .metric-number {
+    font-size: 1.5rem !important;
+  }
+
+  .summary-stage h2,
+  :fullscreen .summary-stage h2,
+  html.is-fullscreen .summary-stage h2 {
+    font-size: 1.75rem !important;
+  }
+
+  .summary-author-footer,
+  :fullscreen .summary-author-footer,
+  html.is-fullscreen .summary-author-footer {
+    flex-direction: column !important;
+    gap: 12px !important;
+    text-align: center !important;
+    padding: 16px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .summary-author-footer .btn,
+  :fullscreen .summary-author-footer .btn,
+  html.is-fullscreen .summary-author-footer .btn {
+    width: 100% !important;
+  }
 
   /* ============================================================
    * FOOTER DUA TINGKAT (MOBILE & TABLET)
    * Baris 1 (footer-meta)   : Slide | Fullscreen | Badge | Counter
    * Baris 2 (footer-actions): Sebelumnya | Peta Komponen | Selanjutnya
    * ============================================================ */
-  .slide-footer {
-    display: flex;
-    flex-direction: column;
-    padding: 8px 12px;
-    gap: 7px;
-    background: var(--white);
-    border-top: 2px solid var(--border-strong);
-    box-shadow: 0 -3px 12px rgba(21, 38, 65, 0.08);
+  .slide-footer,
+  :fullscreen .slide-footer,
+  html.is-fullscreen .slide-footer {
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 8px 12px !important;
+    gap: 7px !important;
+    background: var(--white) !important;
+    border-top: 2px solid var(--border-strong) !important;
+    box-shadow: 0 -3px 12px rgba(21, 38, 65, 0.08) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   /* Baris 1: utilitas + indikator status */
@@ -2096,7 +2393,11 @@ html.is-fullscreen .slide-stage {
  * ===================================================================== */
 
 @media (max-width: 480px) {
-  html { font-size: 14.5px; }
+  html,
+  html.is-fullscreen,
+  :fullscreen {
+    font-size: 14.5px !important;
+  }
 
   .slide-body { padding: 12px 12px 115px 12px; }
 
