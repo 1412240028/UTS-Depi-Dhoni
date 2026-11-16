@@ -167,7 +167,7 @@ h1:focus-visible, h2:focus-visible, h3:focus-visible, h4:focus-visible,
 }
 
 html {
-  font-size: 16px;
+  font-size: 18px;
   transition: font-size 0.2s ease; /* Transisi mulus saat fullscreen font scaling */
 }
 
@@ -1206,9 +1206,34 @@ html.is-fullscreen .slide-stage {
   border: 2px dashed var(--border-strong);
   border-radius: var(--radius-xs);
   padding: 12px;
+  transition: min-height 0.2s ease;
 }
 
-/* Kartu draggable */
+/* Pesan petunjuk saat seluruh kartu sudah dipindahkan ke slot */
+.depot-empty-hint {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--blue);
+  background: var(--white);
+  border: 2px dashed var(--border-blue);
+  border-radius: var(--radius-xs);
+  padding: 16px 14px;
+  text-align: center;
+  line-height: 1.5;
+  margin: auto 0;
+  animation: cardSlotEntry 0.25s ease-out;
+}
+
+.depot-empty-hint small {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--dark-blue);
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+/* Kartu draggable & tap-to-move */
 .drag-item {
   background: var(--white);
   border: 2px solid var(--border-strong);
@@ -1227,7 +1252,19 @@ html.is-fullscreen .slide-stage {
   box-shadow: 2px 2px 0 var(--border-strong);
 }
 .drag-item:hover  { background: #f7fcff; border-color: var(--blue); transform: translateX(4px); }
-.drag-item:active { cursor: grabbing; transform: scale(0.98); background: var(--light-blue); }
+.drag-item:active { cursor: grabbing; transform: scale(0.97); background: var(--blue-soft); }
+
+/* Animasi perpindahan kartu ke dalam slot urutan */
+@keyframes cardSlotEntry {
+  from {
+    opacity: 0;
+    transform: translateY(-5px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
 
 /* Container slot urutan */
 .target-slots {
@@ -1247,11 +1284,26 @@ html.is-fullscreen .slide-stage {
   align-items: center;
   gap: 14px;
   transition: all 0.15s ease;
+  cursor: pointer;
 }
 /* State: kartu sedang melayang di atas slot */
 .assembly-slot.hovered {
   border-color: var(--blue);
   background: var(--light-blue);
+}
+
+/* Kartu saat berada di dalam slot perakitan */
+.assembly-slot .drag-item {
+  flex: 1 1 auto;
+  margin: 0;
+  animation: cardSlotEntry 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: none;
+}
+.assembly-slot .drag-item:hover {
+  border-color: #dc2626;
+  background: #fef2f2;
+  color: #991b1b;
+  transform: none;
 }
 
 /* Nomor urutan slot */
@@ -1363,6 +1415,9 @@ html.is-fullscreen .slide-stage {
   cursor: pointer;
   font-family: var(--font-sans);
   text-align: left;
+  user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   transition: all 0.15s ease;
   display: flex;
   align-items: center;
@@ -1373,6 +1428,10 @@ html.is-fullscreen .slide-stage {
   border-color: var(--blue);
   background: var(--light-blue);
   transform: translateY(-2px);
+}
+.option-tile:active:not(:disabled) {
+  transform: scale(0.98);
+  background: var(--blue-soft);
 }
 
 /* State: jawaban benar (hijau) */
@@ -1918,7 +1977,7 @@ html.is-fullscreen .slide-stage {
   .dnd-panel-header .footer-actions { width: 100%; display: flex; gap: 8px; }
   .dnd-panel-header .footer-actions .btn { flex: 1; padding: 10px 12px; font-size: 0.85rem; }
   .dnd-workbench  { grid-template-columns: 1fr; gap: 14px; }
-  .source-depot   { min-height: 150px; padding: 10px; gap: 8px; }
+  .source-depot   { min-height: 80px; padding: 10px; gap: 8px; }
   .drag-item      { padding: 10px 14px; font-size: 0.88rem; }
   .assembly-slot  { padding: 8px 12px; min-height: 46px; gap: 10px; }
   .slot-placeholder { font-size: 0.82rem; }

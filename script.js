@@ -1118,13 +1118,13 @@ function renderMateriSlides() {
 
 /* =====================================================================
  * §14 — SIMULASI DRAG & DROP PERAKITAN (SLIDE 10)
- * Mendukung tiga mode interaksi:
- *   1. HTML5 Drag & Drop API (desktop)
- *   2. Touch Events (mobile/tablet) dengan ghost element visual
- *   3. Tap/Klik fallback (klik kartu → pindah ke slot kosong pertama)
- *
- * State variabel touch (touchDraggedItem, touchGhostEl) dideklarasikan
- * di luar fungsi agar tetap terjangkau oleh semua event handler touch.
+ * Mendukung interaksi cerdas:
+ *   1. Tap-to-Move (Mobile & Desktop): Cukup ketuk kartu pada depot untuk
+ *      otomatis memindahkannya ke slot urutan berikutnya (1 s/d 5).
+ *      Ketuk kartu pada slot untuk mengembalikannya ke depot.
+ *   2. Touch Drag & Drop: Jika jari digeser (>10px), sistem beralih
+ *      ke mode geser manual dengan elemen ghost melayang.
+ *   3. HTML5 Drag & Drop API (Desktop mouse).
  * ===================================================================== */
 
 /** Kartu yang sedang di-drag melalui touch event */
@@ -1133,11 +1133,21 @@ let touchDraggedItem = null;
 /** Elemen ghost clone yang mengikuti jari saat touch drag */
 let touchGhostEl = null;
 
+/** Posisi awal sentuhan jari untuk membedakan tap vs drag */
+let touchStartX = 0;
+let touchStartY = 0;
+
+/** Status apakah interaksi saat ini adalah drag (geser) atau sekadar tap (ketuk) */
+let isDraggingTouch = false;
+
+/** Timestamp tap terakhir untuk mencegah double-fire event (touch + synthetic click) */
+let lastTouchTapTime = 0;
+
 /**
- * Menangani aksi klik/tap pada kartu DnD.
- * - Jika kartu berada di slot → kembalikan ke depot
- * - Jika kartu berada di depot → pindahkan ke slot kosong pertama
- * @param {HTMLElement} itemEl - Elemen kartu yang diklik
+ * Menangani aksi klik/tap pada kartu tahapan (Tap-to-Move otomatis).
+ * - Jika kartu berada di depot -> otomatis pindah ke slot pertama yang masih kosong.
+ * - Jika kartu berada di slot -> kembalikan ke depot awal.
+ * @param {HTMLElement} itemEl - Elemen kartu yang diketuk
  */
 function handleItemClick(itemEl) {
   const sourceDepot  = $('dnd-source');
@@ -1147,15 +1157,16 @@ function handleItemClick(itemEl) {
   const parentSlot = itemEl.closest('.assembly-slot');
 
   if (parentSlot) {
-    // Kartu di slot → kembalikan ke depot awal
+    // KARTU BERADA DI SLOT -> Kembalikan ke depot sumber
     const placeholder = parentSlot.querySelector('.slot-placeholder');
     if (placeholder) placeholder.style.display = 'block';
     parentSlot.style.borderColor = '';
     parentSlot.style.background  = '';
     sourceDepot.appendChild(itemEl);
-    announce(`Kartu ${itemEl.innerText} dikembalikan ke depot awal.`);
+    updateDepotState();
+    announce(`Kartu ${itemEl.innerText} dikembalikan ke daftar pilihan.`);
   } else {
-    // Kartu di depot → pindahkan ke slot kosong pertama yang ditemukan
+    // KARTU BERADA DI DEPOT -> Otomatis pindahkan ke slot pertama yang masih kosong
     let targetSlot = null;
     for (const slot of targetSlots) {
       if (!slot.querySelector('.drag-item')) {
@@ -1163,14 +1174,40 @@ function handleItemClick(itemEl) {
         break;
       }
     }
+
     if (targetSlot) {
       const placeholder = targetSlot.querySelector('.slot-placeholder');
       if (placeholder) placeholder.style.display = 'none';
       targetSlot.style.borderColor = '';
       targetSlot.style.background  = '';
       targetSlot.appendChild(itemEl);
-      announce(`Kartu ${itemEl.innerText} ditempatkan pada slot ${targetSlot.dataset.expected}.`);
+      updateDepotState();
+      announce(`Kartu ${itemEl.innerText} otomatis masuk ke Slot ${targetSlot.dataset.expected}.`);
+    } else {
+      // Seluruh 5 slot sudah terisi penuh
+      announce("Seluruh 5 slot urutan telah terisi. Ketuk kartu pada slot jika ingin membatalkan/mengubah.");
     }
+  }
+}
+
+/**
+ * Memperbarui status tampilan depot sumber jika semua kartu sudah ditempatkan.
+ */
+function updateDepotState() {
+  const sourceDepot = $('dnd-source');
+  if (!sourceDepot) return;
+  const remaining = sourceDepot.querySelectorAll('.drag-item').length;
+  let emptyHint = sourceDepot.querySelector('.depot-empty-hint');
+
+  if (remaining === 0) {
+    if (!emptyHint) {
+      emptyHint = document.createElement('div');
+      emptyHint.className = 'depot-empty-hint';
+      emptyHint.innerHTML = '&#x2713; Semua 5 tahapan telah dipilih.<br><small>Ketuk kartu pada slot jika ingin membatalkan atau mengubah urutan.</small>';
+      sourceDepot.appendChild(emptyHint);
+    }
+  } else {
+    if (emptyHint) emptyHint.remove();
   }
 }
 
@@ -1178,7 +1215,7 @@ function handleItemClick(itemEl) {
  * Menginisialisasi (atau me-reset) simulasi DnD.
  * - Mengosongkan depot dan slot
  * - Mengacak urutan kartu tahapan (Fisher-Yates)
- * - Membuat kartu drag dengan semua event listener (desktop + touch + klik)
+ * - Mendaftarkan event listener tap, touch-drag, dan desktop drag
  * - Membuat slot target sesuai urutan teknis yang benar
  */
 function initDragAndDrop() {
@@ -1205,7 +1242,7 @@ function initDragAndDrop() {
     item.id          = step.id;
     item.dataset.order = step.order;
     item.innerText   = step.label;
-    item.title       = "Drag ke slot, geser dengan jari, atau tap/klik untuk memindahkan";
+    item.title       = "Ketuk untuk memilih otomatis, atau geser (drag) ke slot urutan";
     item.setAttribute('role',     'button');
     item.setAttribute('tabindex', '0');
 
@@ -1214,8 +1251,13 @@ function initDragAndDrop() {
       e.dataTransfer.setData('text/plain', e.target.id);
     });
 
-    // Event: Klik dan Enter/Space (fallback aksesibilitas)
-    item.addEventListener('click',   (e) => handleItemClick(e.currentTarget));
+    // Event: Klik Desktop & Fallback Aksesibilitas Keyboard (Enter/Space)
+    item.addEventListener('click', (e) => {
+      // Cegah double firing dari touchend pada layar sentuh
+      if (Date.now() - lastTouchTapTime < 500) return;
+      handleItemClick(e.currentTarget);
+    });
+
     item.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
@@ -1223,7 +1265,7 @@ function initDragAndDrop() {
       }
     });
 
-    // Event: Touch (mobile/tablet) — dengan ghost element
+    // Event: Layar Sentuh Mobile (Tap Otomatis vs Drag Manual)
     bindTouchDnD(item);
 
     sourceDepot.appendChild(item);
@@ -1239,12 +1281,23 @@ function initDragAndDrop() {
     slot.addEventListener('dragleave', (e) => e.currentTarget.classList.remove('hovered'));
     slot.addEventListener('drop',      (e) => dropToTargetSlot(e, slot));
 
+    // Ketuk slot juga dapat melepas kartu yang ada di dalamnya
+    slot.addEventListener('click', (e) => {
+      if (Date.now() - lastTouchTapTime < 500) return;
+      const card = slot.querySelector('.drag-item');
+      if (card && (e.target === slot || e.target.classList.contains('slot-index') || e.target.classList.contains('slot-placeholder'))) {
+        handleItemClick(card);
+      }
+    });
+
     slot.innerHTML = `
       <div class="slot-index">${step.order}</div>
       <div class="slot-placeholder">${step.hint}</div>
     `;
     targetSlots.appendChild(slot);
   });
+
+  updateDepotState();
 
   // Reset status simulasi
   dndPassed    = false;
@@ -1253,72 +1306,98 @@ function initDragAndDrop() {
 }
 
 /**
- * Mendaftarkan event listener touch (touchstart, touchmove, touchend)
- * pada sebuah kartu DnD untuk mendukung drag & drop di layar sentuh.
- * Strategi: clone kartu sebagai ghost element mengikuti posisi jari;
- * saat touchend, deteksi elemen di bawah jari via elementFromPoint().
- * @param {HTMLElement} itemEl - Kartu DnD yang akan diberi touch support
+ * Mendaftarkan event listener sentuhan (touchstart, touchmove, touchend, touchcancel)
+ * pada kartu untuk membedakan antara TAP instan (pindah otomatis) vs DRAG (geser manual).
+ * @param {HTMLElement} itemEl - Kartu yang akan diberi penanganan sentuhan
  */
 function bindTouchDnD(itemEl) {
 
-  // touchstart: mulai drag, buat ghost clone
+  // touchstart: catat koordinat awal sentuhan, jangan langsung buat ghost!
   itemEl.addEventListener('touchstart', (e) => {
     if (e.touches.length !== 1) return; // Hanya single touch
     touchDraggedItem = itemEl;
 
     const touch = e.touches[0];
-    touchGhostEl = itemEl.cloneNode(true);
-    touchGhostEl.classList.add('drag-ghost');
-    touchGhostEl.style.left = `${touch.clientX}px`;
-    touchGhostEl.style.top  = `${touch.clientY}px`;
-    document.body.appendChild(touchGhostEl);
-    document.body.classList.add('touch-dragging');
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+    isDraggingTouch = false;
   }, { passive: true });
 
-  // touchmove: geser ghost, highlight slot yang dilintasi
+  // touchmove: jika pergerakan melebihi ambang batas (10px), aktifkan mode drag
   itemEl.addEventListener('touchmove', (e) => {
-    if (!touchGhostEl || !touchDraggedItem) return;
+    if (!touchDraggedItem) return;
     const touch = e.touches[0];
-    touchGhostEl.style.left = `${touch.clientX}px`;
-    touchGhostEl.style.top  = `${touch.clientY}px`;
+    const dx = touch.clientX - touchStartX;
+    const dy = touch.clientY - touchStartY;
 
-    // Sembunyikan ghost sementara untuk mendapatkan elemen di bawah jari
-    touchGhostEl.style.display = 'none';
-    const elemBelow = document.elementFromPoint(touch.clientX, touch.clientY);
-    touchGhostEl.style.display = '';
+    // Aktifkan mode drag manual jika jari bergeser lebih dari 10px
+    if (!isDraggingTouch && Math.hypot(dx, dy) > 10) {
+      isDraggingTouch = true;
+      touchGhostEl = itemEl.cloneNode(true);
+      touchGhostEl.classList.add('drag-ghost');
+      document.body.appendChild(touchGhostEl);
+      document.body.classList.add('touch-dragging');
+    }
 
-    // Highlight slot yang sedang dilintasi
-    document.querySelectorAll('.assembly-slot').forEach(s => s.classList.remove('hovered'));
-    if (elemBelow) {
-      const slot = elemBelow.closest('.assembly-slot');
-      if (slot) slot.classList.add('hovered');
+    if (isDraggingTouch && touchGhostEl) {
+      touchGhostEl.style.left = `${touch.clientX}px`;
+      touchGhostEl.style.top  = `${touch.clientY}px`;
+
+      // Sembunyikan ghost sesaat untuk mendeteksi elemen slot di bawah jari
+      touchGhostEl.style.display = 'none';
+      const elemBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+      touchGhostEl.style.display = '';
+
+      document.querySelectorAll('.assembly-slot').forEach(s => s.classList.remove('hovered'));
+      if (elemBelow) {
+        const slot = elemBelow.closest('.assembly-slot');
+        if (slot) slot.classList.add('hovered');
+      }
     }
   }, { passive: true });
 
-  // touchend: lepaskan kartu ke slot atau depot berdasarkan posisi jari
+  // touchend: eksekusi aksi sesuai mode (Tap -> Pindah otomatis, Drag -> Pindah ke slot target)
   itemEl.addEventListener('touchend', (e) => {
     if (!touchDraggedItem) return;
-    const touch = e.changedTouches[0];
 
-    let targetElement = null;
-    if (touchGhostEl) {
+    if (isDraggingTouch && touchGhostEl) {
+      // --- MODE DRAG MANUAL ---
+      const touch = e.changedTouches[0];
       touchGhostEl.style.display = 'none';
-      targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+      const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+      touchGhostEl.remove();
+      touchGhostEl = null;
+
+      document.body.classList.remove('touch-dragging');
+      document.querySelectorAll('.assembly-slot').forEach(s => s.classList.remove('hovered'));
+
+      if (targetElement) {
+        const targetSlot   = targetElement.closest('.assembly-slot');
+        const targetSource = targetElement.closest('#dnd-source');
+
+        if (targetSlot)        moveItemToSlot(touchDraggedItem, targetSlot);
+        else if (targetSource) moveItemToSource(touchDraggedItem);
+      }
+    } else {
+      // --- MODE TAP OTOMATIS (Sesuai Permintaan Mobile) ---
+      lastTouchTapTime = Date.now();
+      handleItemClick(touchDraggedItem);
+    }
+
+    touchDraggedItem = null;
+    isDraggingTouch  = false;
+  });
+
+  // touchcancel: bersihkan elemen ghost jika gestur terganggu
+  itemEl.addEventListener('touchcancel', () => {
+    if (touchGhostEl) {
       touchGhostEl.remove();
       touchGhostEl = null;
     }
-
     document.body.classList.remove('touch-dragging');
     document.querySelectorAll('.assembly-slot').forEach(s => s.classList.remove('hovered'));
-
-    if (targetElement) {
-      const targetSlot   = targetElement.closest('.assembly-slot');
-      const targetSource = targetElement.closest('#dnd-source');
-
-      if (targetSlot)   moveItemToSlot(touchDraggedItem, targetSlot);
-      else if (targetSource) moveItemToSource(touchDraggedItem);
-    }
     touchDraggedItem = null;
+    isDraggingTouch  = false;
   });
 }
 
@@ -1367,6 +1446,7 @@ function moveItemToSlot(dragged, slot) {
   const placeholder = slot.querySelector('.slot-placeholder');
   if (placeholder) placeholder.style.display = 'none';
   slot.appendChild(dragged);
+  updateDepotState();
 }
 
 /**
@@ -1384,6 +1464,7 @@ function moveItemToSource(dragged) {
   }
   const source = $('dnd-source');
   if (source) source.appendChild(dragged);
+  updateDepotState();
 }
 
 /**
