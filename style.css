@@ -123,6 +123,7 @@ h1:focus-visible, h2:focus-visible, h3:focus-visible, h4:focus-visible,
 .cover-title:focus-visible,
 .menu-head h2,
 .sheet-title,
+.motherboard-head h2,
 .rules-heading h2,
 .dnd-panel-header h3,
 .challenge-box h3,
@@ -213,6 +214,7 @@ html.is-fullscreen .slide-stage {
   /* Layout container diperlebar agar memanfaatkan ruang layar proyektor */
   :fullscreen .cover-layout,
   :fullscreen .rules-stage,
+  :fullscreen .motherboard-stage,
   :fullscreen .challenge-stage,
   :fullscreen .summary-stage,
   :fullscreen .references-stage,
@@ -224,6 +226,7 @@ html.is-fullscreen .slide-stage {
   :fullscreen .schematic-layout,
   html.is-fullscreen .cover-layout,
   html.is-fullscreen .rules-stage,
+  html.is-fullscreen .motherboard-stage,
   html.is-fullscreen .challenge-stage,
   html.is-fullscreen .summary-stage,
   html.is-fullscreen .references-stage,
@@ -409,6 +412,7 @@ html.is-fullscreen .slide-stage {
 /* Tier 1: Judul, kicker, dan tajuk utama */
 .slide-body.active .cover-left,
 .slide-body.active .menu-head,
+.slide-body.active .motherboard-head,
 .slide-body.active .rules-heading,
 .slide-body.active .dnd-panel-header,
 .slide-body.active .challenge-box,
@@ -424,6 +428,8 @@ html.is-fullscreen .slide-stage {
 .slide-body.active .schematic-viewport,
 .slide-body.active .detail-sheet,
 .slide-body.active .component-matrix,
+.slide-body.active .motherboard-visual-card,
+.slide-body.active .inspector-card,
 .slide-body.active .rules-trio,
 .slide-body.active .dnd-workbench,
 .slide-body.active .options-grid,
@@ -435,6 +441,7 @@ html.is-fullscreen .slide-stage {
 /* Tier 3: Tombol aksi alur dan bar status/footer slide */
 .slide-body.active .cover-buttons,
 .slide-body.active .status-bar-line,
+.slide-body.active .hotspot-chips-bar,
 .slide-body.active .rules-banner-action,
 .slide-body.active .challenge-ctrls,
 .slide-body.active .summary-author-footer,
@@ -452,6 +459,10 @@ html.is-fullscreen .slide-stage {
   .slide-body.active .status-bar-line,
   .slide-body.active .schematic-viewport,
   .slide-body.active .detail-sheet,
+  .slide-body.active .motherboard-head,
+  .slide-body.active .motherboard-visual-card,
+  .slide-body.active .inspector-card,
+  .slide-body.active .hotspot-chips-bar,
   .slide-body.active .rules-heading,
   .slide-body.active .rules-trio,
   .slide-body.active .rules-banner-action,
@@ -476,6 +487,7 @@ html.is-fullscreen .slide-stage {
 /* Pembatas lebar konten agar selaras di monitor lebar */
 .cover-layout,
 .rules-stage,
+.motherboard-stage,
 .challenge-stage,
 .summary-stage,
 .references-stage,
@@ -523,22 +535,25 @@ html.is-fullscreen .slide-stage {
 #slide-6 .schematic-layout,
 #slide-7 .schematic-layout  { margin-top: 20px; }
 
-#slide-8 .rules-heading     { margin-top: 24px; }
+#slide-8 .motherboard-stage { margin-top: 20px; }
 
-/* Slide 10 (DnD): justifikasi flex-start dengan padding-top tersendiri */
-#slide-9.slide-body         { justify-content: flex-start; padding-top: 36px; }
-#slide-9 .dnd-panel-header  { margin-top: 14px; }
+#slide-9 .rules-heading     { margin-top: 24px; }
 
-#slide-10 .challenge-stage,
+/* Slide 11 (DnD): justifikasi flex-start dengan padding-top tersendiri */
+#slide-10.slide-body        { justify-content: flex-start; padding-top: 36px; }
+#slide-10 .dnd-panel-header { margin-top: 14px; }
+
 #slide-11 .challenge-stage,
-#slide-12 .challenge-stage  { margin-top: 24px; }
+#slide-12 .challenge-stage,
+#slide-13 .challenge-stage  { margin-top: 24px; }
 
-#slide-13 .summary-stage    { margin-top: 24px; }
-#slide-14 .references-stage { margin-top: 24px; }
+#slide-14 .summary-stage    { margin-top: 24px; }
+#slide-15 .references-stage { margin-top: 24px; }
 
 /* Margin-top global untuk elemen judul slide 2 ke atas */
 .menu-head h2,
 .sheet-title,
+.motherboard-head h2,
 .rules-heading h2,
 .dnd-panel-header h3,
 .challenge-box h3,
@@ -1146,7 +1161,353 @@ html.is-fullscreen .slide-stage {
 
 
 /* =====================================================================
- * §13 — SLIDE 9: ATURAN & SOP PERAKITAN
+ * §13 — SLIDE 09: PETA INTERAKTIF MOTHERBOARD & KOMPONEN TERPASANG
+ * Inspeksi interaktif berbasis hotspot pin pada skematik motherboard.
+ * Tata letak dua kolom: Kanvas Skematik ATX (kiri) & Kartu Inspektur (kanan).
+ * ===================================================================== */
+
+.motherboard-stage {
+  width: 100%;
+}
+
+.motherboard-head {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.motherboard-head h2 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--dark-blue);
+  margin-bottom: 6px;
+}
+
+.motherboard-head p {
+  font-size: 1rem;
+  color: var(--dark-blue);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* Layout dua kolom: Skematik Interaktif di kiri, Inspector Card di kanan */
+.motherboard-inspector-layout {
+  display: grid;
+  grid-template-columns: 1.32fr 1fr;
+  gap: 24px;
+  align-items: start;
+  margin-bottom: 24px;
+}
+
+/* Kartu pembungkus visual skematik motherboard */
+.motherboard-visual-card {
+  background: var(--dark-blue);
+  border: 2px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  box-shadow: 4px 4px 0 var(--border-strong);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Container interaktif rasio 840 x 720 dengan posisi relatif */
+.motherboard-interactive-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 840 / 720;
+  background: #08111d;
+  border: 1.5px solid #25436e;
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+}
+
+/* Vektor SVG memenuhi container */
+.motherboard-integrated-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  user-select: none;
+}
+
+/* Tombol Hotspot Pin Interaktif */
+.hotspot-pin {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  z-index: 10;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  touch-action: manipulation;
+}
+
+.hotspot-pin:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 3px;
+}
+
+.hotspot-pin:hover,
+.hotspot-pin.active {
+  transform: translate(-50%, -50%) scale(1.22);
+}
+
+/* Inti titik menyala */
+.hotspot-core {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--blue);
+  border: 2px solid var(--white);
+  box-shadow: 0 0 10px rgba(19, 108, 252, 0.85), 2px 2px 0 var(--border-strong);
+  transition: all 0.2s ease;
+  z-index: 2;
+}
+
+.hotspot-pin:hover .hotspot-core,
+.hotspot-pin.active .hotspot-core {
+  background: var(--lime);
+  border-color: var(--dark-blue);
+  box-shadow: 0 0 16px rgba(195, 248, 74, 1), 2px 2px 0 var(--border-strong);
+}
+
+/* Gelombang pendar cincin riak (Ripple Animation) */
+.hotspot-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 26px;
+  height: 26px;
+  margin-top: -13px;
+  margin-left: -13px;
+  border-radius: 50%;
+  border: 2px solid var(--blue);
+  opacity: 0.8;
+  animation: hotspotPulseRipple 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  pointer-events: none;
+}
+
+.hotspot-pin:hover .hotspot-ring,
+.hotspot-pin.active .hotspot-ring {
+  border-color: var(--lime);
+  animation-duration: 1.1s;
+}
+
+@keyframes hotspotPulseRipple {
+  0% {
+    transform: scale(0.65);
+    opacity: 0.95;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* Label nama kecil di atas titik hotspot */
+.hotspot-label {
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--dark-blue);
+  color: var(--white);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+  white-space: nowrap;
+  border: 1px solid #395f98;
+  pointer-events: none;
+  box-shadow: 2px 2px 0 var(--border-strong);
+  transition: all 0.15s ease;
+}
+
+.hotspot-pin:hover .hotspot-label,
+.hotspot-pin.active .hotspot-label {
+  background: var(--lime);
+  color: var(--dark-blue);
+  border-color: var(--dark-blue);
+  transform: translateX(-50%) translateY(-2px);
+}
+
+/* Baris Tombol Pintasan Komponen (Chips Bar) */
+.hotspot-chips-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 4px 2px 2px 2px;
+}
+
+.chips-hint {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--light-blue);
+  margin-right: 4px;
+}
+
+.hotspot-chip {
+  background: #152641;
+  color: #e8f4fc;
+  border: 1.5px solid #395f98;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 800;
+  padding: 4px 9px;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.hotspot-chip:hover {
+  background: #192e4e;
+  border-color: var(--blue);
+  color: var(--white);
+}
+
+.hotspot-chip.active {
+  background: var(--lime);
+  border-color: var(--border-strong);
+  color: var(--dark-blue);
+  box-shadow: 2px 2px 0 var(--border-strong);
+}
+
+/* Kartu Inspektur Detail Komponen (Inspector Card) */
+.inspector-card {
+  background: var(--white);
+  border: 2px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 24px 26px;
+  box-shadow: 4px 4px 0 var(--border-strong);
+  display: flex;
+  flex-direction: column;
+  min-height: 440px;
+  transition: all 0.2s ease;
+}
+
+.inspector-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.inspector-badge {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--blue);
+  background: var(--light-blue);
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-xs);
+  padding: 4px 10px;
+  letter-spacing: 0.5px;
+}
+
+.inspector-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--lime);
+  border: 1.5px solid var(--dark-blue);
+  box-shadow: 0 0 8px rgba(195, 248, 74, 0.8);
+}
+
+.inspector-title {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--dark-blue);
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+
+.inspector-analogy {
+  font-size: 0.95rem;
+  color: var(--blue);
+  font-weight: 700;
+  margin-bottom: 14px;
+  line-height: 1.45;
+  padding: 6px 12px;
+  background: var(--light-blue);
+  border-left: 3px solid var(--blue);
+  border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
+}
+
+.inspector-desc {
+  font-size: 0.92rem;
+  color: var(--text-dark);
+  font-weight: 500;
+  line-height: 1.6;
+  margin-bottom: 18px;
+}
+
+.inspector-specs-box {
+  background: var(--light-blue);
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-xs);
+  padding: 14px 16px;
+  margin-bottom: 20px;
+}
+
+.specs-title {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--dark-blue);
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+
+.specs-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.specs-list li {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--dark-blue);
+  position: relative;
+  padding-left: 14px;
+  line-height: 1.45;
+}
+
+.specs-list li::before {
+  content: "■";
+  position: absolute;
+  left: 0;
+  color: var(--blue);
+  font-size: 0.65rem;
+  top: 1px;
+}
+
+.btn-jump-module {
+  width: 100%;
+  padding: 10px 16px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+
+/* =====================================================================
+ * §14 — SLIDE 10: ATURAN & SOP PERAKITAN
  * Tiga kotak SOP (proteksi ESD, sub-assembly, integrasi daya) dalam
  * grid tiga kolom plus banner call-to-action di bawahnya.
  * ===================================================================== */
@@ -2155,6 +2516,14 @@ html.is-fullscreen .slide-stage {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 16px !important;
   }
+
+  /* Inspeksi Motherboard: satu kolom di tablet */
+  .motherboard-inspector-layout,
+  :fullscreen .motherboard-inspector-layout,
+  html.is-fullscreen .motherboard-inspector-layout {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
 }
 
 
@@ -2192,7 +2561,7 @@ html.is-fullscreen .slide-stage {
     max-width: 100vw !important;
     box-sizing: border-box !important;
   }
-  #slide-9.slide-body { padding-top: 16px !important; }
+  #slide-10.slide-body { padding-top: 16px !important; }
 
   /* --- Cover --- */
   .cover-layout,
@@ -2320,6 +2689,67 @@ html.is-fullscreen .slide-stage {
   :fullscreen .technical-checklist li,
   html.is-fullscreen .technical-checklist li {
     font-size: 0.9rem !important;
+  }
+
+  /* --- Inspeksi Motherboard (Slide 9) --- */
+  .motherboard-inspector-layout,
+  :fullscreen .motherboard-inspector-layout,
+  html.is-fullscreen .motherboard-inspector-layout {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    width: 100% !important;
+  }
+
+  .motherboard-head h2,
+  :fullscreen .motherboard-head h2,
+  html.is-fullscreen .motherboard-head h2 {
+    font-size: 1.65rem !important;
+  }
+
+  .motherboard-visual-card,
+  :fullscreen .motherboard-visual-card,
+  html.is-fullscreen .motherboard-visual-card {
+    padding: 10px !important;
+  }
+
+  .inspector-card,
+  :fullscreen .inspector-card,
+  html.is-fullscreen .inspector-card {
+    min-height: auto !important;
+    padding: 18px 16px !important;
+  }
+
+  .hotspot-pin,
+  :fullscreen .hotspot-pin,
+  html.is-fullscreen .hotspot-pin {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .hotspot-core,
+  :fullscreen .hotspot-core,
+  html.is-fullscreen .hotspot-core {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  .hotspot-label,
+  :fullscreen .hotspot-label,
+  html.is-fullscreen .hotspot-label {
+    display: none !important;
+  }
+
+  .hotspot-chips-bar,
+  :fullscreen .hotspot-chips-bar,
+  html.is-fullscreen .hotspot-chips-bar {
+    gap: 5px !important;
+  }
+
+  .hotspot-chip,
+  :fullscreen .hotspot-chip,
+  html.is-fullscreen .hotspot-chip {
+    font-size: 0.7rem !important;
+    padding: 3px 7px !important;
   }
 
   /* --- SOP Perakitan --- */

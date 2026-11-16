@@ -2,7 +2,7 @@
 <html lang="id">
 <!--
   ====================================================================
-  ANATOMI KOMPONEN & SIMULASI PERAKITAN PC (15 SLIDE)
+  ANATOMI KOMPONEN & SIMULASI PERAKITAN PC (16 SLIDE)
   ====================================================================
   Modul Multimedia Pembelajaran Interaktif Teknik Informatika
   Proyek UTS Multimedia (IF562528)
@@ -20,13 +20,14 @@
     §5  Panggung Utama & Slide 01: Sampul Utama & Identifikasi
     §6  Slide 02: Peta Skematik Blok Komponen (Menu Eksplorasi)
     §7  Slide 03–08: Wadah Detail Hardware (Dirender via script.js)
-    §8  Slide 09: Standar Keselamatan & SOP Perakitan
-    §9  Slide 10: Simulasi Urutan Perakitan Drag & Drop
-    §10 Slide 11–13: Wadah Kuis Evaluasi (Dirender via script.js)
-    §11 Slide 14: Laporan Rekapitulasi Capaian Akhir
-    §12 Slide 15: Daftar Referensi & Rujukan Teknis
-    §13 Bar Navigasi Bawah (Technical Footer)
-    §14 Pemuatan Mesin Logika (script.js)
+    §8  Slide 09: Peta Interaktif Motherboard & Komponen Terpasang
+    §9  Slide 10: Standar Keselamatan & SOP Perakitan
+    §10 Slide 11: Simulasi Urutan Perakitan Drag & Drop
+    §11 Slide 12–14: Wadah Kuis Evaluasi (Dirender via script.js)
+    §12 Slide 15: Laporan Rekapitulasi Capaian Akhir
+    §13 Slide 16: Daftar Referensi & Rujukan Teknis
+    §14 Bar Navigasi Bawah (Technical Footer)
+    §15 Pemuatan Mesin Logika (script.js)
   ====================================================================
 -->
 
@@ -57,7 +58,7 @@
 
   <!-- ===================================================================
     §3 — DRAWER NAVIGASI SLIDE
-    Panel samping kiri untuk melompat langsung ke slide manapun (1–15)
+    Panel samping kiri untuk melompat langsung ke slide manapun (1–16)
   ==================================================================== -->
   <div class="slide-nav-backdrop" id="slide-nav-backdrop"></div>
   <nav class="slide-nav-drawer" id="slide-nav-drawer" role="navigation" aria-label="Navigasi Daftar Slide">
@@ -197,9 +198,393 @@
       <section class="slide-body" id="slide-7" data-slide="8" role="region" aria-label="Slide 8: Komponen PSU"></section>
 
       <!-- ===============================================================
-        §8 — SLIDE 09: STANDAR KESELAMATAN & SOP PERAKITAN
+        §8 — SLIDE 09: PETA INTERAKTIF MOTHERBOARD & KOMPONEN TERPASANG
+        Inspeksi titik hotspot arsitektur motherboard ATX dengan CPU, RAM,
+        SSD NVMe, GPU PCIe, VRM daya, Chipset PCH, dan konektor daya ATX.
       ================================================================ -->
-      <section class="slide-body" id="slide-8" data-slide="9" role="region" aria-label="Slide 9: Standar Keselamatan dan SOP Perakitan">
+      <section class="slide-body" id="slide-8" data-slide="9" role="region" aria-label="Slide 9: Peta Interaktif Motherboard dan Komponen Terpasang">
+        <div class="motherboard-stage">
+          <!-- Header Slide Inspeksi -->
+          <div class="motherboard-head">
+            <div class="system-kicker">[INSPEKSI_INTERAKTIF] ANATOMI SISTEM TERINTEGRASI</div>
+            <h2>Inspeksi Motherboard &amp; Komponen Terpasang</h2>
+            <p>Arahkan kursor, ketuk, atau fokuskan titik pada motherboard untuk menginspeksi integrasi komponen dan jalur bus data.</p>
+          </div>
+
+          <!-- Panggung Dua Kolom: Skematik Interaktif (Kiri) & Kartu Inspeksi (Kanan) -->
+          <div class="motherboard-inspector-layout">
+            
+            <!-- Kolom Kiri: Papan Visual Skematik Motherboard -->
+            <div class="motherboard-visual-card">
+              <!-- Kanvas Interaktif dengan Hotspot Pins -->
+              <div class="motherboard-interactive-container" id="mb-interactive-container">
+                <svg class="motherboard-integrated-svg" viewBox="0 0 840 720" role="img" aria-label="Skematik Motherboard ATX Lengkap dengan Komponen Terpasang">
+                  <defs>
+                    <!-- Pola Grid Halus Sirkuit -->
+                    <pattern id="mb-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#152641" stroke-width="0.8"/>
+                    </pattern>
+                    <!-- Gradien Heat Spreader & Armor -->
+                    <linearGradient id="armor-grad" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0%" stop-color="#1f3659"/>
+                      <stop offset="100%" stop-color="#0f1c30"/>
+                    </linearGradient>
+                    <linearGradient id="steel-pcie" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#4a74b0"/>
+                      <stop offset="50%" stop-color="#2a456e"/>
+                      <stop offset="100%" stop-color="#192e4e"/>
+                    </linearGradient>
+                    <linearGradient id="rgb-ram-strip" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#136cfc"/>
+                      <stop offset="50%" stop-color="#c3f84a"/>
+                      <stop offset="100%" stop-color="#136cfc"/>
+                    </linearGradient>
+                  </defs>
+
+                  <!-- 1. Papan Substrat Utama PCB ATX -->
+                  <rect x="25" y="25" width="790" height="670" rx="8" fill="#0c1728" stroke="#395f98" stroke-width="2.5"/>
+                  <rect x="25" y="25" width="790" height="670" fill="url(#mb-grid)" opacity="0.65"/>
+                  <rect x="33" y="33" width="774" height="654" rx="6" fill="none" stroke="#192e4e" stroke-width="1.5" stroke-dasharray="6,4"/>
+
+                  <!-- 2. Titik Baut Grounding Sasis (9 Titik Standar ATX) -->
+                  <!-- Baris Atas -->
+                  <circle cx="50"  cy="50"  r="7" fill="#08111d" stroke="#c3f84a" stroke-width="2"/>
+                  <circle cx="440" cy="50"  r="7" fill="#08111d" stroke="#c3f84a" stroke-width="2"/>
+                  <circle cx="785" cy="50"  r="7" fill="#08111d" stroke="#c3f84a" stroke-width="2"/>
+                  <!-- Baris Tengah -->
+                  <circle cx="50"  cy="360" r="7" fill="#08111d" stroke="#c3f84a" stroke-width="2"/>
+                  <circle cx="440" cy="360" r="7" fill="#08111d" stroke="#c3f84a" stroke-width="2"/>
+                  <circle cx="785" cy="360" r="7" fill="#08111d" stroke="#c3f84a" stroke-width="2"/>
+                  <!-- Baris Bawah -->
+                  <circle cx="50"  cy="665" r="7" fill="#08111d" stroke="#c3f84a" stroke-width="2"/>
+                  <circle cx="440" cy="665" r="7" fill="#08111d" stroke="#c3f84a" stroke-width="2"/>
+                  <circle cx="785" cy="665" r="7" fill="#08111d" stroke="#c3f84a" stroke-width="2"/>
+
+                  <!-- 3. Jalur Bus Tembaga Sirkuit PCB (Bus Signal Traces) -->
+                  <!-- CPU <-> RAM (DDR5 Dual Channel Bus Traces) -->
+                  <path d="M 400 160 H 480" stroke="#136cfc" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M 400 180 H 480" stroke="#136cfc" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M 400 200 H 480" stroke="#136cfc" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M 400 220 H 480" stroke="#136cfc" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M 400 240 H 480" stroke="#136cfc" stroke-width="2" stroke-linecap="round"/>
+
+                  <!-- CPU <-> M.2 NVMe SSD (Direct PCIe 4x Bus Traces) -->
+                  <path d="M 320 290 V 325" stroke="#c3f84a" stroke-width="2.5" stroke-linecap="round"/>
+                  <path d="M 340 290 V 325" stroke="#c3f84a" stroke-width="2.5" stroke-linecap="round"/>
+                  <path d="M 360 290 V 325" stroke="#c3f84a" stroke-width="2.5" stroke-linecap="round"/>
+
+                  <!-- CPU <-> PCIe x16 GPU (Direct 16x PCIe Bus Traces) -->
+                  <path d="M 280 290 V 395" stroke="#136cfc" stroke-width="2" stroke-linecap="round" stroke-dasharray="4,3"/>
+                  <path d="M 300 290 V 395" stroke="#136cfc" stroke-width="2" stroke-linecap="round" stroke-dasharray="4,3"/>
+                  <path d="M 260 290 L 220 395" stroke="#136cfc" stroke-width="2" stroke-linecap="round"/>
+
+                  <!-- CPU <-> Chipset PCH (DMI Bus Traces) -->
+                  <path d="M 390 270 L 540 460" stroke="#c3f84a" stroke-width="2" stroke-dasharray="6,4"/>
+
+                  <!-- 4. Panel I/O Belakang (Rear I/O Shield Ports) -->
+                  <g id="mb-io-shield">
+                    <rect x="35" y="65" width="55" height="260" rx="3" fill="#152641" stroke="#395f98" stroke-width="2"/>
+                    <text x="44" y="80" fill="#395f98" font-family="JetBrains Mono" font-size="7" font-weight="800">REAR_IO</text>
+                    <!-- Port DisplayPort & HDMI -->
+                    <rect x="43" y="90" width="38" height="22" rx="2" fill="#08111d" stroke="#395f98"/>
+                    <rect x="47" y="96" width="30" height="10" fill="#192e4e"/>
+                    <!-- Port USB 3.2 Gen 2 (Biru) -->
+                    <rect x="43" y="122" width="38" height="16" rx="2" fill="#08111d" stroke="#136cfc"/>
+                    <rect x="47" y="126" width="22" height="8" fill="#136cfc"/>
+                    <rect x="43" y="145" width="38" height="16" rx="2" fill="#08111d" stroke="#136cfc"/>
+                    <rect x="47" y="149" width="22" height="8" fill="#136cfc"/>
+                    <!-- Port LAN RJ-45 Gigabit Ethernet -->
+                    <rect x="43" y="172" width="38" height="30" rx="2" fill="#08111d" stroke="#395f98"/>
+                    <circle cx="53" cy="182" r="2.5" fill="#c3f84a"/>
+                    <circle cx="63" cy="182" r="2.5" fill="#136cfc"/>
+                    <!-- Port Audio 3.5mm Stack (Mikrofon, Line Out, Line In) -->
+                    <rect x="43" y="215" width="38" height="95" rx="2" fill="#08111d" stroke="#395f98"/>
+                    <circle cx="62" cy="235" r="7" fill="#152641" stroke="#c3f84a" stroke-width="2"/>
+                    <circle cx="62" cy="262" r="7" fill="#152641" stroke="#136cfc" stroke-width="2"/>
+                    <circle cx="62" cy="290" r="7" fill="#152641" stroke="#ff4a4a" stroke-width="2"/>
+                  </g>
+
+                  <!-- 5. Sirkuit VRM (Voltage Regulator Module) & Heatsink Pendingin Daya -->
+                  <g id="mb-vrm-section">
+                    <!-- Heatsink VRM Sisi Kiri (Besar dengan Sirip Pendingin) -->
+                    <rect x="135" y="80" width="60" height="225" rx="3" fill="url(#armor-grad)" stroke="#395f98" stroke-width="2"/>
+                    <!-- Sirip-sirip Pendingin VRM -->
+                    <line x1="142" y1="100" x2="188" y2="100" stroke="#395f98" stroke-width="2"/>
+                    <line x1="142" y1="120" x2="188" y2="120" stroke="#395f98" stroke-width="2"/>
+                    <line x1="142" y1="140" x2="188" y2="140" stroke="#395f98" stroke-width="2"/>
+                    <line x1="142" y1="160" x2="188" y2="160" stroke="#395f98" stroke-width="2"/>
+                    <line x1="142" y1="180" x2="188" y2="180" stroke="#395f98" stroke-width="2"/>
+                    <line x1="142" y1="200" x2="188" y2="200" stroke="#395f98" stroke-width="2"/>
+                    <line x1="142" y1="220" x2="188" y2="220" stroke="#395f98" stroke-width="2"/>
+                    <line x1="142" y1="240" x2="188" y2="240" stroke="#395f98" stroke-width="2"/>
+                    <line x1="142" y1="260" x2="188" y2="260" stroke="#395f98" stroke-width="2"/>
+                    <line x1="142" y1="280" x2="188" y2="280" stroke="#395f98" stroke-width="2"/>
+                    <!-- Label VRM -->
+                    <text x="142" y="93" fill="#c3f84a" font-family="JetBrains Mono" font-size="8" font-weight="800">VRM_14+2</text>
+
+                    <!-- Heatsink VRM Atas -->
+                    <rect x="220" y="45" width="220" height="48" rx="3" fill="url(#armor-grad)" stroke="#395f98" stroke-width="2"/>
+                    <line x1="240" y1="58" x2="420" y2="58" stroke="#395f98" stroke-width="1.5"/>
+                    <line x1="240" y1="72" x2="420" y2="72" stroke="#395f98" stroke-width="1.5"/>
+                    <text x="235" y="84" fill="#395f98" font-family="JetBrains Mono" font-size="8" font-weight="800">THERMAL_HEATPIPE_ARMOR</text>
+
+                    <!-- Choke Ferrit Daya (Kubus Choke) -->
+                    <rect x="202" y="110" width="16" height="16" rx="2" fill="#08111d" stroke="#c3f84a"/>
+                    <rect x="202" y="135" width="16" height="16" rx="2" fill="#08111d" stroke="#c3f84a"/>
+                    <rect x="202" y="160" width="16" height="16" rx="2" fill="#08111d" stroke="#c3f84a"/>
+                    <rect x="202" y="185" width="16" height="16" rx="2" fill="#08111d" stroke="#c3f84a"/>
+                    <rect x="202" y="210" width="16" height="16" rx="2" fill="#08111d" stroke="#c3f84a"/>
+                    <rect x="202" y="235" width="16" height="16" rx="2" fill="#08111d" stroke="#c3f84a"/>
+                  </g>
+
+                  <!-- 6. Soket CPU AM5 / LGA & Prosesor Terpasang -->
+                  <g id="mb-cpu-section">
+                    <!-- Dudukan Soket Luar -->
+                    <rect x="225" y="115" width="175" height="175" rx="5" fill="#091424" stroke="#395f98" stroke-width="2.5"/>
+                    <!-- Tuas Pengunci Logika ILM -->
+                    <line x1="216" y1="120" x2="216" y2="280" stroke="#c3f84a" stroke-width="3.5" stroke-linecap="round"/>
+                    <circle cx="216" cy="120" r="5" fill="#c3f84a"/>
+                    
+                    <!-- Bracket Pengait Cooler Pendingin -->
+                    <rect x="245" y="105" width="135" height="12" rx="2" fill="#152641" stroke="#395f98"/>
+                    <rect x="245" y="288" width="135" height="12" rx="2" fill="#152641" stroke="#395f98"/>
+
+                    <!-- Integrated Heat Spreader (IHS) Prosesor Terpasang -->
+                    <rect x="242" y="132" width="140" height="140" rx="4" fill="url(#armor-grad)" stroke="#136cfc" stroke-width="2"/>
+                    <!-- Core Silikon Internal CPU -->
+                    <rect x="262" y="152" width="100" height="100" rx="2" fill="#0c1a2e" stroke="#c3f84a" stroke-width="1.5" stroke-dasharray="4,2"/>
+                    <polygon points="245,135 255,135 245,145" fill="#c3f84a"/> <!-- Segitiga Penyelaras Pin 1 -->
+                    
+                    <text x="272" y="195" fill="#ffffff" font-family="JetBrains Mono" font-size="11" font-weight="800">CPU_CORE</text>
+                    <text x="270" y="215" fill="#c3f84a" font-family="JetBrains Mono" font-size="8" font-weight="800">LGA_AM5 // 5.0GHz</text>
+                  </g>
+
+                  <!-- 7. Slot Memori DDR5 DIMM (4 Slot) & RAM Terpasang -->
+                  <g id="mb-ram-section">
+                    <!-- Dudukan 4 Slot DIMM -->
+                    <rect x="470" y="70" width="145" height="280" rx="4" fill="#08111d" stroke="#395f98" stroke-width="1.5"/>
+                    
+                    <!-- Slot 1 (Kosong - Channel A1) -->
+                    <rect x="480" y="80" width="14" height="260" rx="2" fill="#152641" stroke="#25436e"/>
+                    <rect x="483" y="200" width="8" height="15" fill="#08111d"/> <!-- Notch Pembagi Pin -->
+
+                    <!-- Slot 2 (RAM DDR5 Terpasang - Channel A2) -->
+                    <rect x="508" y="72" width="22" height="276" rx="3" fill="#192e4e" stroke="#136cfc" stroke-width="2"/>
+                    <!-- Bilah Lampu RGB Atas Modul RAM -->
+                    <rect x="512" y="74" width="14" height="272" rx="2" fill="url(#rgb-ram-strip)" opacity="0.9"/>
+                    <text x="515" y="220" fill="#ffffff" font-family="JetBrains Mono" font-size="7" font-weight="800" transform="rotate(-90 515 220)">RAM_DDR5_16GB</text>
+
+                    <!-- Slot 3 (Kosong - Channel B1) -->
+                    <rect x="548" y="80" width="14" height="260" rx="2" fill="#152641" stroke="#25436e"/>
+                    <rect x="551" y="200" width="8" height="15" fill="#08111d"/>
+
+                    <!-- Slot 4 (RAM DDR5 Terpasang - Channel B2) -->
+                    <rect x="576" y="72" width="22" height="276" rx="3" fill="#192e4e" stroke="#136cfc" stroke-width="2"/>
+                    <rect x="580" y="74" width="14" height="272" rx="2" fill="url(#rgb-ram-strip)" opacity="0.9"/>
+                    <text x="583" y="220" fill="#ffffff" font-family="JetBrains Mono" font-size="7" font-weight="800" transform="rotate(-90 583 220)">RAM_DDR5_16GB</text>
+
+                    <!-- Klip Pengunci Slot (Q-Release Latches) -->
+                    <rect x="478" y="70"  width="130" height="7" fill="#395f98"/>
+                    <rect x="478" y="343" width="130" height="7" fill="#395f98"/>
+                  </g>
+
+                  <!-- 8. Slot M.2 NVMe SSD & Thermal Armor Heatsink -->
+                  <g id="mb-m2-ssd-section">
+                    <!-- Heatsink Pelindung Panas M.2 Armor -->
+                    <rect x="225" y="332" width="245" height="46" rx="4" fill="url(#armor-grad)" stroke="#395f98" stroke-width="2"/>
+                    <!-- Sekrup Pengencang M.2 -->
+                    <circle cx="236" cy="355" r="4.5" fill="#08111d" stroke="#c3f84a" stroke-width="1.5"/>
+                    <circle cx="458" cy="355" r="4.5" fill="#08111d" stroke="#c3f84a" stroke-width="1.5"/>
+                    <!-- Garis Tekstur & Label Heatsink -->
+                    <line x1="250" y1="345" x2="445" y2="345" stroke="#395f98" stroke-width="1.5"/>
+                    <text x="256" y="362" fill="#ffffff" font-family="JetBrains Mono" font-size="9" font-weight="800">M.2 NVMe PCIe Gen 5.0 x4</text>
+                    <text x="390" y="362" fill="#c3f84a" font-family="JetBrains Mono" font-size="8" font-weight="800">[7500 MB/s]</text>
+                  </g>
+
+                  <!-- 9. Slot Ekspansi PCIe 5.0 x16 (GPU Interface) -->
+                  <g id="mb-pcie-section">
+                    <!-- Pelindung Baja Penguat Slot (Steel Armor) -->
+                    <rect x="135" y="415" width="430" height="36" rx="4" fill="url(#steel-pcie)" stroke="#c3f84a" stroke-width="2"/>
+                    <rect x="145" y="424" width="400" height="18" rx="2" fill="#08111d" stroke="#395f98"/>
+                    <!-- Pin Emas & Pembagi Jalur Bus x16 -->
+                    <line x1="180" y1="424" x2="180" y2="442" stroke="#c3f84a" stroke-width="3"/>
+                    <line x1="150" y1="433" x2="540" y2="433" stroke="#c3f84a" stroke-width="1.5" stroke-dasharray="3,2"/>
+                    
+                    <!-- Klip Pengait Pengaman Kartu Grafis (PCIe Retention Latch) -->
+                    <path d="M 565 415 L 585 415 L 580 445 L 565 445 Z" fill="#152641" stroke="#c3f84a" stroke-width="1.5"/>
+                    <text x="195" y="437" fill="#ffffff" font-family="JetBrains Mono" font-size="9" font-weight="800">PCIe 5.0 x16 // STEEL_ARMOR_GPU_SLOT</text>
+
+                    <!-- Slot Ekspansi Sekunder (PCIe x1 & Slot PCIe x4) -->
+                    <rect x="135" y="485" width="180" height="24" rx="2" fill="#152641" stroke="#395f98"/>
+                    <rect x="135" y="535" width="320" height="28" rx="2" fill="#152641" stroke="#395f98"/>
+                  </g>
+
+                  <!-- 10. Chipset Platform Controller Hub (PCH) -->
+                  <g id="mb-chipset-section">
+                    <!-- Heatsink Paduan Aluminium Chipset PCH -->
+                    <rect x="535" y="445" width="175" height="160" rx="6" fill="url(#armor-grad)" stroke="#395f98" stroke-width="2.5"/>
+                    <!-- Kisi-kisi Ventilasi Thermal -->
+                    <line x1="550" y1="470" x2="695" y2="470" stroke="#395f98" stroke-width="2"/>
+                    <line x1="550" y1="490" x2="695" y2="490" stroke="#395f98" stroke-width="2"/>
+                    <line x1="550" y1="510" x2="695" y2="510" stroke="#395f98" stroke-width="2"/>
+                    <!-- Logo & Identitas Chipset -->
+                    <rect x="560" y="525" width="125" height="60" rx="3" fill="#08111d" stroke="#c3f84a" stroke-width="1.5"/>
+                    <text x="575" y="550" fill="#c3f84a" font-family="JetBrains Mono" font-size="10" font-weight="800">CHIPSET_PCH</text>
+                    <text x="575" y="570" fill="#ffffff" font-family="JetBrains Mono" font-size="8" font-weight="800">DMI 4.0 / USB 3.2</text>
+                  </g>
+
+                  <!-- 11. Konektor Daya Utama ATX 24-Pin -->
+                  <g id="mb-power-section">
+                    <rect x="740" y="175" width="45" height="170" rx="3" fill="#152641" stroke="#395f98" stroke-width="2"/>
+                    <text x="748" y="165" fill="#c3f84a" font-family="JetBrains Mono" font-size="8" font-weight="800">24-PIN</text>
+                    <!-- 2 Kolom Pin Kontak Tembaga (2x12 Pin) -->
+                    <!-- Kolom Kiri -->
+                    <rect x="746" y="182" width="12" height="10" fill="#08111d" stroke="#c3f84a"/>
+                    <rect x="746" y="195" width="12" height="10" fill="#08111d" stroke="#c3f84a"/>
+                    <rect x="746" y="208" width="12" height="10" fill="#08111d" stroke="#c3f84a"/>
+                    <rect x="746" y="221" width="12" height="10" fill="#08111d" stroke="#c3f84a"/>
+                    <rect x="746" y="234" width="12" height="10" fill="#08111d" stroke="#c3f84a"/>
+                    <rect x="746" y="247" width="12" height="10" fill="#08111d" stroke="#c3f84a"/>
+                    <rect x="746" y="260" width="12" height="10" fill="#08111d" stroke="#c3f84a"/>
+                    <rect x="746" y="273" width="12" height="10" fill="#08111d" stroke="#c3f84a"/>
+                    <rect x="746" y="286" width="12" height="10" fill="#08111d" stroke="#c3f84a"/>
+                    <rect x="746" y="299" width="12" height="10" fill="#08111d" stroke="#c3f84a"/>
+                    <rect x="746" y="312" width="12" height="10" fill="#08111d" stroke="#c3f84a"/>
+                    <rect x="746" y="325" width="12" height="10" fill="#08111d" stroke="#c3f84a"/>
+                    <!-- Kolom Kanan -->
+                    <rect x="765" y="182" width="12" height="10" fill="#08111d" stroke="#c3f84a"/>
+                    <rect x="765" y="195" width="12" height="10" fill="#08111d" stroke="#c3f84a"/>
+                    <rect x="765" y="208" width="12" height="10" fill="#08111d" stroke="#c3f84a"/>
+                    <rect x="765" y="221" width="12" height="10" fill="#08111d" stroke="#c3f84a"/>
+                    <rect x="765" y="234" width="12" height="10" fill="#08111d" stroke="#c3f84a"/>
+                    <rect x="765" y="247" width="12" height="10" fill="#08111d" stroke="#c3f84a"/>
+                    <rect x="765" y="260" width="12" height="10" fill="#08111d" stroke="#c3f84a"/>
+                    <rect x="765" y="273" width="12" height="10" fill="#08111d" stroke="#c3f84a"/>
+                    <rect x="765" y="286" width="12" height="10" fill="#08111d" stroke="#c3f84a"/>
+                    <rect x="765" y="299" width="12" height="10" fill="#08111d" stroke="#c3f84a"/>
+                    <rect x="765" y="312" width="12" height="10" fill="#08111d" stroke="#c3f84a"/>
+                    <rect x="765" y="325" width="12" height="10" fill="#08111d" stroke="#c3f84a"/>
+                  </g>
+
+                  <!-- 12. Bagian Audio & Kapasitor Hi-Fi (Pojok Kiri Bawah) -->
+                  <g id="mb-audio-section">
+                    <!-- Garis Isolasi PCB Audio (Mencegah Noise Elektromagnetik) -->
+                    <path d="M 35 440 L 120 440 L 120 670" stroke="#c3f84a" stroke-width="1.5" stroke-dasharray="4,2"/>
+                    <text x="42" y="460" fill="#395f98" font-family="JetBrains Mono" font-size="7" font-weight="800">AUDIO_SHIELD</text>
+                    <!-- Kapasitor Audio Emas Nichicon -->
+                    <circle cx="58"  cy="495" r="7.5" fill="#152641" stroke="#c3f84a" stroke-width="2"/>
+                    <circle cx="58"  cy="525" r="7.5" fill="#152641" stroke="#c3f84a" stroke-width="2"/>
+                    <circle cx="58"  cy="555" r="7.5" fill="#152641" stroke="#c3f84a" stroke-width="2"/>
+                    <circle cx="58"  cy="585" r="7.5" fill="#152641" stroke="#c3f84a" stroke-width="2"/>
+                  </g>
+
+                  <!-- 13. Port SATA 6Gbps (Tepi Kanan Bawah) -->
+                  <g id="mb-sata-ports">
+                    <rect x="740" y="470" width="45" height="35" rx="2" fill="#152641" stroke="#395f98"/>
+                    <rect x="740" y="520" width="45" height="35" rx="2" fill="#152641" stroke="#395f98"/>
+                    <text x="746" y="492" fill="#c3f84a" font-family="JetBrains Mono" font-size="8" font-weight="800">SATA_1/2</text>
+                    <text x="746" y="542" fill="#c3f84a" font-family="JetBrains Mono" font-size="8" font-weight="800">SATA_3/4</text>
+                  </g>
+                </svg>
+
+                <!-- =======================================================
+                  TITIK HOTSPOT INTERAKTIF (HOTSPOT PINS)
+                  Tombol sentuh/klik presisi di atas koordinat komponen
+                ======================================================== -->
+
+                <!-- Hotspot 1: CPU Socket & Processor -->
+                <button type="button" class="hotspot-pin" data-spot="cpu" aria-label="Titik Hotspot: CPU & Soket Prosesor" style="left: 37.5%; top: 28.5%;">
+                  <span class="hotspot-ring"></span>
+                  <span class="hotspot-core"></span>
+                  <span class="hotspot-label">CPU</span>
+                </button>
+
+                <!-- Hotspot 2: Dual-Channel DDR5 RAM -->
+                <button type="button" class="hotspot-pin" data-spot="ram" aria-label="Titik Hotspot: Memori RAM DDR5" style="left: 65.5%; top: 29.5%;">
+                  <span class="hotspot-ring"></span>
+                  <span class="hotspot-core"></span>
+                  <span class="hotspot-label">RAM</span>
+                </button>
+
+                <!-- Hotspot 3: M.2 NVMe SSD Storage -->
+                <button type="button" class="hotspot-pin" data-spot="ssd" aria-label="Titik Hotspot: Solid State Drive M.2 NVMe" style="left: 41.5%; top: 49.3%;">
+                  <span class="hotspot-ring"></span>
+                  <span class="hotspot-core"></span>
+                  <span class="hotspot-label">M.2 SSD</span>
+                </button>
+
+                <!-- Hotspot 4: PCIe 5.0 x16 Slot (GPU / Kartu Grafis) -->
+                <button type="button" class="hotspot-pin" data-spot="gpu" aria-label="Titik Hotspot: Slot Ekspansi PCIe x16 GPU" style="left: 41.5%; top: 60.4%;">
+                  <span class="hotspot-ring"></span>
+                  <span class="hotspot-core"></span>
+                  <span class="hotspot-label">GPU / PCIe</span>
+                </button>
+
+                <!-- Hotspot 5: VRM Power Delivery & Heatsink -->
+                <button type="button" class="hotspot-pin" data-spot="vrm" aria-label="Titik Hotspot: VRM Regulasi Daya & Heatsink" style="left: 20.5%; top: 22.5%;">
+                  <span class="hotspot-ring"></span>
+                  <span class="hotspot-core"></span>
+                  <span class="hotspot-label">VRM Daya</span>
+                </button>
+
+                <!-- Hotspot 6: Chipset Platform Controller Hub (PCH) -->
+                <button type="button" class="hotspot-pin" data-spot="chipset" aria-label="Titik Hotspot: Chipset Motherboard PCH" style="left: 74.0%; top: 73.0%;">
+                  <span class="hotspot-ring"></span>
+                  <span class="hotspot-core"></span>
+                  <span class="hotspot-label">Chipset</span>
+                </button>
+
+                <!-- Hotspot 7: Konektor Daya Utama ATX 24-Pin -->
+                <button type="button" class="hotspot-pin" data-spot="power" aria-label="Titik Hotspot: Konektor Daya Utama ATX 24-Pin" style="left: 91.0%; top: 36.5%;">
+                  <span class="hotspot-ring"></span>
+                  <span class="hotspot-core"></span>
+                  <span class="hotspot-label">Daya ATX</span>
+                </button>
+              </div>
+
+              <!-- Baris Tombol Pintasan Komponen (Chips Bar) -->
+              <div class="hotspot-chips-bar" role="toolbar" aria-label="Pintasan Titik Komponen">
+                <span class="chips-hint">PILIH TITIK:</span>
+                <button type="button" class="hotspot-chip" data-spot="cpu">CPU</button>
+                <button type="button" class="hotspot-chip" data-spot="ram">RAM</button>
+                <button type="button" class="hotspot-chip" data-spot="ssd">M.2 SSD</button>
+                <button type="button" class="hotspot-chip" data-spot="gpu">GPU</button>
+                <button type="button" class="hotspot-chip" data-spot="vrm">VRM</button>
+                <button type="button" class="hotspot-chip" data-spot="chipset">Chipset</button>
+                <button type="button" class="hotspot-chip" data-spot="power">Daya ATX</button>
+              </div>
+            </div>
+
+            <!-- Kolom Kanan: Kartu Inspektor Detail Teknologi -->
+            <div class="inspector-card" id="inspector-card" aria-live="polite">
+              <div class="inspector-card-header">
+                <span class="inspector-badge" id="insp-badge">[TITIK_INTERAKTIF]</span>
+                <span class="inspector-status-dot" id="insp-status-dot"></span>
+              </div>
+              <h3 class="inspector-title" id="insp-title">Pilih Satu Titik Komponen</h3>
+              <p class="inspector-analogy" id="insp-analogy">Arahkan kursor, ketuk, atau fokuskan titik di motherboard untuk melihat teknologinya.</p>
+              <p class="inspector-desc" id="insp-desc">Setiap komponen perangkat keras komputer saling berkomunikasi melalui jalur bus berkecepatan tinggi yang tertanam di papan motherboard. Pilih salah satu titik hotspot berkedip untuk mempelajari bagaimana komponen tersebut terhubung dan bekerja.</p>
+
+              <div class="inspector-specs-box" id="insp-specs-box" style="display: none;">
+                <div class="specs-title">SPESIFIKASI JALUR KONEKSI:</div>
+                <ul class="specs-list" id="insp-specs-list"></ul>
+              </div>
+
+              <div class="inspector-action-box" id="insp-action-box" style="display: none;">
+                <button type="button" class="btn btn-primary btn-jump-module" id="btn-jump-to-module">
+                  Pelajari Modul Ini Selengkapnya &rarr;
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ===============================================================
+        §9 — SLIDE 10: STANDAR KESELAMATAN & SOP PERAKITAN
+      ================================================================ -->
+      <section class="slide-body" id="slide-9" data-slide="10" role="region" aria-label="Slide 10: Standar Keselamatan dan SOP Perakitan">
         <div class="rules-stage">
           <div class="rules-heading">
             <div class="system-kicker">[SOP_ASSEMBLY] STANDAR KESELAMATAN &amp; PROSEDUR TEKNIS</div>
@@ -234,9 +619,9 @@
       </section>
 
       <!-- ===============================================================
-        §9 — SLIDE 10: SIMULASI URUTAN PERAKITAN DRAG & DROP
+        §10 — SLIDE 11: SIMULASI URUTAN PERAKITAN DRAG & DROP
       ================================================================ -->
-      <section class="slide-body" id="slide-9" data-slide="10" role="region" aria-label="Slide 10: Simulasi Urutan Perakitan PC">
+      <section class="slide-body" id="slide-10" data-slide="11" role="region" aria-label="Slide 11: Simulasi Urutan Perakitan PC">
         <div class="dnd-stage">
           <!-- Header Interaksi & Tombol Operasional DnD -->
           <div class="dnd-panel-header">
@@ -272,23 +657,23 @@
       </section>
 
       <!-- ===============================================================
-        §10 — SLIDE 11–13: WADAH KUIS EVALUASI BLOK FUNGSI
+        §11 — SLIDE 12–14: WADAH KUIS EVALUASI BLOK FUNGSI
         Konten soal, opsi pilihan, dan evaluasi dirender via script.js: renderQuizSlides()
       ================================================================ -->
       
-      <!-- Slide 11: Kasus 01 (Multitasking & Beban Memori - RAM) -->
-      <section class="slide-body" id="slide-10" data-slide="11" role="region" aria-label="Slide 11: Tantangan Kasus 01"></section>
+      <!-- Slide 12: Kasus 01 (Multitasking & Beban Memori - RAM) -->
+      <section class="slide-body" id="slide-11" data-slide="12" role="region" aria-label="Slide 12: Tantangan Kasus 01"></section>
 
-      <!-- Slide 12: Kasus 02 (Anomali Suplai Listrik - PSU) -->
-      <section class="slide-body" id="slide-11" data-slide="12" role="region" aria-label="Slide 12: Tantangan Kasus 02"></section>
+      <!-- Slide 13: Kasus 02 (Anomali Suplai Listrik - PSU) -->
+      <section class="slide-body" id="slide-12" data-slide="13" role="region" aria-label="Slide 13: Tantangan Kasus 02"></section>
 
-      <!-- Slide 13: Kasus 03 (Integritas Retensi Data Permanen - SSD) -->
-      <section class="slide-body" id="slide-12" data-slide="13" role="region" aria-label="Slide 13: Tantangan Kasus 03"></section>
+      <!-- Slide 14: Kasus 03 (Integritas Retensi Data Permanen - SSD) -->
+      <section class="slide-body" id="slide-13" data-slide="14" role="region" aria-label="Slide 14: Tantangan Kasus 03"></section>
 
       <!-- ===============================================================
-        §11 — SLIDE 14: LAPORAN REKAPITULASI CAPAIAN AKHIR
+        §12 — SLIDE 15: LAPORAN REKAPITULASI CAPAIAN AKHIR
       ================================================================ -->
-      <section class="slide-body" id="slide-13" data-slide="14" role="region" aria-label="Slide 14: Laporan Rekapitulasi Capaian Pembelajaran">
+      <section class="slide-body" id="slide-14" data-slide="15" role="region" aria-label="Slide 15: Laporan Rekapitulasi Capaian Pembelajaran">
         <div class="summary-stage">
           <span class="summary-tag">MODUL SELESAI // LAPORAN REKAPITULASI</span>
           <h2>Evaluasi Capaian Pembelajaran</h2>
@@ -337,9 +722,9 @@
       </section>
 
       <!-- ===============================================================
-        §12 — SLIDE 15: DAFTAR REFERENSI & RUJUKAN TEKNIS
+        §13 — SLIDE 16: DAFTAR REFERENSI & RUJUKAN TEKNIS
       ================================================================ -->
-      <section class="slide-body" id="slide-14" data-slide="15" role="region" aria-label="Slide 15: Daftar Referensi dan Pustaka Teknis">
+      <section class="slide-body" id="slide-15" data-slide="16" role="region" aria-label="Slide 16: Daftar Referensi dan Pustaka Teknis">
         <div class="references-stage">
           <div class="references-header">
             <div class="system-kicker">[REFERENSI_AKADEMIK] RUJUKAN STANDAR &amp; PUSTAKA TEKNIS</div>
@@ -387,7 +772,7 @@
     </main>
 
     <!-- ===================================================================
-      §13 — TECHNICAL FOOTER NAVIGATION
+      §14 — TECHNICAL FOOTER NAVIGATION
       Bar kontrol navigasi bawah tetap (fixed di dasar layar)
     ==================================================================== -->
     <footer class="slide-footer" role="navigation" aria-label="Kontrol Navigasi Slide">
@@ -399,12 +784,12 @@
         <span class="footer-title" id="footer-title">OVERVIEW</span>
         
         <!-- Progress Bar Horizontal -->
-        <div class="footer-progress" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="15" aria-label="Progres Pembelajaran">
+        <div class="footer-progress" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="16" aria-label="Progres Pembelajaran">
           <div class="footer-progress-bar" id="progress-fill"></div>
         </div>
         
         <!-- Indikator Angka Slide Aktif -->
-        <span class="footer-counter" id="slide-counter">01 / 15</span>
+        <span class="footer-counter" id="slide-counter">01 / 16</span>
       </div>
       
       <!-- Area Kanan: Tombol Kendali Alur Slide -->

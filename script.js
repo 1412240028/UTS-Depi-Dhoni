@@ -42,7 +42,7 @@
  * ===================================================================== */
 
 /** Jumlah total slide dalam presentasi */
-const TOTAL_SLIDES = 15;
+const TOTAL_SLIDES = 16;
 
 /** Kunci penyimpanan state di localStorage */
 const STORAGE_KEY = 'UTS_DHONI_DEVI_PC_MODULE_STATE_V2';
@@ -83,13 +83,14 @@ const slideDirectory = [
   { num: 6,  label: "SSD (STORAGE)",     title: "Blok 04: Solid State Drive (NVMe)" },
   { num: 7,  label: "GPU (GRAPHICS)",    title: "Blok 05: Graphics Processing Unit" },
   { num: 8,  label: "PSU (POWER SUPPLY)",title: "Blok 06: Power Supply Unit" },
-  { num: 9,  label: "SOP PERAKITAN",     title: "Standar Keselamatan & SOP Teknis" },
-  { num: 10, label: "SIMULASI DND",      title: "Simulasi Urutan Perakitan PC" },
-  { num: 11, label: "TANTANGAN 01",      title: "Kasus 01: Multitasking & Beban Memori" },
-  { num: 12, label: "TANTANGAN 02",      title: "Kasus 02: Anomali Suplai Listrik" },
-  { num: 13, label: "TANTANGAN 03",      title: "Kasus 03: Integritas Penyimpanan Permanen" },
-  { num: 14, label: "REKAPITULASI",      title: "Laporan Evaluasi Capaian Akhir" },
-  { num: 15, label: "REFERENSI",         title: "Daftar Referensi & Rujukan Teknis" }
+  { num: 9,  label: "INSPEKSI MOTHERBOARD", title: "Peta Interaktif Komponen Terpasang" },
+  { num: 10, label: "SOP PERAKITAN",     title: "Standar Keselamatan & SOP Teknis" },
+  { num: 11, label: "SIMULASI DND",      title: "Simulasi Urutan Perakitan PC" },
+  { num: 12, label: "TANTANGAN 01",      title: "Kasus 01: Multitasking & Beban Memori" },
+  { num: 13, label: "TANTANGAN 02",      title: "Kasus 02: Anomali Suplai Listrik" },
+  { num: 14, label: "TANTANGAN 03",      title: "Kasus 03: Integritas Penyimpanan Permanen" },
+  { num: 15, label: "REKAPITULASI",      title: "Laporan Evaluasi Capaian Akhir" },
+  { num: 16, label: "REFERENSI",         title: "Daftar Referensi & Rujukan Teknis" }
 ];
 
 
@@ -442,7 +443,7 @@ const dndSteps = [
 const quizData = [
   /* ---- Kasus 01: Multitasking & Beban Memori ---- */
   {
-    slideIdx: 10,
+    slideIdx: 11,
     number: "01",
     title: "KASUS 01 // MULTITASKING & BEBAN KERJA MEMORI",
     question: "Sebuah komputer operasional laboratorium mengalami pelambatan parah stuttering saat menjalankan browser dengan puluhan tab riset, aplikasi desain grafis, dan IDE pemrograman secara simultan. Blok manakah yang bertindak sebagai ruang buffer sementara dan perlu dievaluasi kapasitasnya?",
@@ -459,7 +460,7 @@ const quizData = [
 
   /* ---- Kasus 02: Anomali Suplai Listrik ---- */
   {
-    slideIdx: 11,
+    slideIdx: 12,
     number: "02",
     title: "KASUS 02 // ANOMALI SUPLAI LISTRIK & MATI TOTAL",
     question: "Saat sakelar daya casing ditekan, komputer sama sekali tidak memberikan respons sinyal—kipas pendingin tidak berputar, LED indikator pada motherboard mati, dan tidak ada aliran daya terdeteksi. Blok manakah yang bertanggung jawab mengalirkan energi listrik utama ke sistem?",
@@ -476,7 +477,7 @@ const quizData = [
 
   /* ---- Kasus 03: Integritas Penyimpanan Permanen ---- */
   {
-    slideIdx: 12,
+    slideIdx: 13,
     number: "03",
     title: "KASUS 03 // INTEGRITAS PENYIMPANAN DATA PERMANEN",
     question: "Berkas proyek pemrograman, basis data, dan konfigurasi sistem operasi tetap tersimpan utuh dan tidak terhapus meskipun komputer dimatikan dan kabel stopkontak dicabut dalam jangka waktu lama. Blok manakah yang menjalankan fungsi retensi permanen non-volatile ini?",
@@ -627,8 +628,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   renderComponentMenu();   // §13: Render grid menu komponen (slide 2)
   renderMateriSlides();    // §13: Render konten detail hardware (slide 3–8)
-  initDragAndDrop();       // §14: Render simulasi DnD (slide 10)
-  renderQuizSlides();      // §15: Render soal kuis (slide 11–13)
+  initInteractiveMotherboard(); // §13B: Inisialisasi hotspot motherboard (slide 9)
+  initDragAndDrop();       // §14: Render simulasi DnD (slide 11)
+  renderQuizSlides();      // §15: Render soal kuis (slide 12–14)
   renderSlideNavDrawer();  // §12: Render daftar item di drawer navigasi
 
   bindUnifiedEvents();     // §8:  Bind semua event listener (tidak ada inline onclick)
@@ -880,8 +882,8 @@ function goToSlide(targetIdx, announceSlide = true) {
     renderComponentMenu(); // Perbarui badge status di menu grid
   }
 
-  // Perbarui rekapitulasi jika pengguna masuk ke slide akhir
-  if (currentSlide === 13) {
+  // Perbarui rekapitulasi jika pengguna masuk ke slide evaluasi akhir (Slide 15)
+  if (currentSlide === 14) {
     updateFinalRecap();
   }
 
@@ -1122,7 +1124,192 @@ function renderMateriSlides() {
 
 
 /* =====================================================================
- * §14 — SIMULASI DRAG & DROP PERAKITAN (SLIDE 10)
+ * §13B — INSPEKSI INTERAKTIF MOTHERBOARD & KOMPONEN (SLIDE 9)
+ * Eksplorasi interaktif berbasis titik hotspot (pin) pada skematik
+ * motherboard lengkap dengan CPU, RAM, SSD, GPU, VRM, Chipset, dan PSU.
+ * Mendukung hover, klik mouse, sentuhan mobile (touch), dan navigasi keyboard.
+ * ===================================================================== */
+
+const motherboardHotspots = [
+  {
+    id: "cpu",
+    label: "CPU",
+    badge: "[KOMPONEN_INTI // SOKET_CPU]",
+    title: "Central Processing Unit (CPU) & Soket AM5/LGA",
+    analogy: "Otak utama komputasi pemroses instruksi program secara instan.",
+    desc: "CPU terpasang pada soket motherboard dengan ratusan titik kontak presisi tinggi (LGA/BGA), terkunci rapat di bawah pelat pengunci ILM. Berisi inti komputasi berkecepatan tinggi (GHz) dan pengontrol memori internal yang berkomunikasi langsung ke slot RAM.",
+    specs: [
+      "Antarmuka: Soket AM5 / LGA 1700 dengan tuas penahan logam (ILM)",
+      "Interkoneksi: 16 lajur PCIe Gen 5 ke GPU + 4 lajur PCIe Gen 5 ke M.2 NVMe",
+      "Kontroler Memori: Terhubung langsung ke RAM via Dual-Channel 128-bit bus"
+    ],
+    targetSlide: 3
+  },
+  {
+    id: "ram",
+    label: "RAM",
+    badge: "[MEMORI_KERJA // SLOT_DIMM]",
+    title: "Dual-Channel DDR5 RAM Modules",
+    analogy: "Meja kerja komputasi berkecepatan tinggi tempat data program aktif dibuka.",
+    desc: "Dua modul RAM dipasang pada slot DIMM ke-2 dan ke-4 (A2 & B2) untuk mengaktifkan bandwidth Dual-Channel. Bekerja secara volatil menampung data instruksi aktif dari aplikasi dan sistem operasi agar dapat diakses seketika oleh CPU.",
+    specs: [
+      "Kecepatan Bus: 4800 – 6400+ MT/s (MegaTransfers per detik)",
+      "Lebar Jalur: 128-bit Dual-Channel (2x 32-bit sub-channels pada DDR5)",
+      "Fitur Arsitektur: On-Die Error-Correction Code (ODECC) & PMIC regulator"
+    ],
+    targetSlide: 4
+  },
+  {
+    id: "ssd",
+    label: "M.2 SSD",
+    badge: "[STORAGE_NVME // SLOT_M2]",
+    title: "M.2 NVMe PCIe Solid State Drive (SSD)",
+    analogy: "Gudang arsip super cepat penyimpan sistem operasi dan data permanen.",
+    desc: "Penyimpanan solid-state terpasang langsung ke slot M.2 yang terhubung ke 4 lajur PCIe langsung dari prosesor. Dilapisi heatsink thermal armor aluminium berbobot tebal untuk mendispersikan panas dari chip pengontrol berkecepatan tinggi.",
+    specs: [
+      "Protokol Bus: Non-Volatile Memory Express (NVMe 2.0) via PCIe 4.0/5.0 x4",
+      "Kecepatan Transfer: Kecepatan sequential read/write hingga 7.000–14.000 MB/s",
+      "Bentuk Fisik: Form factor kompak M.2 2280 dengan chip 3D NAND Flash"
+    ],
+    targetSlide: 5
+  },
+  {
+    id: "gpu",
+    label: "GPU / PCIe",
+    badge: "[GRAFIS_KOMPUTASI // SLOT_PCIE]",
+    title: "PCIe 5.0 x16 Expansion Slot (GPU Interface)",
+    analogy: "Jalur tol ekspres data visual berkapasitas terbesar pada sistem.",
+    desc: "Slot ekspansi horizontal terpanjang yang diperkuat pelindung baja (Steel Armor) untuk menopang kartu grafis diskrit (VGA). Menyediakan 16 lajur komunikasi berkecepatan tinggi tanpa perantara langsung ke jalur bus PCIe prosesor.",
+    specs: [
+      "Bandwidth Maksimal: Hingga 64 GB/s dua arah (bidirectional) pada PCIe 5.0",
+      "Mekanisme Pengaman: SafeSlot retention clip di ujung kanan slot",
+      "Fungsi Inti: Rendering frame grafis 3D, pemrosesan video, dan akselerasi AI"
+    ],
+    targetSlide: 6
+  },
+  {
+    id: "vrm",
+    label: "VRM Daya",
+    badge: "[REGULASI_DAYA // MODUL_VRM]",
+    title: "Voltage Regulator Module (VRM) & Heatsink Daya",
+    analogy: "Gardu transformator mini pengatur kestabilan suplai listrik inti CPU.",
+    desc: "Rangkaian choke ferrit, kapasitor solid tahan panas, dan chip power stages (MOSFET) yang menurunkan tegangan 12V dari PSU menjadi tegangan sangat stabil berkisar 1.1V–1.3V dengan arus tinggi ratusan Ampere untuk inti silikon prosesor.",
+    specs: [
+      "Konfigurasi Fase: Multi-phase digital power delivery (mis. 14+2+1 power stages)",
+      "Disipasi Panas: Heatsink aluminium berbobot tebal berlapis sirip pendingin",
+      "Proteksi: Menjaga voltase dari lonjakan (ripple) saat beban kerja puncak"
+    ],
+    targetSlide: 2
+  },
+  {
+    id: "chipset",
+    label: "Chipset",
+    badge: "[KONTROLER_HUB // CHIPSET_PCH]",
+    title: "Platform Controller Hub (Chipset PCH)",
+    analogy: "Pusat pengendali lalu lintas data periferal dan port eksternal.",
+    desc: "Pusat pengendali I/O terpasang di bawah pendingin chipset. Mengatur komunikasi perangkat sekunder seperti deretan port USB, antarmuka storage SATA 6Gbps, kartu jaringan Ethernet LAN, koneksi audio terintegrasi, dan slot ekspansi PCIe sekunder.",
+    specs: [
+      "Interkoneksi ke CPU: Bus antarmuka DMI 4.0 / PCIe 4.0 x4 Uplink",
+      "Konektivitas Didukung: Hingga 12 port USB 3.2, 4 port SATA, dan Wi-Fi 6E/7",
+      "Pendinginan: Blok heatsink aluminium bergaris ventilasi teknis"
+    ],
+    targetSlide: 2
+  },
+  {
+    id: "power",
+    label: "Daya ATX",
+    badge: "[DISTRIBUSI_LISTRIK // KONEKTOR_ATX]",
+    title: "Konektor Daya Utama ATX 24-Pin",
+    analogy: "Pintu gerbang saluran masuk arus energi dari catu daya (PSU).",
+    desc: "Soket distribusi daya utama 24-pin yang mengalirkan rel tegangan +3.3V, +5V, +12V, dan rel standby +5VSB dari Power Supply Unit (PSU) ke seluruh rangkaian jalur PCB motherboard.",
+    specs: [
+      "Standar Spesifikasi: ATX12V 24-Pin dengan terminal kontak tembaga murni",
+      "Pengaman Mekanis: Klip kait pengunci eksternal anti lepas",
+      "Sinyal Logika: Pin PS_ON# (Power Supply On) dan PWR_OK (Power Good Status)"
+    ],
+    targetSlide: 7
+  }
+];
+
+let activeHotspotId = null;
+
+/**
+ * Memilih hotspot tertentu dan memperbarui Inspector Card.
+ * @param {string} spotId - ID hotspot (cpu, ram, ssd, gpu, vrm, chipset, power)
+ */
+function selectMotherboardHotspot(spotId) {
+  const item = motherboardHotspots.find(h => h.id === spotId);
+  if (!item) return;
+
+  activeHotspotId = spotId;
+
+  // Update status visual titik hotspot pada motherboard
+  document.querySelectorAll('.hotspot-pin').forEach(pin => {
+    const isMatch = pin.dataset.spot === spotId;
+    pin.classList.toggle('active', isMatch);
+    pin.setAttribute('aria-pressed', isMatch ? 'true' : 'false');
+  });
+
+  // Update status visual chip tombol pintasan
+  document.querySelectorAll('.hotspot-chip').forEach(chip => {
+    chip.classList.toggle('active', chip.dataset.spot === spotId);
+  });
+
+  // Perbarui konten pada Inspector Card
+  const badgeEl    = $('insp-badge');
+  const titleEl    = $('insp-title');
+  const analogyEl  = $('insp-analogy');
+  const descEl     = $('insp-desc');
+  const specsBox   = $('insp-specs-box');
+  const specsList  = $('insp-specs-list');
+  const actionBox  = $('insp-action-box');
+  const jumpBtn    = $('btn-jump-to-module');
+
+  if (badgeEl)   badgeEl.innerText   = item.badge;
+  if (titleEl)   titleEl.innerText   = item.title;
+  if (analogyEl) analogyEl.innerText = item.analogy;
+  if (descEl)    descEl.innerText    = item.desc;
+
+  if (specsList && specsBox) {
+    specsList.innerHTML = item.specs.map(s => `<li>${s}</li>`).join('');
+    specsBox.style.display = 'block';
+  }
+
+  if (actionBox && jumpBtn) {
+    actionBox.style.display = 'block';
+    jumpBtn.onclick = () => goToSlide(item.targetSlide);
+  }
+
+  announce(`Inspeksi komponen: ${item.title}`);
+}
+
+/**
+ * Menginisialisasi event listener untuk titik hotspot dan chips motherboard.
+ */
+function initInteractiveMotherboard() {
+  const pins = document.querySelectorAll('.hotspot-pin');
+  pins.forEach(pin => {
+    const spotId = pin.dataset.spot;
+    pin.addEventListener('click', () => selectMotherboardHotspot(spotId));
+    pin.addEventListener('mouseenter', () => selectMotherboardHotspot(spotId));
+    pin.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        selectMotherboardHotspot(spotId);
+      }
+    });
+  });
+
+  const chips = document.querySelectorAll('.hotspot-chip');
+  chips.forEach(chip => {
+    const spotId = chip.dataset.spot;
+    chip.addEventListener('click', () => selectMotherboardHotspot(spotId));
+  });
+}
+
+
+/* =====================================================================
+ * §14 — SIMULASI DRAG & DROP PERAKITAN (SLIDE 11)
  * Mendukung interaksi cerdas:
  *   1. Tap-to-Move (Mobile & Desktop): Cukup ketuk kartu pada depot untuk
  *      otomatis memindahkannya ke slot urutan berikutnya (1 s/d 5).
